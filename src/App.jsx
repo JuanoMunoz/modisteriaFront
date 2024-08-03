@@ -1,18 +1,19 @@
 import "./App.css";
-import Button from "./components/Button";
-
+import Test from "./components/Text";
+import { Routes, Route } from "react-router-dom";
+import Error404 from "./pages/Error404";
+import Layout from "./components/Layout";
+import Home from "./pages/Home";
 function App() {
   return (
     <>
-      <p>
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Earum vitae
-        maxime nesciunt necessitatibus eveniet <i>placeat dolore, ratione ea</i>
-        <span style={{ fontWeight: 900, fontStyle: "italic" }}>
-          s laboriosam perferendis sed ipsa unde illum possimus repudiandae?
-        </span>{" "}
-        Vel deserunt dolore ad. born under a bad sign with a blue moon in your
-        eyes
-      </p>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />}></Route>
+          <Route path="/about" element={<Test />}></Route>
+        </Route>
+        <Route path="*" element={<Error404 />}></Route>
+      </Routes>
     </>
   );
 }
