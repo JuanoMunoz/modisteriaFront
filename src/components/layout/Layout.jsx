@@ -1,19 +1,33 @@
 import "./layout.css";
+import logo from "/icon.png"
+
 import { Outlet, Link } from "react-router-dom";
 export default function Layout() {
   return (
     <>
-      <nav className="nav">
-        <li>
-          <Link to={"/"}>Modisteria</Link>
-        </li>
-        <li>
-          <Link to={"/registro"}>Registro</Link>
-        </li>
-        <li>Catálogo</li>
-        <li>Contacto</li>
-        <li>Nosotros</li>
+    <header className="contenedor">
+
+      <div className="logo">
+        <a href="#"><img src={logo} className="img"></img></a>
+        <h4>MODISTERIA D.L</h4>
+      </div>
+
+      <nav className="navegador">
+        <ul>
+            <li className="navItem">
+              <Link to={"/"}>Modisteria</Link>
+            </li>
+            <li className="navItem">
+              <Link to={"/registro"}>Registro</Link>
+            </li>
+            <li className="navItem">Catálogo</li>
+            <li className="navItem">Contacto</li>
+            <li className="navItem">Nosotraaaaaaas</li>
+        </ul>
+
       </nav>
+    </header>
+
       <Outlet></Outlet>
     </>
   );
