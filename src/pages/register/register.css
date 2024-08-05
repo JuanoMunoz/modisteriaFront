@@ -1,0 +1,20 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.form section {
+  display: flex;
+  gap: 1rem;
+}
+.form section article {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+.boton-submit {
+  max-width: 200px;
+  max-height: 50px;
+  justify-self: center;
+  align-self: center;
+}

@@ -1,16 +1,16 @@
 import "./App.css";
-import Test from "./components/Text";
 import { Routes, Route } from "react-router-dom";
-import Error404 from "./pages/Error404";
-import Layout from "./components/Layout";
-import Home from "./pages/Home";
+import Error404 from "./pages/error404/Error404";
+import Layout from "./components/layout/Layout";
+import Home from "./pages/home/Home";
+import Register from "./pages/register/Register";
 function App() {
   return (
     <>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />}></Route>
-          <Route path="/about" element={<Test />}></Route>
+          <Route path="/registro" element={<Register />}></Route>
         </Route>
         <Route path="*" element={<Error404 />}></Route>
       </Routes>
