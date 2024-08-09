@@ -1,5 +1,5 @@
 a img{
-  width: 40px;
+  width: 70px;
   margin-right: 10px;
   filter: invert(100%);
 }
@@ -8,6 +8,8 @@ a img{
   display: flex;
   align-items: center;
   color: white;
+  margin-right: 100px;
+  margin-bottom: 50px;
 }
 
 .navegador a{
@@ -15,14 +17,18 @@ a img{
   color: white;
 }
 
-.contenedor{
+.contenedorNav{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 110%;
+  width: 100%;
   max-width: 1200px;
-  height: 100%;
-  margin: 0 auto;
+  height: 80px;
+}
+
+.navegador a{
+  text-decoration: none;
+  color: white;
 }
 
 .navegador{
@@ -32,7 +38,23 @@ a img{
   border-radius: 0px 35px 0px 35px;
   display: flex;
   justify-content: center;
+  /* border-bottom: solid 3px #9F06FF; */
+  position: relative;
+
 }
+
+/* .navegador::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border-radius: 0px 40px 0px 40px;
+  border: solid 5px white;
+  box-sizing: border-box;
+  z-index: -1; 
+} */
 
 .navegador ul{
   display: flex;
@@ -44,6 +66,7 @@ a img{
   list-style: none;
   margin-left: 35px;
   font-size: 13px;
+  cursor: pointer;
 }
 
 
