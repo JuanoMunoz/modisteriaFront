@@ -1,6 +1,7 @@
 import Metadata from "../../components/metadata/Metadata";
 import "./register.css";
 import video from "/registro.mp4"
+import foto from "/foto1.jfif"
 import { useForm } from "react-hook-form";
 export default function Register() {
   // const EMAIL_REGEX =
@@ -19,44 +20,34 @@ export default function Register() {
   return (
     <>
       <Metadata title={"Registro - Modistería Doña Luz"}></Metadata>
-      <h1>Registrate</h1>
+      <h1>Registrate</h1><br />
 
       <div className="contenedor">
         <div className="imagen">
-            <video src={video} autoPlay loop muted className="video"></video>
+            <img src={foto} alt="" className="imagenForm"/>
         </div>
         <div className="form">
             <form action="#">
 
-              <div className="input-container">
-                <input type="text" className="input-field"/>
-                <label className="input-label">Nombre</label>
-                <span className="input-highlight"></span>
-              </div>
+              <input type="text" className="input" placeholder="Nombres"/><br />
+              <span className="descripcion">Descripcion descripcion descripcion</span><br/>
 
-              <div className="input-container">
-                <input type="text" className="input-field"/>
-                <label className="input-label">Télefono</label>
-                <span className="input-highlight"></span>
-              </div>
+              <input type="text" className="input" placeholder="Télefono"/><br />
+              <span className="descripcion">Descripcion descripcion descripcion</span><br/>
 
-              <div className="input-container">
-                <input type="text" className="input-field"/>
-                <label className="input-label">Correo</label>
-                <span className="input-highlight"></span>
-              </div>
+              <input type="text" className="input" placeholder="Correo"/><br />
+              <span className="descripcion">Descripcion descripcion descripcion</span><br/>
 
-              <div className="input-container">
-                <input type="password" className="input-field"/>
-                <label className="input-label">Contraseña</label>
-                <span className="input-highlight"></span>
-              </div>
+              <input type="password" className="input" placeholder="Contraseña"/><br />
+              <span className="descripcion">Descripcion descripcion descripcion</span><br/>
 
-              <div className="input-container">
-                <input type="password" className="input-field"/>
-                <label className="input-label">Repetir Contraseña</label>
-                <span className="input-highlight"></span>
-              </div>
+              <input type="password" className="input" placeholder="Repetir Contraseña"/><br />
+              <span className="descripcion">Descripcion descripcion descripcion</span><br/>
+
+              <button>
+                <span>Registrarme</span>
+              </button>
+              
             </form>
         </div>
       </div>

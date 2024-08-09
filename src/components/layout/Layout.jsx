@@ -9,7 +9,7 @@ export default function Layout() {
 
       <div className="logo">
         <a href="#"><img src={logo} className="img"></img></a>
-        <h4>MODISTERIA D.L</h4>
+        <h2>MODISTERIA D.L</h2>
       </div>
 
       <nav className="navegador">
@@ -22,7 +22,7 @@ export default function Layout() {
             </li>
             <li className="navItem">Catálogo</li>
             <li className="navItem">Contacto</li>
-            <li className="navItem">Nosotraaaaaaas</li>
+            <li className="navItem">Nosotros</li>
         </ul>
 
       </nav>
