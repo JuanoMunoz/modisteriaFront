@@ -21,10 +21,14 @@ a img{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 110%;
+  width: 100%;
   max-width: 1200px;
-  height: 100%;
-  margin: 0 auto;
+  height: 80px;
+}
+
+.navegador a{
+  text-decoration: none;
+  color: white;
 }
 
 .navegador{
@@ -34,7 +38,23 @@ a img{
   border-radius: 0px 35px 0px 35px;
   display: flex;
   justify-content: center;
+  margin-bottom: 60px;
+  /* border-bottom: solid 3px #9F06FF; */
+  position: relative;
 }
+
+/* .navegador::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border-radius: 0px 40px 0px 40px;
+  border: solid 5px white;
+  box-sizing: border-box;
+  z-index: -1; 
+} */
 
 .navegador ul{
   display: flex;
