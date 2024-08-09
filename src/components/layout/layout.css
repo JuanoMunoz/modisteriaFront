@@ -1,5 +1,5 @@
 a img{
-  width: 40px;
+  width: 70px;
   margin-right: 10px;
   filter: invert(100%);
 }
@@ -8,6 +8,8 @@ a img{
   display: flex;
   align-items: center;
   color: white;
+  margin-right: 70px;
+  margin-bottom: 50px;
 }
 
 .navegador a{
