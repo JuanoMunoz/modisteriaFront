@@ -59,6 +59,23 @@
   margin-bottom: 50px;
 }
 
+/*VER CONTRASEÑA*/
+.verPass{
+  position: absolute;
+  right: 315px;
+  top: 730px;
+  cursor: pointer;
+  width: 25px;
+}
+
+.verPassConfirm{
+  position: absolute;
+  right: 315px;
+  top: 835px;
+  cursor: pointer;
+  width: 25px;
+}
+
 /*BOTON*/
 .btn-registro {
   outline: none;
