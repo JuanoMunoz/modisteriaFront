@@ -5,7 +5,7 @@ import { Outlet, Link } from "react-router-dom";
 export default function Layout() {
   return (
     <>
-    <header className="contenedor">
+    <section className="contenedor">
 
       <div className="logo">
         <a href="#"><img src={logo} className="img"></img></a>
@@ -26,7 +26,7 @@ export default function Layout() {
         </ul>
 
       </nav>
-    </header>
+    </section>
 
       <Outlet></Outlet>
     </>
