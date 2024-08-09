@@ -5,11 +5,11 @@ import { Outlet, Link } from "react-router-dom";
 export default function Layout() {
   return (
     <>
-    <section className="contenedor">
+    <section className="contenedorNav">
 
       <div className="logo">
         <a href="#"><img src={logo} className="img"></img></a>
-        <h2>MODISTERIA D.L</h2>
+        <h3>MODISTERIA D.L</h3>
       </div>
 
       <nav className="navegador">

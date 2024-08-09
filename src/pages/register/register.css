@@ -1,7 +1,7 @@
 .contenedor{
-  margin: 0;
+  margin-top: 0;
   display: flex;
-  justify-content: center;  
+  justify-content: center;
 }
 
 .imagen{
@@ -14,6 +14,17 @@
 
 .form{
   margin-right: 180px;
+  margin-top: 50px;
+}
+
+.separacion{
+  width: 150px;
+  position: relative;
+  bottom: 25px;
+  right: 55px;
+  height: 5px;
+  background-color: rgb(187, 14, 202);
+  border: 0;
 }
 
 /*INPUT*/
@@ -49,7 +60,7 @@
 }
 
 /*BOTON*/
-button {
+.btn-registro {
   outline: none;
   cursor: pointer;
   border: none;
@@ -66,20 +77,21 @@ button {
   overflow: hidden;
   color: ghostwhite;
   margin-top: 50px;
+  background-color: rgb(187, 14, 202);
  }
  
- button span {
+ .btn-registro span {
   position: relative;
   z-index: 10;
   transition: color 0.4s;
  }
  
- button:hover span {
+ .btn-registro:hover span {
   color: rgb(255, 255, 255);
  }
  
- button::before,
- button::after {
+ .btn-registro::before,
+ .btn-registro::after {
   position: absolute;
   top: 0;
   left: 0;
@@ -88,7 +100,7 @@ button {
   z-index: 0;
  }
  
- button::before {
+ .btn-registro::before {
   content: "";
   background: #000;
   width: 120%;
@@ -97,6 +109,6 @@ button {
   transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
  }
  
- button:hover::before {
+ .btn-registro:hover::before {
   transform: translate3d(100%, 0, 0);
  }

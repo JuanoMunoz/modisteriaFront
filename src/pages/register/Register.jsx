@@ -20,7 +20,8 @@ export default function Register() {
   return (
     <>
       <Metadata title={"Registro - Modistería Doña Luz"}></Metadata>
-      <h1>Registrate</h1><br />
+      <br /><br /><h1>Registrate</h1>
+      <hr className="separacion" /><br />
 
       <div className="contenedor">
         <div className="imagen">
@@ -44,7 +45,7 @@ export default function Register() {
               <input type="password" className="input" placeholder="Repetir Contraseña"/><br />
               <span className="descripcion">Descripcion descripcion descripcion</span><br/>
 
-              <button>
+              <button className="btn-registro">
                 <span>Registrarme</span>
               </button>
               
