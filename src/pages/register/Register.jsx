@@ -1,8 +1,14 @@
 import Metadata from "../../components/metadata/Metadata";
 import "./register.css";
+import React, {useState} from "react";
 import video from "/registro.mp4"
 import foto from "/foto1.jfif"
+import ojoAbierto from "/ojoAbierto.png"
+import ojoCerrado from "/ojoCerrado.png"
+import ojito from "/verPass.png"
+
 import { useForm } from "react-hook-form";
+
 export default function Register() {
   // const EMAIL_REGEX =
   //   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -16,6 +22,28 @@ export default function Register() {
   //   console.log(data);
   // };
   // console.log(watch("name"));
+
+  const [password, setPassword] = useState('');
+  const [password2, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  };
+
+  const handleConfirmPasswordChange = (event) => {
+    setConfirmPassword(event.target.value);
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  }
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  }
+
 
   return (
     <>
@@ -39,11 +67,37 @@ export default function Register() {
               <input type="text" className="input" placeholder="Correo"/><br />
               <span className="descripcion">Descripcion descripcion descripcion</span><br/>
 
-              <input type="password" className="input" placeholder="Contraseña"/><br />
+              {/*CONTRASEÑA*/}
+              <input 
+              type={showPassword ? 'text': 'password'} 
+              className="input" 
+              placeholder="Contraseña" 
+              id="password"
+              onChange={handlePasswordChange}
+              /><br />
               <span className="descripcion">Descripcion descripcion descripcion</span><br/>
 
-              <input type="password" className="input" placeholder="Repetir Contraseña"/><br />
+              <img 
+              src={showPassword ? ojoAbierto : ojoCerrado} 
+              alt="" 
+              className="verPass" 
+              onClick={togglePasswordVisibility}/>
+
+              {/*REPETIR CONTRASEÑA*/}
+              <input 
+              type={showConfirmPassword ? 'text': 'password'} 
+              className="input" 
+              placeholder="Repetir Contraseña"
+              id="password2"
+              onChange={handleConfirmPasswordChange}
+              /><br />
               <span className="descripcion">Descripcion descripcion descripcion</span><br/>
+
+              <img 
+              src={showConfirmPassword ? ojoAbierto : ojoCerrado} 
+              alt="" 
+              className="verPassConfirm" 
+              onClick={toggleConfirmPasswordVisibility}/>
 
               <button className="btn-registro">
                 <span>Registrarme</span>
