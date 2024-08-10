@@ -97,3 +97,9 @@
 .btn-registro:hover::before {
   transform: translate3d(100%, 0, 0);
 }
+
+.descripcion {
+  font-size: 12px;
+  margin-bottom: 50px;
+  plac
+}
