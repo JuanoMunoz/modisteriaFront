@@ -18,6 +18,9 @@ export default function Layout() {
               <Link to={"/"}>Modisteria</Link>
             </li>
             <li className="navItem">
+              <Link to={"/sesion"}>Inicia Sesión</Link>
+            </li>
+            <li className="navItem">
               <Link to={"/registro"}>Registro</Link>
             </li>
             <li className="navItem">Catálogo</li>
@@ -29,6 +32,34 @@ export default function Layout() {
     </section>
 
       <Outlet></Outlet>
+
+            
+      <footer className="pie-pagina">
+        <div className="grupo-1">
+          <div className="box">
+            <figure>
+              <a href="#">
+                <img src={logo}  className="logoFooter"/>
+              </a>
+            </figure>
+          </div>
+          <div className="box">
+            <span className="nosotros">SOBRE </span><span className="nosotros purple">NOSOTROS</span>
+            <p>Jovenes emprendedores con objetivos claros y concretos.</p>
+            <p>¿Quieres saber mas sobre nosotros y como aportamos al sitio web? <a href="Nosotros.php"><b>Ver mas...</b></a></p>
+          </div>
+
+          <div className="box">
+            <span className="contacto">CONTACTANOS</span>
+            <p>Dirección: Calle 123, N° 1234, Ciudad.</p>
+            <p>Email: info@modisteria.com</p>
+            <p>Telefono: 3123456789</p>
+          </div>
+        </div>
+        <div className="grupo-2">
+          <small>&copy; 2024 <b>Modisteria D.L</b> - Todos los Derechos Reservados.</small>
+        </div>
+      </footer>
     </>
   );
 }
