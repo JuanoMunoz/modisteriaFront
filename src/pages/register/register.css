@@ -2,6 +2,17 @@
   margin-top: 0;
   display: flex;
   justify-content: center;
+  border-color: 10px solid #000;
+}
+
+.black {
+  color: #000;
+  font-weight: bold;
+  font-size: 55px;
+}
+
+.purple{
+  color: rgb(187, 14, 202);
 }
 
 .imagen {
@@ -20,9 +31,9 @@
 .separacion {
   width: 150px;
   position: relative;
-  bottom: 25px;
-  right: 55px;
-  height: 5px;
+  bottom: 15px;
+  right: 65px;
+  height: 7px;
   background-color: rgb(187, 14, 202);
   border: 0;
 }
@@ -101,5 +112,7 @@
 .descripcion {
   font-size: 12px;
   margin-bottom: 50px;
-  plac
+
 }
+
+
