@@ -1,0 +1,136 @@
+.contenedorSesion {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    border-color: 10px solid #000;
+  }
+  
+  .blackSesion {
+    color: #000;
+    font-weight: bold;
+    font-size: 55px;
+  }
+  
+  .purpleSesion{
+    color: rgb(187, 14, 202);
+    font-weight: bold;
+    font-size: 55px;
+  }
+  
+  .imagenFormSesion {
+    width: 500px;
+  }
+  
+  .formSesion {
+    margin-right: 150px;
+    margin-top: 110px;  
+}
+
+  .formSesion form input {
+    margin-left: 30px;    
+}
+
+.separacionForgot{
+    background-color: rgb(187, 14, 202);
+    height: 2px;
+    margin-top: 30px;
+    margin-left: 10px;
+}
+  
+  .separacionSesion {
+    width: 150px;
+    position: relative;
+    bottom: 15px;
+    right: 105px;
+    height: 7px;
+    background-color: rgb(187, 14, 202);
+    border: 0;
+  }
+
+  .forgotPass{
+    width: 280px;
+    background-color: transparent;
+    margin-top: 10px;
+    transition: ease 1s;
+  }
+
+  .forgotPass:hover{
+    color: rgb(187, 14, 202);
+  }
+  
+  /*VER CONTRASEÑA*/
+  .verPassSesion {
+    position: absolute;
+    right: 315px;
+    top: 730px;
+    cursor: pointer;
+    width: 25px;
+  }
+  
+  .verPassConfirmSesion {
+    position: absolute;
+    right: 315px;
+    top: 835px;
+    cursor: pointer;
+    width: 25px;
+  }
+  
+  /*BOTON*/
+  .btn-registroSesion {
+    outline: none;
+    cursor: pointer;
+    border: none;
+    padding: 0.9rem 2rem;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    position: relative;
+    display: inline-block;
+    letter-spacing: 0.05rem;
+    font-weight: 700;
+    font-size: 17px;
+    border-radius: 500px;
+    overflow: hidden;
+    color: ghostwhite;
+    margin-top: 30px;
+    background-color: rgb(187, 14, 202);
+  }
+  
+  .btn-registroSesion span {
+    position: relative;
+    z-index: 10;
+    transition: color 0.4s;
+  }
+  
+  .btn-registroSesion:hover span {
+    color: rgb(255, 255, 255);
+  }
+  
+  .btn-registroSesion::before,
+  .btn-registroSesion::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+  
+  .btn-registroSesion::before {
+    content: "";
+    background: #000;
+    width: 120%;
+    left: -10%;
+    transform: skew(30deg);
+    transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+  }
+  
+  .btn-registroSesion:hover::before {
+    transform: translate3d(100%, 0, 0);
+  }
+  
+  .descripcionSesion {
+    font-size: 12px;
+    margin-bottom: 50px;
+  
+  }
