@@ -1,6 +1,7 @@
 import Metadata from "../../components/metadata/Metadata";
 import "./register.css";
 import foto from "/foto1.jfif";
+import logo from "/icon.png"
 import { useForm } from "react-hook-form";
 import Input from "../../components/input_basico/Input";
 import { useEffect } from "react";
@@ -46,7 +47,7 @@ export default function Register() {
       <Metadata title={"Registro - Modistería Doña Luz"}></Metadata>
       <br />
       <br />
-      <h1>Registrate</h1>
+      <span className="black">Regis</span><span className="black">trate</span>
       <hr className="separacion" />
       <br />
 
@@ -124,5 +125,6 @@ export default function Register() {
       </div>
       <ToastContainer></ToastContainer>
     </>
+    
   );
 }
