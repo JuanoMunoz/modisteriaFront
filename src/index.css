@@ -1,10 +1,14 @@
+
+
 :root {
   font-family: "Comfortaa", sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: rgb(241, 235, 235);
+  background-color: #FFFFFF;
+  background-image: url("https://i.pinimg.com/564x/16/3d/ef/163deff1e4a3fe6345d64df7c0a0fae1.jpg");
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

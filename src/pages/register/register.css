@@ -2,6 +2,17 @@
   margin-top: 0;
   display: flex;
   justify-content: center;
+  border-color: 10px solid #000;
+}
+
+.black {
+  color: #000;
+  font-weight: bold;
+  font-size: 55px;
+}
+
+.purple{
+  color: rgb(187, 14, 202);
 }
 
 .imagen {
@@ -20,9 +31,9 @@
 .separacion {
   width: 150px;
   position: relative;
-  bottom: 25px;
-  right: 55px;
-  height: 5px;
+  bottom: 15px;
+  right: 65px;
+  height: 7px;
   background-color: rgb(187, 14, 202);
   border: 0;
 }
@@ -101,5 +112,79 @@
 .descripcion {
   font-size: 12px;
   margin-bottom: 50px;
-  plac
+
+}
+
+
+/*FOOTER*/
+
+.pie-pagina{
+  width: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  background-color: black;
+  margin-top: 90px;
+
+}
+
+.logoFooter{
+  width: 200px;
+  position: absolute;
+  left: 100px;
+  top: 50px;
+  filter: invert(100%);
+}
+
+.pie-pagina .grupo-1{
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  grid-gap: 50px;
+  padding: 30px 0px;
+}
+
+.pie-pagina .grupo-1 .box figure{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pie-pagina .grupo-1 .box .nosotros, .contacto{
+  margin-bottom: 25px;
+  font-size: 35px;
+}
+
+.pie-pagina .grupo-1 .box p{
+  color: white;
+  margin-bottom: 10px;
+}
+
+.pie-pagina .grupo-1 .redsocial i{
+  display: inline-block;
+  text-decoration: none;
+  width: 45px;
+  height: 45px;
+  line-height: 45px;
+  color: white;
+  margin-right: 10px;
+  text-align: center;
+  font-size: 35px;
+  transition: all 300ms ease;
+}
+
+.pie-pagina .grupo-2{
+  background-color: #000000;
+  padding: 15px 10px;
+  text-align: center;
+  color: white;
+  font-size: 18px;
+}
+
+.box a{
+  color: rgb(187, 14, 202);
 }

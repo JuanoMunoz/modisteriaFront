@@ -1,15 +1,15 @@
 a img{
   width: 70px;
   margin-right: 10px;
-  filter: invert(100%);
 }
 
 .logo{
   display: flex;
   align-items: center;
-  color: white;
+  color: black;
   margin-right: 100px;
   margin-bottom: 50px;
+  font-weight: bold;
 }
 
 .navegador a{
