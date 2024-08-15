@@ -40,8 +40,8 @@ export default function Register() {
   const samePass = () => {
     return watch("contrasenia") === watch("repetirContrasenia");
   };
-  const minPassword = watch("contrasenia")?.length < 8 ? "#f00" : "#fff";
-  const minUserName = watch("nombre")?.length < 4 ? "#f00" : "#fff";
+  const minPassword = watch("contrasenia")?.length < 8 ? "#f00" : "#000";
+  const minUserName = watch("nombre")?.length < 4 ? "#f00" : "#000";
   return (
     <>
       <Metadata title={"Registro - Modistería Doña Luz"}></Metadata>
@@ -74,7 +74,7 @@ export default function Register() {
                 validate: colombianPhone,
                 maxLength: 10,
               })}
-              color={colombianPhone() ? "#fff" : "#f00"}
+              color={colombianPhone() ? "#000" : "#f00"}
               description={
                 watch("telefono")?.length > 0
                   ? "Ingrese un número válido (+57)"
@@ -91,7 +91,7 @@ export default function Register() {
                 watch("correo")?.length > 0 ? "Ingrese un correo válido" : ""
               }
               placeholder={"Correo"}
-              color={mailValidation() ? "#fff" : "#f00"}
+              color={mailValidation() ? "#000" : "#f00"}
             ></Input>
             <Input
               {...register("contrasenia", { required: true, minLength: 8 })}
@@ -114,7 +114,7 @@ export default function Register() {
                   : ""
               }
               placeholder={"Repetir contraseña"}
-              color={samePass() ? "#fff" : "#f00"}
+              color={samePass() ? "#000" : "#f00"}
               canHidden
             ></Input>
             <button className="btn-registro">
