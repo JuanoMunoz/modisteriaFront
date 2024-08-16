@@ -4,14 +4,14 @@
   justify-content: center;
   border-color: 10px solid #000;
 }
-  
+
 .blackSesion {
   color: #000;
   font-weight: bold;
   font-size: 55px;
 }
 
-.purpleSesion{
+.purpleSesion {
   color: rgb(187, 14, 202);
   font-weight: bold;
   font-size: 55px;
@@ -23,18 +23,18 @@
 
 .formSesion {
   margin-right: 150px;
-  margin-top: 110px;  
+  margin-top: 110px;
 }
 
-.inputSesion{
+.inputSesion {
   margin-left: 30px;
 }
 
-.separacionForgot{
-    background-color: rgb(187, 14, 202);
-    height: 2px;
-    margin-top: 30px;
-    margin-left: 10px;
+.separacionForgot {
+  background-color: rgb(187, 14, 202);
+  height: 2px;
+  margin-top: 30px;
+  margin-left: 10px;
 }
 
 .separacionSesion {
@@ -47,17 +47,17 @@
   border: 0;
 }
 
-.forgotPass{
+.forgotPass {
   width: 280px;
   background-color: transparent;
   margin-top: 10px;
   transition: ease 1s;
 }
 
-.forgotPass:hover{
+.forgotPass:hover {
   color: rgb(187, 14, 202);
 }
-  
+
 /*BOTON*/
 .btn-registroSesion {
   outline: none;
@@ -84,7 +84,7 @@
   z-index: 10;
   transition: color 0.4s;
 }
-  
+
 .btn-registroSesion:hover span {
   color: rgb(255, 255, 255);
 }
@@ -98,7 +98,7 @@
   height: 100%;
   z-index: 0;
 }
-  
+
 .btn-registroSesion::before {
   content: "";
   background: #000;
@@ -111,18 +111,33 @@
 .btn-registroSesion:hover::before {
   transform: translate3d(100%, 0, 0);
 }
-  
+
 .descripcionSesion {
   font-size: 12px;
   margin-bottom: 50px;
-
 }
 
 /*MODAL*/
-.inputModal{
+.inputModal {
   margin-left: 35px;
 }
+.inputModal .otp-input:first-child {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+.inputModal .otp-input:last-child {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
 
-.inputModalPassword{
+.inputModalPassword {
   margin-left: 15px;
+}
+.link-get-back {
+  color: rgb(187, 14, 202);
+  cursor: pointer;
+}
+.link-get-back:hover {
+  text-decoration: underline;
+  color: rgb(150, 11, 162);
 }
