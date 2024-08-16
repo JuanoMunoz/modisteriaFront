@@ -1,20 +1,13 @@
 import Metadata from "../../components/metadata/Metadata";
 import "./register.css";
 import foto from "/foto1.jfif";
-import logo from "/icon.png"
 import { useForm } from "react-hook-form";
 import Input from "../../components/input_basico/Input";
 import { useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import constants from "../../assets/constants.d";
 export default function Register() {
-  /* REGEX START */
-  const EMAIL_REGEX =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  const PHONE_REGEX = /^3\d{9}$/;
-
-  //--- REGEX END ---
-
   // REACT HOOK FORM
   const { register, handleSubmit, watch, setFocus } = useForm();
 
@@ -32,10 +25,10 @@ export default function Register() {
 
   //VALIDATION
   const colombianPhone = () => {
-    return PHONE_REGEX.test(watch("telefono"));
+    return constants.PHONE_REGEX.test(watch("telefono"));
   };
   const mailValidation = () => {
-    return EMAIL_REGEX.test(watch("correo"));
+    return constants.EMAIL_REGEX.test(watch("correo"));
   };
   const samePass = () => {
     return watch("contrasenia") === watch("repetirContrasenia");
@@ -47,7 +40,8 @@ export default function Register() {
       <Metadata title={"Registro - Modistería Doña Luz"}></Metadata>
       <br />
       <br />
-      <span className="black">Regis</span><span className="black">trate</span>
+      <span className="black">Regis</span>
+      <span className="black">trate</span>
       <hr className="separacion" />
       <br />
 
@@ -125,6 +119,5 @@ export default function Register() {
       </div>
       <ToastContainer></ToastContainer>
     </>
-    
   );
 }
