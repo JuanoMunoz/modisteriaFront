@@ -44,7 +44,7 @@ export default function InicioSesion() {
   const onSubmit = async (data) => {
     setLoading(true);
     axios
-      .post("https://modisteria-back.onrender.com/api/login", {
+      .post("https://modisteria-back.onrender.com/api/createUser", {
         email: data.email,
         password: data.password,
       })
