@@ -19,7 +19,7 @@ export default function useModals(canSendCode,email) {
     const handleSendCode = async() => {
     if (!canSendCode) return;
     console.log("estás dentro");
-    axios.post("https://modisteria-back.onrender.com/api/forgotPassword",{email}).then(response=>{console.log(response).catch(err=>{console.log(err);
+    axios.post("https://modisteria-back.onrender.com/api/forgotPassword",{email}).then(response=>{console.log(response).catch(err=>{console.log(err.message);
     });
     })
     toggleModal();
