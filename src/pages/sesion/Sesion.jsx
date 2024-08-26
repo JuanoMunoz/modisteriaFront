@@ -5,7 +5,7 @@ import foto2 from "/foto2.jfif";
 import Input from "../../components/input_basico/Input";
 import Metadata from "../../components/metadata/Metadata";
 import OTP from "../../components/input_otp/Otp";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 import constants from "../../assets/constants.d";
 import axios from "axios";
@@ -17,12 +17,12 @@ export default function InicioSesion() {
     handleSubmit: handleSubmit1,
     watch: watch,
     register: register1,
+    setFocus,
   } = useForm();
-  const {
-    handleSubmit: handleSubmit2,
-    watch: watch2,
-    register: register2,
-  } = useForm();
+  const { watch: watch2, register: register2 } = useForm();
+  const [otpCode, setOtpCode] = useState("");
+  //FORM
+  const [loading, setLoading] = useState(null);
   const {
     showModal,
     showModal2,
@@ -33,31 +33,37 @@ export default function InicioSesion() {
     handleSendCode,
     changeMail,
     handleVerifyCode,
+    handleChangePass,
   } = useModals(
     constants.EMAIL_REGEX.test(watch2("recoveryMail")),
-    watch2("recoveryMail")
+    watch2("recoveryMail"),
+    otpCode,
+    watch2("newPassword"),
+    watch2("confirmNewPassword")
   );
-  const [otpCode, setOtpCode] = useState("");
-  //FORM
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(null);
   const onSubmit = async (data) => {
+    if (data.email === "") {
+      setFocus("email");
+      return;
+    }
+    if (data.password === "") {
+      setFocus("password");
+      return;
+    }
     setLoading(true);
     axios
-      .post("https://modisteria-back.onrender.com/api/createUser", {
+      .post("https://modisteria-back.onrender.com/api/login", {
         email: data.email,
         password: data.password,
       })
-      .then((response) => {
-        setData(response.data);
-        toast.success("sesión iniciada correctamente! 😊", {
+      .then(() => {
+        toast.success("sesión iniciada correctamente!", {
           toastId: "success-toast-fetch-api",
         });
       })
       .catch(() => {
         toast.error("email y/o contraseña incorrecto/s", {
           toastId: "toast-error-fetch-id",
-          theme: "colored",
         });
       })
       .finally(() => {
@@ -88,13 +94,21 @@ export default function InicioSesion() {
                 {...register1("email", { pattern: constants.EMAIL_REGEX })}
                 type={"text"}
                 placeholder={"Correo"}
-                description={"Ingresa tu correo electrónico"}
+                description={
+                  constants.EMAIL_REGEX.test(watch("email"))
+                    ? "✔ Ingresa tu correo electrónico"
+                    : ""
+                }
               ></Input>
               <Input
                 {...register1("password", { minLength: 8 })}
                 type={"password"}
                 placeholder={"Contraseña"}
-                description={"Ingresa tu contraseña"}
+                description={
+                  watch("password")?.length >= 8
+                    ? "✔ Ingresa una contraseña válida"
+                    : ""
+                }
                 canHidden
               ></Input>
             </div>
@@ -161,19 +175,29 @@ export default function InicioSesion() {
         <div className="inputModalPassword">
           <Input
             type={"password"}
+            {...register2("newPassword", { minLength: 8 })}
             placeholder={"Nueva Contraseña"}
-            description={"Ingresa tu nueva contraseña"}
+            description={
+              watch2("newPassword")?.length >= 8
+                ? "✔ Nueva contraseña válida"
+                : ""
+            }
             canHidden
           />
           <Input
             type={"password"}
+            {...register2("confirmNewPassword", { minLength: 8 })}
             placeholder={"Confirmar Contraseña"}
-            description={"Confirma tu nueva contraseña"}
+            description={
+              watch2("newPassword") == watch2("confirmNewPassword")
+                ? "✔ Las contraseñas coinciden"
+                : ""
+            }
             canHidden
           />
         </div>
 
-        <button onClick={toggleModal3} className="btn-registroSesion">
+        <button onClick={handleChangePass} className="btn-registroSesion">
           <span>Cambiar Contraseña</span>
         </button>
       </Modal>

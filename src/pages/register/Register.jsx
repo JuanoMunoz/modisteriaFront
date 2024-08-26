@@ -8,10 +8,10 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import constants from "../../assets/constants.d";
 import axios from "axios";
+import Loading from "../../components/loading/Loading";
 export default function Register() {
   // REACT HOOK FORM
   const { register, handleSubmit, watch, setFocus } = useForm();
-  const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
 
   //PONER EL FOCO AL INICIAR LA PÁGINA AL NOMBRE
@@ -21,11 +21,32 @@ export default function Register() {
 
   // MANEJO DEL ENVÍO FORMULARIO
   const onSubmit = async (data) => {
+    console.log(data);
     setLoading(true);
-    axios.post("https://modisteria-back.onrender.com/api/login");
-    toast.success("Registrado correctamente!", {
-      position: "top-right",
-    });
+    axios
+      .post("https://modisteria-back.onrender.com/api/createUser", {
+        nombre: data.nombre,
+        email: data.correo,
+        telefono: data.telefono,
+        password: data.contrasenia,
+        roleId: 1,
+      })
+      .then((response) => {
+        toast.success(`${response.data.msg}`, {
+          position: "top-right",
+          toastId: "success-toast-fetch-register",
+        });
+      })
+
+      .catch((error) => {
+        toast.error(`${error.response.data.msg}!`, {
+          position: "top-right",
+          toastId: "error-toast-fetch-register",
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   //VALIDATION
@@ -42,6 +63,7 @@ export default function Register() {
   const minUserName = watch("nombre")?.length < 4 ? "#f00" : "#000";
   return (
     <>
+      {loading && <Loading></Loading>}
       <Metadata title={"Registro - Modistería Doña Luz"}></Metadata>
       <br />
       <br />
