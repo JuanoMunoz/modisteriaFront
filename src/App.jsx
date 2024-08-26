@@ -7,6 +7,7 @@ import Register from "./pages/register/Register";
 import LayoutDashboard from "./components/layoutManuela/LayoutDashboard";
 import Estadisticas from "./pages/estadisticas/Estadisticas";
 import InicioSesion from "./pages/sesion/Sesion";
+import Catalogo from "./pages/catalogo/Catalogo"
 function App() {
   return (
     <>
@@ -15,6 +16,7 @@ function App() {
           <Route index element={<Home />}></Route>
           <Route path="/registro" element={<Register />}></Route>
           <Route path="/sesion" element={<InicioSesion/>}></Route>
+          <Route path="/catalogo" element={<Catalogo/>}></Route>y
         </Route>
         <Route path="/dashboard" element={<LayoutDashboard/>}>
           <Route index element={<Estadisticas/>}></Route>
