@@ -1,0 +1,316 @@
+h1{
+    color: black;
+    font-weight: bold;
+    font-size: 55px;
+    margin-top: 70px;
+}
+
+.separacionCatalogo {
+    width: 150px;
+    position: relative;
+    bottom: 30px;
+    right: 40px;
+    height: 7px;
+    background-color: rgb(187, 14, 202);
+    border: 0;
+}
+
+.separacionDetalle{
+    width: 150px;
+    position: relative;
+    bottom: 10px;
+    right: 180px;
+    height: 3px;
+    background-color: rgb(187, 14, 202);
+    border: 0;
+}
+
+.contenedorCatalogo{
+    color: black;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+}
+
+.catalogo{
+    width: 950px;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 25px;
+}
+
+.itemCatalogo{
+    margin-bottom: 40px;
+}
+
+.contenedorDetalle{
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+.imageDetalle{
+    width: 400px;
+    margin-right: 50px;
+    margin-top: 35px;
+    background-color: rgba(255, 255, 255, 0.733);
+}
+
+.infoDetalle{
+    text-align: start;
+    background-color: rgba(255, 255, 255, 0.733);
+}
+
+.precioDetalle, .tituloPrenda{
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.detalleDetalle span{
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.detalleDetalle p{
+    font-size: 14px;
+}
+
+.accionesDetalle{
+    display: flex;
+    justify-content: space-between;
+}
+
+.btnAccionDetalle{
+    width: 200px;
+    height: 40px;
+}
+
+.cantidadDetalle input{
+    height: 15px;
+    margin: 0px;
+    border: 1px solid black;
+}
+
+/*CARTA DEL PRODUCTO*/
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    width: 14rem;
+    background-image: url('https://i.pinimg.com/564x/c6/de/00/c6de00bcdda65e6016bcec7653a55754.jpg');
+    background-size: contain;
+    text-align: start;
+    border-radius: 1rem;
+    margin-bottom: 20px;
+}
+
+.image_container {
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    height: 8rem;
+    border-radius: 0.5rem;
+}
+
+.image_container .image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 3rem;
+}
+
+.title {
+    overflow: clip;
+    width: 100%;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+}
+
+.size {
+    font-size: 0.75rem;
+}
+
+.list-size {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+    margin-left: -20px;
+}
+
+.list-size .item-list {
+    list-style: none;
+}
+
+.list-size .item-list-button {
+    cursor: pointer;
+    padding: 0.5rem;
+    background-color: rgb(26, 26, 26);
+    font-size: 0.75rem;
+    color: white;
+    border-radius: 0.25rem;
+    transition: all 0.3s ease-in-out;
+}
+
+.item-list-button:focus {
+    background-color: rgb(187, 14, 202);
+    box-shadow: inset 0px 1px 4px black;
+}
+
+.action {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 10px;
+}
+
+.price {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.cantidad{
+    text-align: end;
+}
+
+.cantidad input{
+    height: 1px;
+    width: 30px;
+    margin: 0;
+}
+
+.btnAccion, .btnAccionDetalle {
+    margin-top: -10px;
+    outline: none;
+    cursor: pointer;
+    border: none;
+    padding: 0.9rem 2rem;
+    position: relative;
+    display: inline-block;
+    border-radius: 500px;
+    overflow: hidden;
+    color: ghostwhite;
+    margin-top: 30px;
+    background-color: rgb(187, 14, 202);
+    font-size: 10px;
+}
+
+.btnAccion span, .btnAccionDetalle span {
+    position: relative;
+    z-index: 10;
+    transition: color 0.4s;
+}
+
+.btnAccion:hover span, .btnAccionDetalle:hover span {
+    color: rgb(255, 255, 255);
+}
+
+.btnAccion::before,
+.btnAccion::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.btnAccionDetalle::before,
+.btnAccionDetalle::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.btnAccion::before, .btnAccionDetalle::before {
+    content: "";
+    background: #000;
+    width: 120%;
+    left: -10%;
+    transform: skew(30deg);
+    transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+}
+
+.btnAccion:hover::before, .btnAccionDetalle:hover::before {
+    transform: translate3d(100%, 0, 0);
+}
+
+.cart-button .cart-icon {
+    width: 1rem;
+}
+
+
+/*PAGINADOR*/
+.cPaginador {
+    margin-top: 50px;
+    padding: 25px;
+    border-radius: 3px;
+    width: 860px;
+    margin-left: 120px;
+    display: flex;
+    justify-content: center;
+}
+
+.paginador {
+    display: flex;
+    list-style: none;
+    width: 200px;
+    justify-content: center;
+}
+
+.paginador li {
+    flex: 1;
+    margin: 0px 5px;
+    background: white;
+    border-radius: 3px;
+    box-shadow: -3px -3px 7px #ffffff73, 3px 3px 5px rgba(94, 104, 121, 0.288);
+    transition: 0.4s ease-in-out;
+}
+
+.paginador li:first-child, .paginador li:last-child{
+    background: rgb(12, 12, 12);
+}
+
+.paginador li:hover{
+    background: rgb(187, 14, 202);
+    color: white;
+}
+
+.paginador li a:hover{
+    color: white;
+}
+
+.paginador li a {
+    font-size: 15px;
+    text-decoration: none;
+    color: black;
+    height: 45px;
+    width: 50px;
+    display: block;
+    line-height: 45px;
+    transition: 0.4s ease-in-out;
+}
+.paginador li:first-child a {
+    width: 120px;
+    color: white;
+}
+.paginador li:last-child a {
+    width: 100px;
+    color: white;
+}
+.paginador li:first-child {
+    margin: 0 15px 0 0;
+}
+.paginador li:last-child {
+    margin: 0 0 0 15px;
+}
