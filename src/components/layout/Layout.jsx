@@ -23,7 +23,9 @@ export default function Layout() {
             <li className="navItem">
               <Link to={"/registro"}>Registro</Link>
             </li>
-            <li className="navItem">Catálogo</li>
+            <li className="navItem">
+              <Link to={"/catalogo"}>Catálogo</Link>
+            </li>
             <li className="navItem">Contacto</li>
             <li className="navItem">Nosotros</li>
         </ul>

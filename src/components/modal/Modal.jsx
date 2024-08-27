@@ -1,7 +1,7 @@
 import "./modal.css";
 import { useEffect, useState } from "react";
 
-const Modal = ({ show, onClose, children }) => {
+const Modal = ({ show, onClose, children, customWidth }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
@@ -9,13 +9,13 @@ const Modal = ({ show, onClose, children }) => {
     if (show) {
       setShowModal(true);
       setTimeout(() => {
-        setIsVisible(true); // Hacer visible el modal después de 10ms
+        setIsVisible(true);
       }, 10);
     } else {
       setIsVisible(false);
       setTimeout(() => {
-        setShowModal(false); // Ocultar después de la animación
-      }, 300); // Tiempo que coincide con la duración de la animación de salida
+        setShowModal(false);
+      }, 300);
     }
   }, [show]);
 
@@ -25,7 +25,10 @@ const Modal = ({ show, onClose, children }) => {
 
   return (
     <div className={`modal-overlay ${isVisible ? "show" : ""}`}>
-      <div className={`modal ${isVisible ? "show" : ""}`}>
+      <div
+        className={`modal ${isVisible ? "show" : ""}`}
+        style={{ maxWidth: customWidth || '500px' }} // Aplica el ancho personalizado
+      >
         <button onClick={onClose} className="modal-close-button">
           &times;
         </button>
