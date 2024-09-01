@@ -1,13 +1,18 @@
 import "./catalogo.css";
 import { useEffect, useState } from "react";
 import Metadata from "../../components/metadata/Metadata";
-import Input from "../../components/input_basico/Input";
 import Modal from "../../components/modal/Modal";
 import { Cart, Info } from "../../components/svg/Svg";
 
 export default function Catalogo() {
   const [showModal, setShowModal] = useState(false);
   const [cantidad, setCantidad] = useState(1);
+  const [title] = useState("Camiseta del Nacional");
+  const [sizes] = useState(["37", "38", "39", "40", "41"]);
+  const [filterPrice, setFilterPrice] = useState(250000);
+  const [description] = useState(
+    "Muestra tu pasión por el fútbol y tu lealtad al equipo con la Camisa Oficial del Atlético Nacional 2024. Diseñada para los verdaderos hinchas, esta camiseta combina la elegancia del verde y blanco con la más alta tecnología en tejido deportivo."
+  );
   const initialPrice = 20000;
   const [finalPrice, setFinalPrice] = useState(0);
   useEffect(() => {
@@ -15,6 +20,11 @@ export default function Catalogo() {
   }, [cantidad, initialPrice]);
   const toggleModal = () => {
     setShowModal(!showModal);
+  };
+  const handleFilterPrice = (e) => {
+    e.preventDefault();
+    if (e.target.value > 250000 || e.target.value < 1) return;
+    setFilterPrice(e.target.value);
   };
   const handleMinusOne = () => {
     if (cantidad == 1) return;
@@ -31,7 +41,15 @@ export default function Catalogo() {
       <section className="contenedorCatalogo">
         <div className="filtros">
           <h4>filtrar por precio</h4>
-          <input type="range" className="range-category" />
+          <h3>${filterPrice} COP</h3>
+          <input
+            type="range"
+            value={filterPrice}
+            min={1}
+            onChange={handleFilterPrice}
+            max={250000}
+            className="range-category"
+          />
         </div>
         <div className="catalogo">
           {/*CARTA DEL PRODUCTO*/}
@@ -43,26 +61,16 @@ export default function Catalogo() {
               />
             </div>
             <div className="title">
-              <span>Camisa del Nacional viva el verde verdolsga</span>
+              <span>{title}</span>
             </div>
             <div className="size">
               <span>Size</span>
               <ul className="list-size">
-                <li className="item-list">
-                  <button className="item-list-button">37</button>
-                </li>
-                <li className="item-list">
-                  <button className="item-list-button">37</button>
-                </li>
-                <li className="item-list">
-                  <button className="item-list-button">37</button>
-                </li>
-                <li className="item-list">
-                  <button className="item-list-button">37</button>
-                </li>
-                <li className="item-list">
-                  <button className="item-list-button">37</button>
-                </li>
+                {sizes.map((size, idx) => (
+                  <li key={idx} className="item-list">
+                    <button className="item-list-button">{size}</button>
+                  </li>
+                ))}
               </ul>
             </div>
             <div className="action">
@@ -144,9 +152,7 @@ export default function Catalogo() {
             />
           </div>
           <div className="infoDetalle">
-            <span className="tituloPrenda">
-              Camisa del Naciona viva el verde verdolaga
-            </span>
+            <span className="tituloPrenda">{title}</span>
             <hr className="separacionDetalle" />
             <br />
             <span className="precioDetalle">${finalPrice}</span>
@@ -154,30 +160,16 @@ export default function Catalogo() {
             <br />
             <div className="detalleDetalle">
               <span>Detalles:</span>
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Temporibus, adipisci. Natus corrupti repudiandae suscipit
-                accusamus voluptas quas sapiente
-              </p>
+              <p>{description}</p>
             </div>
             <div className="size">
               <span>Talla</span>
               <ul className="list-size">
-                <li className="item-list">
-                  <button className="item-list-button">37</button>
-                </li>
-                <li className="item-list">
-                  <button className="item-list-button">38</button>
-                </li>
-                <li className="item-list">
-                  <button className="item-list-button">39</button>
-                </li>
-                <li className="item-list">
-                  <button className="item-list-button">40</button>
-                </li>
-                <li className="item-list">
-                  <button className="item-list-button">41</button>
-                </li>
+                {sizes.map((size, idx) => (
+                  <li key={idx} className="item-list">
+                    <button className="item-list-button">{size}</button>
+                  </li>
+                ))}
               </ul>
             </div>
             <div className="accionesDetalle">
