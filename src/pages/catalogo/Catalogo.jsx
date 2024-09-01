@@ -1,26 +1,37 @@
 import "./catalogo.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Metadata from "../../components/metadata/Metadata";
 import Input from "../../components/input_basico/Input";
 import Modal from "../../components/modal/Modal";
+import { Cart, Info } from "../../components/svg/Svg";
 
 export default function Catalogo() {
   const [showModal, setShowModal] = useState(false);
-
+  const [cantidad, setCantidad] = useState(1);
+  const initialPrice = 20000;
+  const [finalPrice, setFinalPrice] = useState(0);
+  useEffect(() => {
+    setFinalPrice(initialPrice * cantidad);
+  }, [cantidad, initialPrice]);
   const toggleModal = () => {
     setShowModal(!showModal);
   };
-
+  const handleMinusOne = () => {
+    if (cantidad == 1) return;
+    setCantidad(cantidad - 1);
+  };
+  const handlePlusOne = () => {
+    setCantidad(cantidad + 1);
+  };
   return (
     <>
       <Metadata title={"Catálogo de Productos"}></Metadata>
       <h1>Catálogo</h1>
       <hr className="separacionCatalogo" />
-
       <section className="contenedorCatalogo">
         <div className="filtros">
           <h4>filtrar por precio</h4>
-          <input type="range" />
+          <input type="range" className="range-category" />
         </div>
         <div className="catalogo">
           {/*CARTA DEL PRODUCTO*/}
@@ -32,7 +43,7 @@ export default function Catalogo() {
               />
             </div>
             <div className="title">
-              <span>Camisa del Nacional</span>
+              <span>Camisa del Nacional viva el verde verdolsga</span>
             </div>
             <div className="size">
               <span>Size</span>
@@ -56,24 +67,26 @@ export default function Catalogo() {
             </div>
             <div className="action">
               <div className="price">
-                <span>$20.000</span>
+                <span>${finalPrice}</span>
               </div>
-
-              <div className="cantidad">
-                <span>Cantidad</span>
-                <br />
-                <Input
-                  type={"number"}
-                  min={"1"}
-                  placeholder={"1"}
-                  id={"cantidadProducto"}
-                ></Input>
+              <div className="quantity ">
+                <span onClick={handleMinusOne} className="quantity-button">
+                  -
+                </span>
+                <span>{cantidad}</span>
+                <span onClick={handlePlusOne} className="quantity-button">
+                  +
+                </span>
               </div>
               <button className="btnAccion">
-                <span>Agregar</span>
+                <span>
+                  <Cart></Cart>
+                </span>
               </button>
               <button className="btnAccion" onClick={toggleModal}>
-                <span>Ver mas</span>
+                <span>
+                  <Info></Info>
+                </span>
               </button>
             </div>
           </div>
@@ -131,10 +144,12 @@ export default function Catalogo() {
             />
           </div>
           <div className="infoDetalle">
-            <span className="tituloPrenda">Camisa del Nacional</span>
+            <span className="tituloPrenda">
+              Camisa del Naciona viva el verde verdolaga
+            </span>
             <hr className="separacionDetalle" />
             <br />
-            <span className="precioDetalle">$20.000</span>
+            <span className="precioDetalle">${finalPrice}</span>
             <br />
             <br />
             <div className="detalleDetalle">
@@ -166,18 +181,19 @@ export default function Catalogo() {
               </ul>
             </div>
             <div className="accionesDetalle">
-              <div className="cantidadDetalle">
-                <span>Cantidad</span>
-                <br />
-                <Input
-                  type={"number"}
-                  min={"1"}
-                  placeholder={"1"}
-                  id={"cantidadProducto"}
-                ></Input>
+              <div className="quantity-detalle ">
+                <span onClick={handleMinusOne} className="quantity-button">
+                  -
+                </span>
+                <span>{cantidad}</span>
+                <span onClick={handlePlusOne} className="quantity-button">
+                  +
+                </span>
               </div>
               <button className="btnAccionDetalle">
-                <span>Agregar al Carrito</span>
+                <span>
+                  <Cart></Cart>
+                </span>
               </button>
             </div>
           </div>
