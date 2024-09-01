@@ -54,6 +54,7 @@ h1 {
   margin-right: 50px;
   margin-top: 35px;
   background-color: rgba(255, 255, 255, 0.733);
+  mask-image: linear-gradient(black 80%, transparent);
 }
 
 .infoDetalle {
@@ -79,6 +80,7 @@ h1 {
 .accionesDetalle {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
 }
 
 .btnAccionDetalle {
@@ -103,7 +105,7 @@ h1 {
   background-image: url("https://i.pinimg.com/564x/c6/de/00/c6de00bcdda65e6016bcec7653a55754.jpg");
   background-size: contain;
   text-align: start;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   margin-bottom: 20px;
 }
 
@@ -177,14 +179,43 @@ h1 {
   font-weight: 700;
 }
 
-.cantidad {
-  text-align: end;
+.quantity {
+  font-size: 1.2rem;
+  font-weight: 800;
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.quantity-detalle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.quantity-button {
+  cursor: pointer;
+  font-size: 1.5rem;
+  user-select: none;
+}
+.quantity-button:hover {
+  animation-duration: 0.1s;
+  animation-name: buttonQuantity;
+  animation-delay: 0.1s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
 }
 
-.cantidad input {
-  height: 1px;
-  width: 30px;
-  margin: 0;
+@keyframes buttonQuantity {
+  0% {
+    color: initial;
+  }
+  100% {
+    color: rgb(187, 14, 202);
+    transform: scale(1.2);
+  }
 }
 
 .btnAccion,
@@ -193,10 +224,9 @@ h1 {
   outline: none;
   cursor: pointer;
   border: none;
-  padding: 0.9rem 2rem;
+
   position: relative;
   display: inline-block;
-  border-radius: 500px;
   overflow: hidden;
   color: ghostwhite;
   margin-top: 30px;
@@ -319,4 +349,93 @@ h1 {
 }
 .paginador li:last-child {
   margin: 0 0 0 15px;
+}
+input[type="range"] {
+  height: 38px;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+}
+input[type="range"]:focus {
+  outline: none;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 10px;
+  cursor: pointer;
+  animation: 0.2s;
+  box-shadow: 1px 1px 1px #000000;
+  background: rgb(187, 14, 202);
+  border-radius: 5px;
+  border: 1px solid #000000;
+}
+input[type="range"]::-webkit-slider-thumb {
+  box-shadow: 1px 1px 1px #000000;
+  border: 1px solid #000000;
+  height: 30px;
+  width: 15px;
+  border-radius: 5px;
+  background: #ffffff;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -11px;
+}
+input[type="range"]:focus::-webkit-slider-runnable-track {
+  background: rgb(187, 14, 202);
+}
+input[type="range"]::-moz-range-track {
+  width: 100%;
+  height: 10px;
+  cursor: pointer;
+  animation: 0.2s;
+  box-shadow: 1px 1px 1px #000000;
+  background: rgb(187, 14, 202);
+  border-radius: 5px;
+  border: 1px solid #000000;
+}
+input[type="range"]::-moz-range-thumb {
+  box-shadow: 1px 1px 1px #000000;
+  border: 1px solid #000000;
+  height: 30px;
+  width: 15px;
+  border-radius: 5px;
+  background: #ffffff;
+  cursor: pointer;
+}
+input[type="range"]::-ms-track {
+  width: 100%;
+  height: 10px;
+  cursor: pointer;
+  animation: 0.2s;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+input[type="range"]::-ms-fill-lower {
+  background: rgb(187, 14, 202);
+  border: 1px solid #000000;
+  border-radius: 10px;
+  box-shadow: 1px 1px 1px #000000;
+}
+input[type="range"]::-ms-fill-upper {
+  background: rgb(187, 14, 202);
+  border: 1px solid #000000;
+  border-radius: 10px;
+  box-shadow: 1px 1px 1px #000000;
+}
+input[type="range"]::-ms-thumb {
+  margin-top: 1px;
+  box-shadow: 1px 1px 1px #000000;
+  border: 1px solid #000000;
+  height: 30px;
+  width: 15px;
+  border-radius: 5px;
+  background: #ffffff;
+  cursor: pointer;
+}
+input[type="range"]:focus::-ms-fill-lower {
+  background: rgb(187, 14, 202);
+}
+input[type="range"]:focus::-ms-fill-upper {
+  background: rgb(187, 14, 202);
 }
