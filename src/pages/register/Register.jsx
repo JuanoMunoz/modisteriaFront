@@ -9,11 +9,12 @@ import "react-toastify/dist/ReactToastify.css";
 import constants from "../../assets/constants.d";
 import axios from "axios";
 import Loading from "../../components/loading/Loading";
+import { useNavigate } from "react-router-dom";
 export default function Register() {
   // REACT HOOK FORM
   const { register, handleSubmit, watch, setFocus } = useForm();
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   //PONER EL FOCO AL INICIAR LA PÁGINA AL NOMBRE
   useEffect(() => {
     setFocus("nombre");
@@ -24,17 +25,24 @@ export default function Register() {
     console.log(data);
     setLoading(true);
     axios
-      .post("https://modisteria-back.onrender.com/api/createUser", {
-        nombre: data.nombre,
-        email: data.correo,
-        telefono: data.telefono,
-        password: data.contrasenia,
-        roleId: 1,
-      })
+      .post(
+        "https://modisteria-back-production.up.railway.app/api/createUser",
+        {
+          nombre: data.nombre,
+          email: data.correo,
+          telefono: data.telefono,
+          password: data.contrasenia,
+          roleId: 1,
+        }
+      )
       .then((response) => {
         toast.success(`${response.data.msg}`, {
           position: "top-right",
           toastId: "success-toast-fetch-register",
+          autoClose: 4000,
+          onClose: setTimeout(() => {
+            navigate("/sesion");
+          }, 4000),
         });
       })
 

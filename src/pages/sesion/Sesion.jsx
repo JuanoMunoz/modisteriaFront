@@ -1,5 +1,5 @@
 import "./sesion.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "../../components/modal/Modal";
 import foto2 from "/foto2.jfif";
 import Input from "../../components/input_basico/Input";
@@ -11,8 +11,19 @@ import constants from "../../assets/constants.d";
 import axios from "axios";
 import Loading from "../../components/loading/Loading";
 import useModals from "../../hooks/useSessionModals";
+import { useJwt } from "../../context/JWTContext";
 
 export default function InicioSesion() {
+  const { token, saveToken } = useJwt();
+  useEffect(() => {
+    console.log(token);
+  }, [token]);
+  useEffect(() => {
+    setLoading((prev) => !prev);
+    setTimeout(() => {
+      setLoading((prev) => !prev);
+    }, 400);
+  }, []);
   const {
     handleSubmit: handleSubmit1,
     watch: watch,
@@ -52,14 +63,15 @@ export default function InicioSesion() {
     }
     setLoading(true);
     axios
-      .post("https://modisteria-back.onrender.com/api/login", {
+      .post("https://modisteria-back-production.up.railway.app/api/login", {
         email: data.email,
         password: data.password,
       })
-      .then(() => {
+      .then((response) => {
         toast.success("sesión iniciada correctamente!", {
           toastId: "success-toast-fetch-api",
         });
+        saveToken(response.data.token);
       })
       .catch(() => {
         toast.error("email y/o contraseña incorrecto/s", {
