@@ -21,7 +21,7 @@ export default function useModals(canSendCode,email,otpCode,nuevaContraseña,con
     if (nuevaContraseña != confirmarNuevaContraseña || nuevaContraseña?.length < 8) return
     console.log("hola");
     
-    axios.post("https://modisteria-back.onrender.com/api/forgotPassword", { email, codigo: otpCode, newPassword: nuevaContraseña }).then(() => {
+    axios.post("https://modisteria-back-production.up.railway.app/api/forgotPassword", { email, codigo: otpCode, newPassword: nuevaContraseña }).then(() => {
        toast.success("Contraseña actualizada correctamente!", {
         toastId: "actualizarPass",
         autoClose: 2000
@@ -37,7 +37,7 @@ export default function useModals(canSendCode,email,otpCode,nuevaContraseña,con
     const handleSendCode = async() => {
     if (!canSendCode) return;
     console.log("estás dentro");
-    axios.post("https://modisteria-back.onrender.com/api/forgotPassword",{email}).then(response=>{console.log(response).catch(err=>{console.log(err);
+    axios.post("https://modisteria-back-production.up.railway.app/api/forgotPassword",{email}).then(response=>{console.log(response).catch(err=>{console.log(err);
     });
     }).finally(() => {
     toggleModal();
@@ -50,10 +50,13 @@ export default function useModals(canSendCode,email,otpCode,nuevaContraseña,con
   };
 
   const handleVerifyCode = async() => {
-    axios.post("https://modisteria-back.onrender.com/api/getCodePass", { email }).then((response) => {
+    axios.post("https://modisteria-back-production.up.railway.app/api/getCodePass", { email }).then((response) => {
+      console.log(response.data.msg);
+      
       if (otpCode !== response.data.msg) {
         toast.error("Código incorrecto!", {
-          toastId: "toastErrorCode"
+          toastId: "toastErrorCode",
+          autoClose: 500
         })
         return
       }

@@ -1,10 +1,45 @@
+import { useJwt } from "../../context/JWTContext";
+import useDecodedJwt from "../../hooks/useJwt";
 import "./layout.css";
 import logo from "/icon.png";
-
-import { Outlet, Link } from "react-router-dom";
+import Modal from "../modal/Modal";
+import { Logout } from "../svg/Svg";
+import { Outlet, Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { toast } from "react-toastify";
 export default function Layout() {
+  const { token, cleanToken } = useJwt();
+  const navigate = useNavigate();
+  const [visible, setVisible] = useState(false);
+  const payload = useDecodedJwt(token);
+  const toogleModal = () => {
+    setVisible(!visible);
+  };
+  const logout = () => {
+    cleanToken();
+    toogleModal();
+    toast.success("sesión cerrada con éxito!", {
+      toastId: "closeSession",
+      autoClose: 400,
+      onClose: () => {
+        navigate("/");
+      },
+    });
+  };
   return (
     <>
+      <Modal show={visible} onClose={toogleModal}>
+        <Logout size={"120"}></Logout>
+        <h3>Estás seguro que quieres cerrar sesión?</h3>
+        <div className="logout">
+          <button onClick={toogleModal} className="btn-cancelar">
+            <span>cancelar</span>
+          </button>
+          <button onClick={logout} className="btn-accion">
+            <span>cerrar sesión</span>
+          </button>
+        </div>
+      </Modal>
       <section className="contenedorNav">
         <div className="logo">
           <a href="#">
@@ -19,16 +54,32 @@ export default function Layout() {
               <Link to={"/"}>Modisteria</Link>
             </li>
             <li className="navItem">
-              <Link to={"/sesion"}>Inicia Sesión</Link>
-            </li>
-            <li className="navItem">
-              <Link to={"/registro"}>Registro</Link>
-            </li>
-            <li className="navItem">
               <Link to={"/catalogo"}>Catálogo</Link>
             </li>
             <li className="navItem">Contacto</li>
             <li className="navItem">Nosotros</li>
+            {token ? (
+              <>
+                {" "}
+                <li className="navItem">
+                  <Link title="Perfil" to={"/"}>
+                    {payload.nombre}
+                  </Link>
+                </li>
+                <li className="navItem">
+                  <a onClick={toogleModal}>cerrar sesión</a>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="navItem">
+                  <Link to={"/sesion"}>Inicia Sesión</Link>
+                </li>
+                <li className="navItem">
+                  <Link to={"/registro"}>Registro</Link>
+                </li>
+              </>
+            )}
           </ul>
         </nav>
       </section>

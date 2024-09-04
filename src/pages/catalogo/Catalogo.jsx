@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import Metadata from "../../components/metadata/Metadata";
 import Modal from "../../components/modal/Modal";
 import { Cart, Info } from "../../components/svg/Svg";
-
 export default function Catalogo() {
   const [showModal, setShowModal] = useState(false);
   const [cantidad, setCantidad] = useState(1);
@@ -13,6 +12,7 @@ export default function Catalogo() {
   const [description] = useState(
     "Muestra tu pasión por el fútbol y tu lealtad al equipo con la Camisa Oficial del Atlético Nacional 2024. Diseñada para los verdaderos hinchas, esta camiseta combina la elegancia del verde y blanco con la más alta tecnología en tejido deportivo."
   );
+  const handleAddToCart = () => {};
   const initialPrice = 20000;
   const [finalPrice, setFinalPrice] = useState(0);
   useEffect(() => {
@@ -86,14 +86,14 @@ export default function Catalogo() {
                   +
                 </span>
               </div>
-              <button className="btnAccion">
-                <span>
-                  <Cart></Cart>
-                </span>
-              </button>
               <button className="btnAccion" onClick={toggleModal}>
                 <span>
                   <Info></Info>
+                </span>
+              </button>
+              <button onClick={handleAddToCart} className="btnAccion">
+                <span>
+                  <Cart></Cart>
                 </span>
               </button>
             </div>
