@@ -7,13 +7,19 @@ import { Logout } from "../svg/Svg";
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { Cart } from "../svg/Svg";
 export default function Layout() {
+  const [cartVisible, setCartVisible] = useState(false);
+
   const { token, cleanToken } = useJwt();
   const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
   const payload = useDecodedJwt(token);
   const toogleModal = () => {
     setVisible(!visible);
+  };
+  const toggleCart = () => {
+    setCartVisible((prev) => !prev);
   };
   const logout = () => {
     cleanToken();
@@ -56,7 +62,9 @@ export default function Layout() {
             <li className="navItem">
               <Link to={"/catalogo"}>Catálogo</Link>
             </li>
-            <li className="navItem">Contacto</li>
+            <li className="navItem">
+              <Link to={"/cita"}>Citas</Link>
+            </li>
             <li className="navItem">Nosotros</li>
             {token ? (
               <>
@@ -85,6 +93,19 @@ export default function Layout() {
       </section>
 
       <Outlet></Outlet>
+
+      <button className="cart-button " onClick={toggleCart}>
+        <Cart color="#fff" size={"27"}></Cart>
+      </button>
+
+      <nav className={`cart ${cartVisible ? "active" : ""}`}>
+        <div className="opacidad-carrito"></div>
+        <article className="carrito-lista">
+          <button onClick={toggleCart} className="modal-close-button">
+            &times;
+          </button>
+        </article>
+      </nav>
 
       <footer className="pie-pagina">
         <div className="grupo-1">
