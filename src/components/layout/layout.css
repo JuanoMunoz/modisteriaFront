@@ -8,8 +8,57 @@ a img {
   align-items: center;
   color: black;
   margin-right: 100px;
-  margin-bottom: 50px;
+  margin-bottom: 0px;
   font-weight: bold;
+}
+.cart {
+  position: relative;
+}
+
+.opacidad-carrito {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease;
+}
+
+.carrito-lista {
+  position: fixed;
+  top: 0;
+  right: -20rem;
+  width: 0;
+  height: 100vh;
+  background-color: white;
+  z-index: 901;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+  transition: right 0.5s ease, width 0.5s ease;
+  overflow: hidden;
+}
+
+.cart.active .opacidad-carrito {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cart.active .carrito-lista {
+  right: 0;
+  width: 20rem;
+}
+
+.cart-button {
+  position: fixed;
+  bottom: 2.5rem;
+  right: 3.4rem;
+  z-index: 800;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 999px;
 }
 
 .navegador a {
