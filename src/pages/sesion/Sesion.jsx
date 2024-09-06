@@ -63,10 +63,13 @@ export default function InicioSesion() {
     }
     setLoading(true);
     axios
-      .post("https://modisteria-back-production.up.railway.app/api/login", {
-        email: data.email,
-        password: data.password,
-      })
+      .post(
+        "https://modisteria-back-production.up.railway.app/api/usuarios/login",
+        {
+          email: data.email,
+          password: data.password,
+        }
+      )
       .then((response) => {
         toast.success("sesión iniciada correctamente!", {
           toastId: "success-toast-fetch-api",

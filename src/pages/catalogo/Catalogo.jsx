@@ -93,7 +93,7 @@ export default function Catalogo() {
               </button>
               <button onClick={handleAddToCart} className="btnAccion">
                 <span>
-                  <Cart></Cart>
+                  <Cart color={"#fff"}></Cart>
                 </span>
               </button>
             </div>
@@ -184,7 +184,7 @@ export default function Catalogo() {
               </div>
               <button className="btnAccionDetalle">
                 <span>
-                  <Cart></Cart>
+                  <Cart color={"#fff"}></Cart>
                 </span>
               </button>
             </div>
