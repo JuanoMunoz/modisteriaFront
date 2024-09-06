@@ -31,10 +31,11 @@ a img {
 .carrito-lista {
   position: fixed;
   top: 0;
-  right: -20rem;
+  right: -42rem;
   width: 0;
   height: 100vh;
-  background-color: white;
+  background-image: url('https://i.pinimg.com/1200x/5d/bd/1c/5dbd1c64aabc02156ef6621304e710ca.jpg');
+  background-size: cover;
   z-index: 901;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
   transition: right 0.5s ease, width 0.5s ease;
@@ -48,7 +49,7 @@ a img {
 
 .cart.active .carrito-lista {
   right: 0;
-  width: 20rem;
+  width: 38rem;
 }
 
 .cart-button {
@@ -293,3 +294,149 @@ a img {
 .btn-cancelar:hover::before {
   transform: translate3d(100%, 0, 0);
 }
+
+
+/*CARRITO DE COMPRAS*/
+.contenedorCarrito{
+  color: #000000;
+  margin-top: 50px;
+  padding: 20px;
+}
+
+.titulo{
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.separacionCarrito{
+  width: 90px;
+  position: relative;
+  bottom: 10px;
+  right: 30px;
+  height: 4px;
+  background-color: rgb(187, 14, 202);
+  border: 0;
+}
+
+.itemCarrito{
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 17px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.158);
+  border-radius: 0px 0px 0px 10px;
+}
+
+.idPrenda{
+  color: #00000080;
+  font-size: 12px;
+}
+
+.itemCarrito span input{
+  width: 30px;
+}
+
+.cancelarPrenda{
+  background-color: rgb(36, 35, 35);
+  width: 34px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  font-size: 10px;
+  color: white;
+  transition: 0.2s ease-in-out;
+}
+
+.cancelarPrenda:hover{
+  background-color: rgb(187, 14, 202);
+}
+
+.imgCarrito{
+  width: 90px;
+}
+
+.actionButtons{
+  position: absolute;
+  color: black;
+  bottom: 40px;
+  right: 50px;
+}
+
+.subtotal{
+  background-color: #8a898946;
+  width: 170px;
+  height: 35px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btnAccionCarrito,
+.btnAccionCarritoDetalle {
+  margin-top: -10px;
+  outline: none;
+  cursor: pointer;
+  border: none;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  color: ghostwhite;
+  margin-top: 30px;
+  background-color: rgb(187, 14, 202);
+  font-size: 13px;
+  width: 170px;
+  height: 40px;
+  border-radius: 20px;
+}
+
+.btnAccionCarrito span,
+.btnAccionCarritoDetalle span {
+  position: relative;
+  z-index: 10;
+  transition: color 0.4s;
+}
+
+.btnAccionCarrito:hover span,
+.btnAccionCarritoDetalle:hover span {
+  color: rgb(255, 255, 255);
+}
+
+.btnAccionCarrito::before,
+.btnAccionCarrito::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.btnAccionCarritoDetalle::before,
+.btnAccionCarritoDetalle::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.btnAccionCarrito::before,
+.btnAccionCarritoDetalle::before {
+  content: "";
+  background: #000;
+  width: 120%;
+  left: -10%;
+  transform: skew(30deg);
+  transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+}
+
+.btnAccionCarrito:hover::before,
+.btnAccionCarritoDetalle:hover::before {
+  transform: translate3d(100%, 0, 0);
+}
+
+
