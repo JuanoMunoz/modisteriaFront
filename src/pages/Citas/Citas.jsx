@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import useLLM from "../../hooks/useLLM";
 import "./citas.css";
 import videoSource from "/registro.mp4";
+import { useJwt } from "../../context/JWTContext";
 export default function Citas() {
+  const { token } = useJwt();
   const {
     historial,
     sendMessage,
