@@ -1,8 +1,11 @@
+import Metadata from "../../components/metadata/Metadata";
 import { useEffect, useRef, useState } from "react";
 import useLLM from "../../hooks/useLLM";
 import "./citas.css";
-import videoSource from "/registro.mp4";
+import videoSource from "/citasVideo.mp4";
 import { useJwt } from "../../context/JWTContext";
+import { Asesor, Right, Plus, Top } from "../../components/svg/Svg";
+import Input from "../../components/input_basico/Input";
 export default function Citas() {
   const { token } = useJwt();
   const {
@@ -30,52 +33,48 @@ export default function Citas() {
     console.log(historial);
   }, [historial]);
 
+
+  const asesorDiv = useRef(null);
+
+  const scrollToDiv = () => {
+    asesorDiv.current.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <>
-      <section className="header">
+      <Metadata title={"Citas - Modistería Doña Luz"}></Metadata>
+      <div className="contenedorCitas">
         <div className="video">
-          <video className="background-video" autoPlay muted loop>
-            <source src={videoSource} type="video/mp4" />
-            Tu navegador no soporta video.
-          </video>
+          <video src={videoSource} autoPlay loop  muted className="video"></video>
         </div>
-        <div className="container-gradient">
-          <div className="texto">
-            <h1>
-              PIDE TU <br />
-              CITA
-            </h1>
-            <h3>
-              Tenemos un asesor virtual <br /> especializado para tí!
-            </h3>
-          </div>
-          <div className="gradient-div"></div>
+        <div className="citas">
+          <span>Citas</span>
+          <hr className="separacionCitas"/>
+          <h2>¡Agenda tu cita ahora!</h2>
+          <p>Contamos con un asesor especializado que estará completamente dedicado a atender tus necesidades. No pierdas la oportunidad de recibir una atención personalizada y profesional, diseñada exclusivamente para ti.</p>
+          <button className="btnAsesor" onClick={scrollToDiv}>
+              <span><Asesor color={'#fff'} size={'30px'}></Asesor><Right color={'#fff'} size={'30px'}></Right></span>
+          </button>
         </div>
-      </section>
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <section>
-        <input
+      </div>
+
+      <section ref={asesorDiv}>
+
+        <Input
+          placeholder={'Escribe un Mensaje'}
           ref={inputRef}
           onChange={handleInput}
           type="text"
           value={inputValue}
-        />
+        ></Input>
+
         <button style={{ color: "#fff" }} onClick={submitQuestion}>
           {" "}
-          preguntar
+          <Top color={'#fff'}></Top>
         </button>
         <button style={{ color: "#fff" }} onClick={resetHistory}>
           {" "}
-          nuevo chat
+          <Plus color={'#fff'}></Plus>
         </button>
         <button style={{ color: "#fff" }} onClick={generateReport}>
           {" "}

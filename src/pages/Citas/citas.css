@@ -1,62 +1,94 @@
-.header {
+.contenedorCitas{
   display: flex;
-  justify-content: start;
-  align-items: center;
-  width: 100%;
-  height: 100vh;
-  position: relative;
-  gap: 5rem;
+  justify-content: space-between;
+  padding: 50px;
+  margin-top: 50px;
 }
-.opacity {
+
+.video{
+  width: 500px;
+}
+
+.citas{
+  padding-top: 170px;
+  padding-left: 50px;
+}
+
+.citas span{
+  font-size: 70px;
+  color: black;
+  font-weight: bold;
+}
+
+.citas p, h2{
+  color: black;
+}
+
+.citas p{
+  font-weight: bold;
+}
+
+.separacionCitas{
+  background-color: rgb(187, 14, 202);
+  width: 100px;
+  height: 5px;
+  position: relative;
+  bottom: 20px;
+  right: 30px;
+}
+
+/*BOTON*/
+.btnAsesor {
+  outline: none;
+  cursor: pointer;
+  border: none;
+  padding: 0.9rem 2rem;
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  position: relative;
+  display: inline-block;
+  letter-spacing: 0.05rem;
+  font-weight: 700;
+  font-size: 17px;
+  border-radius: 500px;
+  overflow: hidden;
+  color: ghostwhite;
+  margin-top: 50px;
+  background-color: rgb(187, 14, 202);
+}
+
+.btnAsesor span {
+  position: relative;
+  z-index: 10;
+  transition: color 0.4s;
+  color: white;
+  font-size: 20px;
+}
+
+.btnAsesor:hover span {
+  color: rgb(255, 255, 255);
+}
+
+.btnAsesor::before,
+.btnAsesor::after {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -500;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-.background-video {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  border-radius: 1rem;
+  z-index: 0;
 }
 
-.container-gradient {
-  display: flex;
-  justify-content: center; /* Centra ambos elementos horizontalmente */
-  align-items: end; /* Centra ambos elementos verticalmente */
-  position: relative;
-  width: 100%;
-  height: 25%;
-}
-.texto h1 {
-  font-weight: bolder;
-  font-size: 6rem;
-  color: black;
-  text-align: start;
-  z-index: 500;
-}
-.texto h3 {
-  color: black;
-  margin-top: -20px;
-  margin-left: 15px;
-  text-align: start;
+.btnAsesor::before {
+  content: "";
+  background: #000;
+  width: 120%;
+  left: -10%;
+  transform: skew(30deg);
+  transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
 }
 
-/* El div con el gradiente */
-.gradient-div {
-  width: 350px;
-  height: 350px;
-  background: radial-gradient(
-    circle,
-    rgba(187, 14, 202, 1) 0%,
-    rgba(187, 14, 202, 0) 70%
-  );
-  position: absolute;
-  top: 25%;
-  left: 45%;
-  transform: translate(-50%, -50%); /* Centra el div del gradiente */
-  z-index: -100; /* Asegura que el gradiente esté detrás del vestido */
+.btnAsesor:hover::before {
+  transform: translate3d(100%, 0, 0);
 }

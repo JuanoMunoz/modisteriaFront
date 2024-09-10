@@ -15,7 +15,7 @@ export default function Catalogo() {
   console.log(isLoading);
   return (
     <>
-      <Metadata title={"Catálogo de Productos"}></Metadata>
+      <Metadata title={"Catálogo - Modistería Doña Luz"}></Metadata>
       {isLoading && <Loading></Loading>}
       <h1>Catálogo</h1>
       <hr className="separacionCatalogo" />
