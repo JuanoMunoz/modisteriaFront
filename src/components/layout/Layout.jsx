@@ -98,14 +98,55 @@ export default function Layout() {
         <Cart color="#fff" size={"27"}></Cart>
       </button>
 
-      <nav className={`cart ${cartVisible ? "active" : ""}`}>
+      <span className={`cart ${cartVisible ? "active" : ""}`}>
         <div className="opacidad-carrito"></div>
         <article className="carrito-lista">
           <button onClick={toggleCart} className="modal-close-button">
             &times;
           </button>
+          
+          <div className="contenedorCarrito">
+            <span className="titulo">Tu Carrito</span>
+            <hr className="separacionCarrito"/>
+            
+            <div className="itemCarrito">
+                <div className="imgCarrito">
+                  <img src="https://eldeportivo.com.co/wp-content/uploads/2023/01/Polemica-precio-camiseta-Atletico-Nacional-2023-1.png" alt="" className="imgCarrito"/>
+                </div>
+                <span>
+                  Camisa del nacional
+                  <span className="idPrenda">#1</span>
+                </span>
+                <span>
+                  $23000
+                </span>
+                <span>
+                  <input type="number" name="" id="" min={1} placeholder="1"/>
+                </span>
+
+                <button className="cancelarPrenda">X</button>
+            </div>
+
+
+          </div>
+
+
+          <div className="actionButtons">
+
+            <div className="subtotal">
+              <span>Subtotal: $23000</span>
+            </div>
+
+            <button className="btnAccionCarrito">
+                  <span>
+                    Pagar
+                  </span>
+            </button>
+
+          </div>
+        
         </article>
-      </nav>
+      </span>
 
       <footer className="pie-pagina">
         <div className="grupo-1">
