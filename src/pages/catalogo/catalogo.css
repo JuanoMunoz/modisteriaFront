@@ -446,7 +446,6 @@ input[type="range"]:focus::-ms-fill-lower {
 input[type="range"]:focus::-ms-fill-upper {
   background: rgb(187, 14, 202);
 }
-<<<<<<< HEAD
 
 /*Filtros de categorias*/
 .categorias {
@@ -520,5 +519,3 @@ input[type="range"]:focus::-ms-fill-upper {
   opacity: 1;
   scale: 1;
 }
-=======
->>>>>>> upstream/main
