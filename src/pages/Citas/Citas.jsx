@@ -4,8 +4,7 @@ import useLLM from "../../hooks/useLLM";
 import "./citas.css";
 import videoSource from "/citasVideo.mp4";
 import { useJwt } from "../../context/JWTContext";
-import { Asesor, Right, Plus, Top } from "../../components/svg/Svg";
-import Input from "../../components/input_basico/Input";
+import { Asesor, Right, Send, Report, NewChat } from "../../components/svg/Svg";
 export default function Citas() {
   const { token } = useJwt();
   const {
@@ -15,29 +14,40 @@ export default function Citas() {
     generarReporte,
     resetHistory,
   } = useLLM();
+
   const inputRef = useRef();
+  const [inputValue, setInputValue] = useState("");
+  const [lastResponse, setLastResponse] = useState("");
+  const [sentMessage, setSentMessage] = useState("");
+
   const handleInput = (e) => {
     setInputValue(e.target.value);
   };
+
   const submitQuestion = async () => {
-    const response = await sendMessage(inputRef.current.value);
+    const message = inputRef.current.value;
+
+    setSentMessage(message);
+
+    const response = await sendMessage(message);
     setLastResponse(response);
+
+    setInputValue("");
   };
+
   const generateReport = async () => {
     const response = await generarReporte();
     console.log(response);
   };
-  const [inputValue, setInputValue] = useState("");
-  const [lastResponse, setLastResponse] = useState("");
+
   useEffect(() => {
     console.log(historial);
   }, [historial]);
 
-
   const asesorDiv = useRef(null);
 
   const scrollToDiv = () => {
-    asesorDiv.current.scrollIntoView({ behavior: 'smooth' });
+    asesorDiv.current.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -58,31 +68,90 @@ export default function Citas() {
         </div>
       </div>
 
-      <section ref={asesorDiv}>
+      <section ref={asesorDiv} className="asesor">
+        
+      <div className="accionesTop">
+        <button className="btnAccionesTop" onClick={resetHistory}>
+              {" "}
+              <span><NewChat></NewChat></span>
+        </button>
+        <button className="btnAccionesTop" onClick={generateReport}>
+              {" "}
+              <span><Report></Report></span>
+        </button>
+      </div>
 
-        <Input
-          placeholder={'Escribe un Mensaje'}
-          ref={inputRef}
-          onChange={handleInput}
-          type="text"
-          value={inputValue}
-        ></Input>
+      <p className="mensajeAsesor" style={{display: sentMessage.length > 0 ? "inline-block" : "none"}}>
+        {sentMessage ? sentMessage : ""}
+      </p>
 
-        <button style={{ color: "#fff" }} onClick={submitQuestion}>
-          {" "}
-          <Top color={'#fff'}></Top>
-        </button>
-        <button style={{ color: "#fff" }} onClick={resetHistory}>
-          {" "}
-          <Plus color={'#fff'}></Plus>
-        </button>
-        <button style={{ color: "#fff" }} onClick={generateReport}>
-          {" "}
-          generar reporte
-        </button>
-        <p style={{ color: "#f00" }}>
-          {isLoadingMessage ? "cargando mensaje... " : lastResponse}
-        </p>
+      <p className="respuestaAsesor" style={{backgroundColor: lastResponse.length > 0 || isLoadingMessage ? "#e0e0e0" : "transparent"}}>
+        {isLoadingMessage ? (
+          <center>
+              <div className="loader-containerAsesor">
+              <div className="loaderAsesor">
+                <svg viewBox="0 0 80 80">
+                  <circle r="32" cy="40" cx="40" id="test"></circle>
+                </svg>
+              </div>
+
+              <div className="loaderAsesor triangleAsesor">
+                <svg viewBox="0 0 86 80">
+                  <polygon points="43 8 79 72 7 72"></polygon>
+                </svg>
+              </div>
+
+              <div className="loaderAsesor">
+                <svg viewBox="0 0 80 80">
+                  <rect height="64" width="64" y="8" x="8"></rect>
+                </svg>
+              </div>
+            </div>
+          </center>
+          
+        ) : (
+          lastResponse
+        )}
+      </p>
+
+        <div className="accionesAsesor">
+
+          <div className="messageBox">
+            <div className="fileUploadWrapper">
+              <label htmlFor="file">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 337 337">
+                  <circle
+                    strokeWidth="20"
+                    stroke="#6c6c6c"
+                    fill="none"
+                    r="158.5"
+                    cy="168.5"
+                    cx="168.5"
+                  ></circle>
+                  <path
+                    strokeLinecap="round"
+                    strokeWidth="25"
+                    stroke="#6c6c6c"
+                    d="M167.759 79V259"
+                  ></path>
+                  <path
+                    strokeLinecap="round"
+                    strokeWidth="25"
+                    stroke="#6c6c6c"
+                    d="M79 167.138H259"
+                  ></path>
+                </svg>
+                <span className="tooltip">Agregar Imagen</span>
+              </label>
+              <input type="file" id="file" name="file" />
+            </div>
+            <input required placeholder="Mensaje..." type="text" id="messageInput" ref={inputRef} value={inputValue} onChange={handleInput} />
+            <button id="sendButton" onClick={submitQuestion}>
+              <Send></Send>
+            </button>
+          </div>
+
+        </div>
       </section>
     </>
   );
