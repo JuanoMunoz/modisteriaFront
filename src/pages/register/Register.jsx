@@ -26,7 +26,7 @@ export default function Register() {
     setLoading(true);
     axios
       .post(
-        "https://modisteria-back-production.up.railway.app/api/createUser",
+        "https://modisteria-back-production.up.railway.app/api/usuarios/createUser",
         {
           nombre: data.nombre,
           email: data.correo,

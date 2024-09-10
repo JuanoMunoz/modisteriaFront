@@ -37,7 +37,6 @@ h1 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 25px;
-  margin-left: 40px;
 }
 
 .itemCatalogo {
@@ -108,8 +107,14 @@ h1 {
   text-align: start;
   border-radius: 0.5rem;
   margin-bottom: 20px;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 0.6s ease-out;
 }
-
+.card.show {
+  opacity: 1;
+  transform: translateY(0);
+}
 .image_container {
   overflow: hidden;
   cursor: pointer;
@@ -441,6 +446,7 @@ input[type="range"]:focus::-ms-fill-lower {
 input[type="range"]:focus::-ms-fill-upper {
   background: rgb(187, 14, 202);
 }
+<<<<<<< HEAD
 
 /*Filtros de categorias*/
 .categorias {
@@ -514,3 +520,5 @@ input[type="range"]:focus::-ms-fill-upper {
   opacity: 1;
   scale: 1;
 }
+=======
+>>>>>>> upstream/main

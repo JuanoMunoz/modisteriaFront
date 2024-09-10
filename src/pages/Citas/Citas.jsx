@@ -1,6 +1,35 @@
+import { useEffect, useRef, useState } from "react";
+import useLLM from "../../hooks/useLLM";
 import "./citas.css";
 import videoSource from "/registro.mp4";
+import { useJwt } from "../../context/JWTContext";
 export default function Citas() {
+  const { token } = useJwt();
+  const {
+    historial,
+    sendMessage,
+    isLoadingMessage,
+    generarReporte,
+    resetHistory,
+  } = useLLM();
+  const inputRef = useRef();
+  const handleInput = (e) => {
+    setInputValue(e.target.value);
+  };
+  const submitQuestion = async () => {
+    const response = await sendMessage(inputRef.current.value);
+    setLastResponse(response);
+  };
+  const generateReport = async () => {
+    const response = await generarReporte();
+    console.log(response);
+  };
+  const [inputValue, setInputValue] = useState("");
+  const [lastResponse, setLastResponse] = useState("");
+  useEffect(() => {
+    console.log(historial);
+  }, [historial]);
+
   return (
     <>
       <section className="header">
@@ -22,6 +51,39 @@ export default function Citas() {
           </div>
           <div className="gradient-div"></div>
         </div>
+      </section>
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <section>
+        <input
+          ref={inputRef}
+          onChange={handleInput}
+          type="text"
+          value={inputValue}
+        />
+        <button style={{ color: "#fff" }} onClick={submitQuestion}>
+          {" "}
+          preguntar
+        </button>
+        <button style={{ color: "#fff" }} onClick={resetHistory}>
+          {" "}
+          nuevo chat
+        </button>
+        <button style={{ color: "#fff" }} onClick={generateReport}>
+          {" "}
+          generar reporte
+        </button>
+        <p style={{ color: "#f00" }}>
+          {isLoadingMessage ? "cargando mensaje... " : lastResponse}
+        </p>
       </section>
     </>
   );
