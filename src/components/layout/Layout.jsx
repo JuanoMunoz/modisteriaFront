@@ -35,17 +35,18 @@ export default function Layout() {
   return (
     <>
       <Modal show={visible} onClose={toogleModal}>
-        <Logout size={"120"}></Logout>
+        <Logout size={"120"} color></Logout>
         <h3>Estás seguro que quieres cerrar sesión?</h3>
         <div className="logout">
           <button onClick={toogleModal} className="btn-cancelar">
-            <span>cancelar</span>
+            <span>Cancelar</span>
           </button>
           <button onClick={logout} className="btn-accion">
-            <span>cerrar sesión</span>
+            <span>Cerrar</span>
           </button>
         </div>
       </Modal>
+
       <section className="contenedorNav">
         <div className="logo">
           <a href="#">
@@ -75,7 +76,7 @@ export default function Layout() {
                   </Link>
                 </li>
                 <li className="navItem">
-                  <a onClick={toogleModal}>cerrar sesión</a>
+                  <a onClick={toogleModal}>Cerrar sesión</a>
                 </li>
               </>
             ) : (

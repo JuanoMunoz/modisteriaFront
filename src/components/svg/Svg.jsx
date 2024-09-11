@@ -49,7 +49,7 @@ export function Logout({ size }) {
       height={size}
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#bb0eca"
+      stroke="black"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
