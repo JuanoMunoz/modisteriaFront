@@ -15,13 +15,13 @@ export default function Catalogo() {
   console.log(isLoading);
   return (
     <>
-      <Metadata title={"Catálogo de Productos"}></Metadata>
+      <Metadata title={"Catálogo - Modistería Doña Luz"}></Metadata>
       {isLoading && <Loading></Loading>}
       <h1>Catálogo</h1>
       <hr className="separacionCatalogo" />
       <section className="contenedorCatalogo">
         <div className="filtros">
-          <h4>filtrar por precio</h4>
+          <h4>Filtrar por precio</h4>
           <h3>${filterPrice} COP</h3>
           <input
             type="range"
@@ -31,7 +31,32 @@ export default function Catalogo() {
             max={250000}
             className="range-category"
           />
+
+          <h4>Filtrar por Categoria</h4>
+            <div className="categorias">
+              <div>
+                <input type="radio" id="radio1" name="categoria"/>
+                <label htmlFor="radio1">Camisetas</label>
+              </div>
+
+              <div>
+                <input type="radio" id="radio2" name="categoria"/>
+                <label htmlFor="radio2">Polos</label>
+              </div>
+
+              <div>
+                <input type="radio" id="radio3" name="categoria"/>
+                <label htmlFor="radio3">Faldas</label>
+              </div>
+
+              <div>
+                <input type="radio" id="radio4" name="categoria"/>
+                <label htmlFor="radio4">Vestidos</label>
+              </div>
+
+            </div>
         </div>
+        
         <div className="catalogo">
           {!isLoading &&
             fetchCatalagoData?.map((data) => (

@@ -36,7 +36,8 @@ h1 {
   width: 950px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 25px;
+  gap: 20px;
+  margin-left: 60px;
 }
 
 .itemCatalogo {
