@@ -25,6 +25,7 @@ export default function Citas() {
   };
 
   const submitQuestion = async () => {
+    if (inputRef.current.value == "") return;
     const message = inputRef.current.value;
 
     setSentMessage(message);
@@ -55,71 +56,101 @@ export default function Citas() {
       <Metadata title={"Citas - Modistería Doña Luz"}></Metadata>
       <div className="contenedorCitas">
         <div className="video">
-          <video src={videoSource} autoPlay loop  muted className="video"></video>
+          <video
+            src={videoSource}
+            autoPlay
+            loop
+            muted
+            className="video"
+          ></video>
         </div>
         <div className="citas">
           <span>Citas</span>
-          <hr className="separacionCitas"/>
+          <hr className="separacionCitas" />
           <h2>¡Agenda tu cita ahora!</h2>
-          <p>Contamos con un asesor especializado que estará completamente dedicado a atender tus necesidades. No pierdas la oportunidad de recibir una atención personalizada y profesional, diseñada exclusivamente para ti.</p>
+          <p>
+            Contamos con un asesor especializado que estará completamente
+            dedicado a atender tus necesidades. No pierdas la oportunidad de
+            recibir una atención personalizada y profesional, diseñada
+            exclusivamente para ti.
+          </p>
           <button className="btnAsesor" onClick={scrollToDiv}>
-              <span><Asesor color={'#fff'} size={'30px'}></Asesor><Right color={'#fff'} size={'30px'}></Right></span>
+            <span>
+              <Asesor color={"#fff"} size={"30px"}></Asesor>
+              <Right color={"#fff"} size={"30px"}></Right>
+            </span>
           </button>
         </div>
       </div>
 
       <section ref={asesorDiv} className="asesor">
-        
-      <div className="accionesTop">
-        <button className="btnAccionesTop" onClick={resetHistory}>
-              {" "}
-              <span><NewChat></NewChat></span>
-        </button>
-        <button className="btnAccionesTop" onClick={generateReport}>
-              {" "}
-              <span><Report></Report></span>
-        </button>
-      </div>
+        <div className="accionesTop">
+          <button className="btnAccionesTop" onClick={resetHistory}>
+            {" "}
+            <span>
+              <NewChat></NewChat>
+            </span>
+          </button>
+          <button className="btnAccionesTop" onClick={generateReport}>
+            {" "}
+            <span>
+              <Report></Report>
+            </span>
+          </button>
+        </div>
 
-      <p className="mensajeAsesor" style={{display: sentMessage.length > 0 ? "inline-block" : "none"}}>
-        {sentMessage ? sentMessage : ""}
-      </p>
+        <p
+          className="mensajeAsesor"
+          style={{ display: sentMessage.length > 0 ? "inline-block" : "none" }}
+        >
+          {sentMessage ? sentMessage : ""}
+        </p>
 
-      <p className="respuestaAsesor" style={{backgroundColor: lastResponse.length > 0 || isLoadingMessage ? "#e0e0e0" : "transparent"}}>
-        {isLoadingMessage ? (
-          <center>
+        <p
+          className="respuestaAsesor"
+          style={{
+            backgroundColor:
+              lastResponse.length > 0 || isLoadingMessage
+                ? "#e0e0e0"
+                : "transparent",
+          }}
+        >
+          {isLoadingMessage ? (
+            <center>
               <div className="loader-containerAsesor">
-              <div className="loaderAsesor">
-                <svg viewBox="0 0 80 80">
-                  <circle r="32" cy="40" cx="40" id="test"></circle>
-                </svg>
-              </div>
+                <div className="loaderAsesor">
+                  <svg viewBox="0 0 80 80">
+                    <circle r="32" cy="40" cx="40" id="test"></circle>
+                  </svg>
+                </div>
 
-              <div className="loaderAsesor triangleAsesor">
-                <svg viewBox="0 0 86 80">
-                  <polygon points="43 8 79 72 7 72"></polygon>
-                </svg>
-              </div>
+                <div className="loaderAsesor triangleAsesor">
+                  <svg viewBox="0 0 86 80">
+                    <polygon points="43 8 79 72 7 72"></polygon>
+                  </svg>
+                </div>
 
-              <div className="loaderAsesor">
-                <svg viewBox="0 0 80 80">
-                  <rect height="64" width="64" y="8" x="8"></rect>
-                </svg>
+                <div className="loaderAsesor">
+                  <svg viewBox="0 0 80 80">
+                    <rect height="64" width="64" y="8" x="8"></rect>
+                  </svg>
+                </div>
               </div>
-            </div>
-          </center>
-          
-        ) : (
-          lastResponse
-        )}
-      </p>
+            </center>
+          ) : (
+            lastResponse
+          )}
+        </p>
 
         <div className="accionesAsesor">
-
           <div className="messageBox">
             <div className="fileUploadWrapper">
               <label htmlFor="file">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 337 337">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 337 337"
+                >
                   <circle
                     strokeWidth="20"
                     stroke="#6c6c6c"
@@ -145,12 +176,19 @@ export default function Citas() {
               </label>
               <input type="file" id="file" name="file" />
             </div>
-            <input required placeholder="Mensaje..." type="text" id="messageInput" ref={inputRef} value={inputValue} onChange={handleInput} />
+            <input
+              required
+              placeholder="Mensaje..."
+              type="text"
+              id="messageInput"
+              ref={inputRef}
+              value={inputValue}
+              onChange={handleInput}
+            />
             <button id="sendButton" onClick={submitQuestion}>
               <Send></Send>
             </button>
           </div>
-
         </div>
       </section>
     </>

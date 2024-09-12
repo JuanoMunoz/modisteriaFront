@@ -12,9 +12,10 @@ import axios from "axios";
 import Loading from "../../components/loading/Loading";
 import useModals from "../../hooks/useSessionModals";
 import { useJwt } from "../../context/JWTContext";
-
+import { useNavigate } from "react-router-dom";
 export default function InicioSesion() {
   const { token, saveToken } = useJwt();
+  const navigate = useNavigate();
   useEffect(() => {
     console.log(token);
   }, [token]);
@@ -73,12 +74,17 @@ export default function InicioSesion() {
       .then((response) => {
         toast.success("sesión iniciada correctamente!", {
           toastId: "success-toast-fetch-api",
+          autoClose: 1000,
+          onClose: () => {
+            navigate("/");
+          },
         });
         saveToken(response.data.token);
       })
       .catch(() => {
         toast.error("email y/o contraseña incorrecto/s", {
           toastId: "toast-error-fetch-id",
+          autoClose: 1000,
         });
       })
       .finally(() => {

@@ -9,6 +9,7 @@ import Estadisticas from "./pages/estadisticas/Estadisticas";
 import InicioSesion from "./pages/sesion/Sesion";
 import Catalogo from "./pages/catalogo/Catalogo";
 import Citas from "./pages/Citas/Citas";
+import { useJwt } from "./context/JWTContext";
 function App() {
   return (
     <>

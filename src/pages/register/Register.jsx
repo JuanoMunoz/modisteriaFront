@@ -39,10 +39,10 @@ export default function Register() {
         toast.success(`${response.data.msg}`, {
           position: "top-right",
           toastId: "success-toast-fetch-register",
-          autoClose: 4000,
+          autoClose: 1000,
           onClose: setTimeout(() => {
             navigate("/sesion");
-          }, 4000),
+          }, 1000),
         });
       })
 
@@ -50,6 +50,7 @@ export default function Register() {
         toast.error(`${error.response.data.msg}!`, {
           position: "top-right",
           toastId: "error-toast-fetch-register",
+          autoClose: 1000,
         });
       })
       .finally(() => {
