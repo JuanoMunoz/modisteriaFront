@@ -4,15 +4,30 @@ import Metadata from "../../components/metadata/Metadata";
 import Loading from "../../components/loading/Loading";
 import useCatalogoData from "../../hooks/useCatalogo";
 import Product from "../../components/producto/Producto";
+import { ArrowRight, ArrowLeft } from "../../components/svg/Svg";
+import useDebounce from "../../hooks/useDebounce";
+
 export default function Catalogo() {
-  const { fetchCatalagoData, isLoading } = useCatalogoData();
+  const [page, setPage] = useState(1);
   const [filterPrice, setFilterPrice] = useState(250000);
+  const { debouncedValue } = useDebounce(filterPrice, 1000);
+  const { fetchCatalagoData, isLoading, numberOfPages } = useCatalogoData(
+    page,
+    debouncedValue
+  );
+  const handlePreviousPage = () => {
+    if (page == 1) return;
+    setPage((prev) => prev - 1);
+  };
+  const handleNextPage = () => {
+    if (page === numberOfPages.length) return;
+    setPage((prev) => prev + 1);
+  };
   const handleFilterPrice = (e) => {
     e.preventDefault();
     if (e.target.value > 250000 || e.target.value < 1) return;
     setFilterPrice(e.target.value);
   };
-  console.log(isLoading);
   return (
     <>
       <Metadata title={"Catálogo - Modistería Doña Luz"}></Metadata>
@@ -26,37 +41,37 @@ export default function Catalogo() {
           <input
             type="range"
             value={filterPrice}
-            min={1}
+            min={5000}
+            step={5000}
             onChange={handleFilterPrice}
             max={250000}
             className="range-category"
           />
 
           <h4>Filtrar por Categoria</h4>
-            <div className="categorias">
-              <div>
-                <input type="radio" id="radio1" name="categoria"/>
-                <label htmlFor="radio1">Camisetas</label>
-              </div>
-
-              <div>
-                <input type="radio" id="radio2" name="categoria"/>
-                <label htmlFor="radio2">Polos</label>
-              </div>
-
-              <div>
-                <input type="radio" id="radio3" name="categoria"/>
-                <label htmlFor="radio3">Faldas</label>
-              </div>
-
-              <div>
-                <input type="radio" id="radio4" name="categoria"/>
-                <label htmlFor="radio4">Vestidos</label>
-              </div>
-
+          <div className="categorias">
+            <div>
+              <input type="radio" id="radio1" name="categoria" />
+              <label htmlFor="radio1">Camisetas</label>
             </div>
+
+            <div>
+              <input type="radio" id="radio2" name="categoria" />
+              <label htmlFor="radio2">Polos</label>
+            </div>
+
+            <div>
+              <input type="radio" id="radio3" name="categoria" />
+              <label htmlFor="radio3">Faldas</label>
+            </div>
+
+            <div>
+              <input type="radio" id="radio4" name="categoria" />
+              <label htmlFor="radio4">Vestidos</label>
+            </div>
+          </div>
         </div>
-        
+
         <div className="catalogo">
           {!isLoading &&
             fetchCatalagoData?.map((data) => (
@@ -67,35 +82,26 @@ export default function Catalogo() {
       {/* PAGINADOR */}
       <div className="cPaginador">
         <ul className="paginador">
-          <li>
-            <a href="#">Previous</a>
+          <li onClick={handlePreviousPage}>
+            <a>
+              <ArrowLeft size={28}></ArrowLeft>
+            </a>
           </li>
-          <li>
-            <a href="#">1</a>
-          </li>
-          <li>
-            <a href="#">2</a>
-          </li>
-          <li>
-            <a href="#">3</a>
-          </li>
-          <li>
-            <a href="#">4</a>
-          </li>
-          <li>
-            <a href="#">5</a>
-          </li>
-          <li>
-            <a href="#">6</a>
-          </li>
-          <li>
-            <a href="#">7</a>
-          </li>
-          <li>
-            <a href="#">8</a>
-          </li>
-          <li>
-            <a href="#">Next</a>
+          {numberOfPages.map((value) => (
+            <li
+              className={value === page ? `active` : ""}
+              key={value}
+              onClick={() => {
+                setPage(value);
+              }}
+            >
+              <a>{value}</a>
+            </li>
+          ))}
+          <li onClick={handleNextPage}>
+            <a>
+              <ArrowRight size={30}></ArrowRight>
+            </a>
           </li>
         </ul>
       </div>

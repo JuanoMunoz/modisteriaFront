@@ -19,7 +19,7 @@ h1 {
   width: 150px;
   position: relative;
   bottom: 10px;
-  right: 180px;
+  right: 125px;
   height: 3px;
   background-color: rgb(187, 14, 202);
   border: 0;
@@ -46,8 +46,8 @@ h1 {
 
 .contenedorDetalle {
   display: flex;
-  justify-content: space-around;
-  padding: 20px;
+  justify-content: space-evenly;
+  padding: 10px;
 }
 
 .imageDetalle {
@@ -61,6 +61,7 @@ h1 {
 .infoDetalle {
   text-align: start;
   background-color: rgba(255, 255, 255, 0.733);
+  width: 22rem;
 }
 
 .precioDetalle,
@@ -79,6 +80,7 @@ h1 {
 }
 
 .accionesDetalle {
+  margin-top: 3rem;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -116,6 +118,10 @@ h1 {
   opacity: 1;
   transform: translateY(0);
 }
+.card:hover {
+  scale: 1.03;
+  transition: all 0.2s ease-out;
+}
 .image_container {
   overflow: hidden;
   cursor: pointer;
@@ -152,12 +158,17 @@ h1 {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  margin-top: 0.25rem;
+  margin-top: 1.5rem;
   margin-left: -20px;
 }
 
 .list-size .item-list {
   list-style: none;
+}
+.alarm {
+  background-color: rgb(205, 30, 30) !important;
+  color: white;
+  transition: background-color 0.3s ease-in-out; /* Suaviza la transición de color */
 }
 
 .list-size .item-list-button {
@@ -170,7 +181,7 @@ h1 {
   transition: all 0.3s ease-in-out;
 }
 
-.item-list-button:focus {
+.item-list-button.active {
   background-color: rgb(187, 14, 202);
   box-shadow: inset 0px 1px 4px black;
 }
@@ -324,10 +335,17 @@ h1 {
 .paginador li:last-child {
   background: rgb(12, 12, 12);
 }
-
+.paginador .active {
+  background: rgb(187, 14, 202);
+  font-weight: bolder;
+}
+.paginador .active a {
+  color: white;
+}
 .paginador li:hover {
   background: rgb(187, 14, 202);
   color: white;
+  cursor: pointer;
 }
 
 .paginador li a:hover {
@@ -343,6 +361,13 @@ h1 {
   display: block;
   line-height: 45px;
   transition: 0.4s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.previous .next {
+  width: 3rem;
+  background-color: red;
 }
 .paginador li:first-child a {
   width: 120px;
@@ -491,9 +516,7 @@ input[type="range"]:focus::-ms-fill-upper {
   inset: 0.25rem;
   opacity: 0;
   scale: 0;
-  transition:
-    opacity 150ms ease-in-out,
-    scale 150ms ease-in-out;
+  transition: opacity 150ms ease-in-out, scale 150ms ease-in-out;
   background-color: var(--_clr-checked);
   border-radius: inherit;
 }

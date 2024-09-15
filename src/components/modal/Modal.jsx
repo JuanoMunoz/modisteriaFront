@@ -27,7 +27,9 @@ const Modal = ({ show, onClose, children, customWidth }) => {
     <div className={`modal-overlay ${isVisible ? "show" : ""}`}>
       <div
         className={`modal ${isVisible ? "show" : ""}`}
-        style={{ maxWidth: customWidth || '500px' }} // Aplica el ancho personalizado
+        style={{
+          maxWidth: customWidth || "500px",
+        }}
       >
         <button onClick={onClose} className="modal-close-button">
           &times;

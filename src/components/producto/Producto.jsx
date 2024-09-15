@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useRef } from "react";
 import { useState, useEffect } from "react";
 import { Cart, Info } from "../../components/svg/Svg";
 import Modal from "../../components/modal/Modal";
@@ -7,9 +7,12 @@ export default function Product({ data, isLoading }) {
   const [cantidad, setCantidad] = useState(1);
   const [title, setTitle] = useState("");
   const [sizes, setSizes] = useState([]);
+  const [size, setSize] = useState();
   const [description, setDescription] = useState("");
   const [initialPrice, setInitialPrice] = useState(0);
   const [finalPrice, setFinalPrice] = useState(0);
+  const listRef = useRef();
+  const listRefModal = useRef();
   const toggleModal = () => {
     setShowModal(!showModal);
   };
@@ -20,7 +23,38 @@ export default function Product({ data, isLoading }) {
   const handlePlusOne = () => {
     setCantidad(cantidad + 1);
   };
-  const handleAddToCart = () => {};
+  const handleSetSize = (value) => {
+    setSize(value);
+  };
+  const handleAddToCart = () => {
+    if (!size) {
+      if (listRef.current) {
+        const buttons = listRef.current.querySelectorAll(".item-list-button");
+        buttons.forEach((button) => {
+          button.classList.add("alarm");
+        });
+        setTimeout(() => {
+          buttons.forEach((button) => {
+            button.classList.remove("alarm");
+          });
+        }, 1000);
+      }
+      if (listRefModal.current) {
+        const buttons =
+          listRefModal.current.querySelectorAll(".item-list-button");
+        buttons.forEach((button) => {
+          button.classList.add("alarm");
+        });
+        setTimeout(() => {
+          buttons.forEach((button) => {
+            button.classList.remove("alarm");
+          });
+        }, 1000);
+      }
+      return;
+    }
+    console.log(size);
+  };
   useEffect(() => {
     setFinalPrice(initialPrice * cantidad);
   }, [cantidad, initialPrice]);
@@ -53,10 +87,19 @@ export default function Product({ data, isLoading }) {
         </div>
         <div className="size">
           <span>Size</span>
-          <ul className="list-size">
-            {sizes.map((size, idx) => (
+          <ul ref={listRef} className="list-size">
+            {sizes.map((valueSize, idx) => (
               <li key={idx} className="item-list">
-                <button className="item-list-button">{size}</button>
+                <button
+                  onClick={() => {
+                    handleSetSize(valueSize);
+                  }}
+                  className={`item-list-button ${
+                    valueSize === size ? "active" : ""
+                  }`}
+                >
+                  {valueSize}
+                </button>
               </li>
             ))}
           </ul>
@@ -90,7 +133,7 @@ export default function Product({ data, isLoading }) {
         show={showModal}
         onClose={toggleModal}
         className="modalDetalle"
-        customWidth="1000px"
+        customWidth="800px"
       >
         <section className="contenedorDetalle">
           <div className="imageDetalle">
@@ -109,10 +152,19 @@ export default function Product({ data, isLoading }) {
             </div>
             <div className="size">
               <span>Talla</span>
-              <ul className="list-size">
-                {sizes.map((size, idx) => (
-                  <li key={idx} className="item-list">
-                    <button className="item-list-button">{size}</button>
+              <ul ref={listRefModal} className="list-size">
+                {sizes.map((valueSize, idx) => (
+                  <li key={idx} className={`item-list`}>
+                    <button
+                      onClick={() => {
+                        handleSetSize(valueSize);
+                      }}
+                      className={`item-list-button ${
+                        valueSize === size ? "active" : ""
+                      }`}
+                    >
+                      {valueSize}
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -127,7 +179,7 @@ export default function Product({ data, isLoading }) {
                   +
                 </span>
               </div>
-              <button className="btnAccionDetalle">
+              <button onClick={handleAddToCart} className="btnAccionDetalle">
                 <span>
                   <Cart color={"#fff"}></Cart>
                 </span>
