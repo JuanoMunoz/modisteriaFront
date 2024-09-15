@@ -11,6 +11,7 @@ export default function Product({ data, isLoading }) {
   const [description, setDescription] = useState("");
   const [initialPrice, setInitialPrice] = useState(0);
   const [finalPrice, setFinalPrice] = useState(0);
+  const [id, setId] = useState();
   const listRef = useRef();
   const listRefModal = useRef();
   const toggleModal = () => {
@@ -63,6 +64,7 @@ export default function Product({ data, isLoading }) {
     setSizes(data.talla);
     setDescription(data.descripcion);
     setInitialPrice(data.precio);
+    setId(data.id);
   }, []);
   const [isAnimating, setIsAnimating] = useState(false);
 
