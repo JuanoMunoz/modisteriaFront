@@ -4,7 +4,15 @@ import useLLM from "../../hooks/useLLM";
 import "./citas.css";
 import videoSource from "/citasVideo.mp4";
 import { useJwt } from "../../context/JWTContext";
-import { Asesor, Right, Send, Report, NewChat } from "../../components/svg/Svg";
+import {
+  Asesor,
+  Right,
+  Send,
+  Report,
+  NewChat,
+  ArrowDown,
+} from "../../components/svg/Svg";
+import Maniqui from "/maniqui.jpg";
 export default function Citas() {
   const { token } = useJwt();
   const {
@@ -14,17 +22,27 @@ export default function Citas() {
     generarReporte,
     resetHistory,
   } = useLLM();
-
+  const emptyChat = useRef();
   const inputRef = useRef();
   const [inputValue, setInputValue] = useState("");
   const [lastResponse, setLastResponse] = useState("");
   const [sentMessage, setSentMessage] = useState("");
+  const [hasClassActive, setHasClassActive] = useState(false);
 
   const handleInput = (e) => {
     setInputValue(e.target.value);
   };
+  const handleReset = () => {
+    setHasClassActive(false);
+    resetHistory();
+  };
 
-  const submitQuestion = async () => {
+  const submitQuestion = async (e) => {
+    e.preventDefault();
+    if (!hasClassActive) {
+      emptyChat.current.classList.add("active");
+      setHasClassActive(true);
+    }
     if (inputRef.current.value == "") return;
     const message = inputRef.current.value;
 
@@ -85,7 +103,7 @@ export default function Citas() {
 
       <section ref={asesorDiv} className="asesor">
         <div className="accionesTop">
-          <button className="btnAccionesTop" onClick={resetHistory}>
+          <button className="btnAccionesTop" onClick={handleReset}>
             {" "}
             <span>
               <NewChat></NewChat>
@@ -98,52 +116,68 @@ export default function Citas() {
             </span>
           </button>
         </div>
-
-        <p
-          className="mensajeAsesor"
-          style={{ display: sentMessage.length > 0 ? "inline-block" : "none" }}
-        >
-          {sentMessage ? sentMessage : ""}
-        </p>
-
-        <p
-          className="respuestaAsesor"
-          style={{
-            backgroundColor:
-              lastResponse.length > 0 || isLoadingMessage
-                ? "#e0e0e0"
-                : "transparent",
-          }}
-        >
-          {isLoadingMessage ? (
-            <center>
-              <div className="loader-containerAsesor">
-                <div className="loaderAsesor">
-                  <svg viewBox="0 0 80 80">
-                    <circle r="32" cy="40" cx="40" id="test"></circle>
-                  </svg>
-                </div>
-
-                <div className="loaderAsesor triangleAsesor">
-                  <svg viewBox="0 0 86 80">
-                    <polygon points="43 8 79 72 7 72"></polygon>
-                  </svg>
-                </div>
-
-                <div className="loaderAsesor">
-                  <svg viewBox="0 0 80 80">
-                    <rect height="64" width="64" y="8" x="8"></rect>
-                  </svg>
-                </div>
+        {historial.length <= 6 ? (
+          <div ref={emptyChat} className="empty-chat">
+            <img className="img-empty-chat" src={Maniqui} alt="" />
+            <div className="bg-overlay"></div>
+            <div className="text-empty-chat">
+              <span>ENVÍA UN MENSAJE PARA COMENZAR!</span>
+              <div className="bouncing-arrow">
+                <ArrowDown color={"#bb0eca"} size={40}></ArrowDown>
               </div>
-            </center>
-          ) : (
-            lastResponse
-          )}
-        </p>
+            </div>
+          </div>
+        ) : (
+          <div className="chat">
+            <p
+              className="mensajeAsesor"
+              style={{
+                display: sentMessage.length > 0 ? "inline-block" : "none",
+              }}
+            >
+              {sentMessage ? sentMessage : ""}
+            </p>
+
+            <p
+              className="respuestaAsesor"
+              style={{
+                backgroundColor:
+                  lastResponse.length > 0 || isLoadingMessage
+                    ? "#e0e0e0"
+                    : "transparent",
+              }}
+            >
+              {isLoadingMessage ? (
+                <center>
+                  <div className="loader-containerAsesor">
+                    <div className="loaderAsesor">
+                      <svg viewBox="0 0 80 80">
+                        <circle r="32" cy="40" cx="40" id="test"></circle>
+                      </svg>
+                    </div>
+
+                    <div className="loaderAsesor triangleAsesor">
+                      <svg viewBox="0 0 86 80">
+                        <polygon points="43 8 79 72 7 72"></polygon>
+                      </svg>
+                    </div>
+
+                    <div className="loaderAsesor">
+                      <svg viewBox="0 0 80 80">
+                        <rect height="64" width="64" y="8" x="8"></rect>
+                      </svg>
+                    </div>
+                  </div>
+                </center>
+              ) : (
+                lastResponse
+              )}
+            </p>
+          </div>
+        )}
 
         <div className="accionesAsesor">
-          <div className="messageBox">
+          <form onSubmit={submitQuestion} className="messageBox">
             <div className="fileUploadWrapper">
               <label htmlFor="file">
                 <svg
@@ -185,10 +219,10 @@ export default function Citas() {
               value={inputValue}
               onChange={handleInput}
             />
-            <button id="sendButton" onClick={submitQuestion}>
+            <button id="sendButton" type="submit">
               <Send></Send>
             </button>
-          </div>
+          </form>
         </div>
       </section>
     </>

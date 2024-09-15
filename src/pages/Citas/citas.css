@@ -1,34 +1,35 @@
-.contenedorCitas{
+.contenedorCitas {
   display: flex;
   justify-content: space-between;
   padding: 50px;
   margin-top: 50px;
 }
 
-.video{
+.video {
   width: 500px;
 }
 
-.citas{
+.citas {
   padding-top: 170px;
   padding-left: 50px;
 }
 
-.citas span{
+.citas span {
   font-size: 70px;
   color: black;
   font-weight: bold;
 }
 
-.citas p, h2{
+.citas p,
+h2 {
   color: black;
 }
 
-.citas p{
+.citas p {
   font-weight: bold;
 }
 
-.separacionCitas{
+.separacionCitas {
   background-color: rgb(187, 14, 202);
   width: 100px;
   height: 5px;
@@ -37,31 +38,127 @@
   right: 30px;
 }
 
-.asesor{
+.asesor {
   margin-top: 30px;
   padding: 50px;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+.chat {
+  flex-grow: 1;
+}
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+}
+.empty-chat.active {
+  animation: fadeOut 3s forwards; /* Aplicar la animación */
+}
+.empty-chat {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
-.accionesAsesor{
+.img-empty-chat {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  mask: linear-gradient(to right, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.7) 40%)
+      left,
+    linear-gradient(to left, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.7) 40%) right;
+  -webkit-mask: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0) 30%,
+        rgba(0, 0, 0, 0.7) 40%
+      )
+      left,
+    linear-gradient(to left, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.7) 40%) right;
+}
+
+.bg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 0.7) 30%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  z-index: 2;
+}
+
+.text-empty-chat {
+  position: relative;
+  z-index: 3;
+  color: #fff;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  padding: 20px;
+  background: none;
+  width: 50rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.text-empty-chat span {
+  text-wrap: pretty;
+  font-size: 3.5rem;
+}
+.bouncing-arrow {
+  animation: bounce 3s infinite;
+}
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0); /* Inicial y final en la posición original */
+  }
+  50% {
+    transform: translateY(
+      50px
+    ); /* Mover hacia arriba a la mitad de la animación */
+  }
+}
+
+.accionesAsesor {
   display: flex;
   justify-content: center;
 }
 
-.accionesTop{
+.accionesTop {
   display: flex;
   justify-content: center;
   gap: 20px;
   width: 20%;
   position: relative;
-  left: 80%;
-  margin-bottom: 50px
+  left: 75%;
+  margin-bottom: 50px;
 }
 
-.accionesTop button{
+.accionesTop button {
   border-radius: 50px;
 }
 
-.respuestaAsesor{
+.respuestaAsesor {
   color: black;
   width: 700px;
   text-align: start;
@@ -71,7 +168,7 @@
   margin-left: 150px;
 }
 
-.mensajeAsesor{
+.mensajeAsesor {
   color: white;
   width: 400px;
   text-align: start;
@@ -295,7 +392,6 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s;
-
 }
 #sendButton svg {
   height: 18px;
@@ -313,7 +409,7 @@
 }
 
 /*Loader Asesor*/
-/* From Uiverse.io by mobinkakei */ 
+/* From Uiverse.io by mobinkakei */
 .loaderAsesor {
   --path: #2f3545;
   --dot: #5628ee;
@@ -471,4 +567,3 @@
   display: inline-block;
   margin: 0 16px;
 }
-
