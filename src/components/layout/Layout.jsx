@@ -8,13 +8,15 @@ import { Outlet, Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { Cart, Trash } from "../svg/Svg";
+import { useCart } from "../../context/CartContext";
+import ProductoCarrito from "../productoCarrito/ProductoCarrito";
 export default function Layout() {
   const [cartVisible, setCartVisible] = useState(false);
 
   const { token, cleanToken } = useJwt();
+  const { cartData, subtotal } = useCart();
   const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
-  const [cantidad, setCantidad] = useState(1);
   const payload = useDecodedJwt(token);
   const toogleModal = () => {
     setVisible(!visible);
@@ -22,13 +24,7 @@ export default function Layout() {
   const toggleCart = () => {
     setCartVisible((prev) => !prev);
   };
-  const handleMinusOne = () => {
-    if (cantidad == 1) return;
-    setCantidad(cantidad - 1);
-  };
-  const handlePlusOne = () => {
-    setCantidad(cantidad + 1);
-  };
+
   const logout = () => {
     cleanToken();
     toogleModal();
@@ -118,200 +114,14 @@ export default function Layout() {
             <hr className="separacionCarrito" />
           </div>
           <div className="contenedorCarrito">
-            <div className="itemCarrito">
-              <div className="imgCarrito">
-                <img
-                  src="https://eldeportivo.com.co/wp-content/uploads/2023/01/Polemica-precio-camiseta-Atletico-Nacional-2023-1.png"
-                  alt=""
-                  className="imgCarrito"
-                />
-              </div>
-              <div className="">
-                <span>Camisa del nacional</span>
-                <span className="idPrenda">#1</span>
-              </div>
-              <span>$23000</span>
-              <div className="amount">
-                <span onClick={handleMinusOne} className="quantity-button">
-                  -
-                </span>
-                <span>{cantidad}</span>
-                <span onClick={handlePlusOne} className="quantity-button">
-                  +
-                </span>
-              </div>
-
-              <div className="trash">
-                <Trash size={25}></Trash>
-              </div>
-            </div>
-            <div className="itemCarrito">
-              <div className="imgCarrito">
-                <img
-                  src="https://eldeportivo.com.co/wp-content/uploads/2023/01/Polemica-precio-camiseta-Atletico-Nacional-2023-1.png"
-                  alt=""
-                  className="imgCarrito"
-                />
-              </div>
-              <div className="">
-                <span>Camisa del nacional</span>
-                <span className="idPrenda">#1</span>
-              </div>
-              <span>$23000</span>
-              <div className="amount">
-                <span onClick={handleMinusOne} className="quantity-button">
-                  -
-                </span>
-                <span>{cantidad}</span>
-                <span onClick={handlePlusOne} className="quantity-button">
-                  +
-                </span>
-              </div>
-
-              <div className="trash">
-                <Trash size={25}></Trash>
-              </div>
-            </div>
-            <div className="itemCarrito">
-              <div className="imgCarrito">
-                <img
-                  src="https://eldeportivo.com.co/wp-content/uploads/2023/01/Polemica-precio-camiseta-Atletico-Nacional-2023-1.png"
-                  alt=""
-                  className="imgCarrito"
-                />
-              </div>
-              <div className="">
-                <span>Camisa del nacional</span>
-                <span className="idPrenda">#1</span>
-              </div>
-              <span>$23000</span>
-              <div className="amount">
-                <span onClick={handleMinusOne} className="quantity-button">
-                  -
-                </span>
-                <span>{cantidad}</span>
-                <span onClick={handlePlusOne} className="quantity-button">
-                  +
-                </span>
-              </div>
-
-              <div className="trash">
-                <Trash size={25}></Trash>
-              </div>
-            </div>
-            <div className="itemCarrito">
-              <div className="imgCarrito">
-                <img
-                  src="https://eldeportivo.com.co/wp-content/uploads/2023/01/Polemica-precio-camiseta-Atletico-Nacional-2023-1.png"
-                  alt=""
-                  className="imgCarrito"
-                />
-              </div>
-              <div className="">
-                <span>Camisa del nacional</span>
-                <span className="idPrenda">#1</span>
-              </div>
-              <span>$23000</span>
-              <div className="amount">
-                <span onClick={handleMinusOne} className="quantity-button">
-                  -
-                </span>
-                <span>{cantidad}</span>
-                <span onClick={handlePlusOne} className="quantity-button">
-                  +
-                </span>
-              </div>
-
-              <div className="trash">
-                <Trash size={25}></Trash>
-              </div>
-            </div>
-            <div className="itemCarrito">
-              <div className="imgCarrito">
-                <img
-                  src="https://eldeportivo.com.co/wp-content/uploads/2023/01/Polemica-precio-camiseta-Atletico-Nacional-2023-1.png"
-                  alt=""
-                  className="imgCarrito"
-                />
-              </div>
-              <div className="">
-                <span>Camisa del nacional</span>
-                <span className="idPrenda">#1</span>
-              </div>
-              <span>$23000</span>
-              <div className="amount">
-                <span onClick={handleMinusOne} className="quantity-button">
-                  -
-                </span>
-                <span>{cantidad}</span>
-                <span onClick={handlePlusOne} className="quantity-button">
-                  +
-                </span>
-              </div>
-
-              <div className="trash">
-                <Trash size={25}></Trash>
-              </div>
-            </div>
-            <div className="itemCarrito">
-              <div className="imgCarrito">
-                <img
-                  src="https://eldeportivo.com.co/wp-content/uploads/2023/01/Polemica-precio-camiseta-Atletico-Nacional-2023-1.png"
-                  alt=""
-                  className="imgCarrito"
-                />
-              </div>
-              <div className="">
-                <span>Camisa del nacional</span>
-                <span className="idPrenda">#1</span>
-              </div>
-              <span>$23000</span>
-              <div className="amount">
-                <span onClick={handleMinusOne} className="quantity-button">
-                  -
-                </span>
-                <span>{cantidad}</span>
-                <span onClick={handlePlusOne} className="quantity-button">
-                  +
-                </span>
-              </div>
-
-              <div className="trash">
-                <Trash size={25}></Trash>
-              </div>
-            </div>
-            <div className="itemCarrito">
-              <div className="imgCarrito">
-                <img
-                  src="https://eldeportivo.com.co/wp-content/uploads/2023/01/Polemica-precio-camiseta-Atletico-Nacional-2023-1.png"
-                  alt=""
-                  className="imgCarrito"
-                />
-              </div>
-              <div className="">
-                <span>Camisa del nacional</span>
-                <span className="idPrenda">#1</span>
-              </div>
-              <span>$23000</span>
-              <div className="amount">
-                <span onClick={handleMinusOne} className="quantity-button">
-                  -
-                </span>
-                <span>{cantidad}</span>
-                <span onClick={handlePlusOne} className="quantity-button">
-                  +
-                </span>
-              </div>
-
-              <div className="trash">
-                <Trash size={25}></Trash>
-              </div>
-            </div>
+            {cartData.map((data) => (
+              <ProductoCarrito key={data.itemId} data={data} />
+            ))}
           </div>
 
           <div className="acciones">
             <span className="subtotal">
-              <strong>Subtotal: $23000</strong>
+              <strong>Subtotal: ${subtotal}</strong>
             </span>
 
             <button className="btnAccionCarrito">

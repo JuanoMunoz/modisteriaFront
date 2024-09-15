@@ -2,8 +2,13 @@ import { Fragment, useRef } from "react";
 import { useState, useEffect } from "react";
 import { Cart, Info } from "../../components/svg/Svg";
 import Modal from "../../components/modal/Modal";
+import { useCart } from "../../context/CartContext";
+import { v4 as uuidv4 } from "uuid";
+import { toast } from "react-toastify";
+
 export default function Product({ data, isLoading }) {
   const [showModal, setShowModal] = useState(false);
+  const { addItem, cartData, updateItem } = useCart();
   const [cantidad, setCantidad] = useState(1);
   const [title, setTitle] = useState("");
   const [sizes, setSizes] = useState([]);
@@ -11,7 +16,6 @@ export default function Product({ data, isLoading }) {
   const [description, setDescription] = useState("");
   const [initialPrice, setInitialPrice] = useState(0);
   const [finalPrice, setFinalPrice] = useState(0);
-  const [id, setId] = useState();
   const listRef = useRef();
   const listRefModal = useRef();
   const toggleModal = () => {
@@ -52,9 +56,28 @@ export default function Product({ data, isLoading }) {
           });
         }, 1000);
       }
+      toast.error("Error, selecciona una talla!", {
+        autoClose: 700,
+        toastId: "error",
+      });
       return;
     }
-    console.log(size);
+    const carritoData = {
+      itemId: uuidv4(),
+      ...data,
+      cantidad,
+      finalPrice,
+      size,
+    };
+    cartData.some(
+      (value) => value.id === carritoData.id && value.size === carritoData.size
+    )
+      ? updateItem(carritoData)
+      : addItem(carritoData);
+    toast.success("Item agregado con éxito! 😊", {
+      autoClose: 222,
+      toastId: "item-add",
+    });
   };
   useEffect(() => {
     setFinalPrice(initialPrice * cantidad);
@@ -64,7 +87,6 @@ export default function Product({ data, isLoading }) {
     setSizes(data.talla);
     setDescription(data.descripcion);
     setInitialPrice(data.precio);
-    setId(data.id);
   }, []);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -93,6 +115,7 @@ export default function Product({ data, isLoading }) {
             {sizes.map((valueSize, idx) => (
               <li key={idx} className="item-list">
                 <button
+                  style={{ textTransform: "uppercase" }}
                   onClick={() => {
                     handleSetSize(valueSize);
                   }}
@@ -158,6 +181,7 @@ export default function Product({ data, isLoading }) {
                 {sizes.map((valueSize, idx) => (
                   <li key={idx} className={`item-list`}>
                     <button
+                      style={{ textTransform: "uppercase" }}
                       onClick={() => {
                         handleSetSize(valueSize);
                       }}

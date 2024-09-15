@@ -6,6 +6,7 @@ import useCatalogoData from "../../hooks/useCatalogo";
 import Product from "../../components/producto/Producto";
 import { ArrowRight, ArrowLeft } from "../../components/svg/Svg";
 import useDebounce from "../../hooks/useDebounce";
+import { ToastContainer } from "react-toastify";
 
 export default function Catalogo() {
   const [page, setPage] = useState(1);
@@ -105,6 +106,7 @@ export default function Catalogo() {
           </li>
         </ul>
       </div>
+      <ToastContainer></ToastContainer>
     </>
   );
 }
