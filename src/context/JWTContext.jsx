@@ -1,11 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { json } from "react-router-dom";
 
 const JWTContext = createContext();
 export const useJwt = () => {
   return useContext(JWTContext);
 };
 export default function JWTProvider({ children }) {
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("jwt") || null);
   const cleanToken = () => {
     localStorage.removeItem("jwt");
     setToken(null);
