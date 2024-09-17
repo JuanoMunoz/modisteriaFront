@@ -16,6 +16,7 @@ export default function Venta() {
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
   const [elegirPago, setElegirPago] = useState(false);
+  const [formaPago, setFormaPago] = useState("");
   const { cartData, subtotal } = useCart();
   const navigate = useNavigate();
   const [address, setAddress] = useState(false);
@@ -23,15 +24,21 @@ export default function Venta() {
   const [loading, setLoading] = useState(false);
   const { userData, setUserData } = useActiveUserInfo(payload?.id);
   const [domicilio, setDomicilio] = useState();
+  const [showFullQr, setShowFullQr] = useState(false);
   const handleChangeAddress = (e) => {
     setLugarEntrega(e.target.value);
+  };
+  const handleChangePayMethod = (e) => {
+    setFormaPago(e.target.value);
   };
   const addressToggle = () => {
     setAddress(!address);
   };
+  const qrToggle = () => {
+    setShowFullQr(!showFullQr);
+  };
   console.log(lugarEntrega);
 
-  const initialDomicilio = userData?.direccion ? 15000 : null;
   const handleAddressSubmit = async (data) => {
     setLoading(true);
     setAddress(false);
@@ -101,7 +108,7 @@ export default function Venta() {
       <Metadata title={"Venta - Modisteria Doña Luz"}></Metadata>
       {loading && <Loading></Loading>}
       <section className="venta-section">
-        <article className={`recogida ${elegirPago ? "" : "activo"}`}>
+        {/* <article className={`recogida ${elegirPago ? "" : "activo"}`}>
           <h2>Elige la forma de entrega</h2>
           <label className="card-option">
             <div className="choice">
@@ -151,6 +158,69 @@ export default function Venta() {
             </div>
             <div className="price-choice">
               <span>Sin costo</span>
+            </div>
+          </label>
+          <button onClick={handlePassPayMethod} className="boton-continuar">
+            Continuar
+          </button>
+        </article> */}
+        <article className={`recogida ${elegirPago ? "" : "activo"}`}>
+          <h2>Elige la forma de pago</h2>
+          <label className="card-option">
+            <div className="choice">
+              <div>
+                <input
+                  type="radio"
+                  className="radio-styles"
+                  name="pago"
+                  value="efectivo"
+                  onChange={handleChangePayMethod}
+                  checked={formaPago === "efectivo"}
+                />
+                <span className="input-text">Pagar en efectivo 💵</span>
+              </div>
+              <h4 className="info-adicional" style={{ color: "#808080" }}>
+                *Ten el dinero a la mano
+              </h4>
+            </div>
+            <div className="price-choice"></div>
+          </label>
+          <label className="card-option">
+            <div className="choice">
+              <div>
+                <input
+                  type="radio"
+                  onChange={handleChangePayMethod}
+                  className="radio-styles"
+                  name="pago"
+                  value="transferencia"
+                  checked={formaPago === "transferencia"}
+                />
+                <span className="input-text">Pagar por transferencia</span>
+              </div>
+              <div className="tipos-transferencia">
+                <img
+                  alt="bancolombia logo"
+                  title="Bancolombia"
+                  src="https://seeklogo.com/images/B/bancolombia-logo-932DD4816B-seeklogo.com.png"
+                />
+                <img
+                  src="https://static.wixstatic.com/media/60a29b_ff944fc332d24bf9b7e861543c9d9854~mv2.png/v1/fill/w_318,h_318,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/nequi-logo.png"
+                  alt="nequi logo"
+                  title="Nequi"
+                />
+              </div>
+            </div>
+            <div className="price-choice">
+              <span>
+                <img
+                  className="qr-img"
+                  onClick={qrToggle}
+                  src="https://static.vecteezy.com/system/resources/previews/013/722/213/non_2x/sample-qr-code-icon-png.png"
+                  alt="qr"
+                  title="Qr Doña Luz"
+                />
+              </span>
             </div>
           </label>
           <button onClick={handlePassPayMethod} className="boton-continuar">
@@ -274,6 +344,23 @@ export default function Venta() {
             Agregar
           </button>
         </form>
+      </Modal>
+      <Modal onClose={qrToggle} show={showFullQr}>
+        <div className="modal-qr">
+          <img
+            src="https://static.vecteezy.com/system/resources/previews/013/722/213/non_2x/sample-qr-code-icon-png.png"
+            alt="qr"
+            title="Qr Doña Luz"
+          />
+          <div>
+            <Input placeholder={"Nro. Comprobante"}></Input>
+
+            <Input placeholder={"Valor enviado"}></Input>
+          </div>
+          <button type="submit" className="agregar-direccion">
+            Enviar Comprobante
+          </button>
+        </div>
       </Modal>
       <ToastContainer></ToastContainer>
     </>
