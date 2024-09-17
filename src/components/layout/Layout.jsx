@@ -4,10 +4,10 @@ import "./layout.css";
 import logo from "/icon.png";
 import Modal from "../modal/Modal";
 import { Logout } from "../svg/Svg";
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Outlet, Link, useNavigate, Navigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { Cart, Trash } from "../svg/Svg";
+import { Cart } from "../svg/Svg";
 import { useCart } from "../../context/CartContext";
 import ProductoCarrito from "../productoCarrito/ProductoCarrito";
 export default function Layout() {
@@ -25,6 +25,10 @@ export default function Layout() {
     setCartVisible((prev) => !prev);
   };
 
+  const handleVenta = () => {
+    toggleCart();
+    navigate("/venta");
+  };
   const logout = () => {
     cleanToken();
     toogleModal();
@@ -124,7 +128,14 @@ export default function Layout() {
               <strong>Subtotal: ${subtotal}</strong>
             </span>
 
-            <button className="btnAccionCarrito">
+            <button
+              disabled={cartData.length == 0}
+              className="btnAccionCarrito"
+              onClick={handleVenta}
+              style={{
+                cursor: cartData.length == 0 ? "not-allowed" : "pointer",
+              }}
+            >
               <span>Continuar compra</span>
             </button>
           </div>

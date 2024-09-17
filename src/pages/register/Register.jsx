@@ -10,6 +10,7 @@ import constants from "../../assets/constants.d";
 import axios from "axios";
 import Loading from "../../components/loading/Loading";
 import { useNavigate } from "react-router-dom";
+import { useJwt } from "../../context/JWTContext";
 export default function Register() {
   // REACT HOOK FORM
   const { register, handleSubmit, watch, setFocus } = useForm();
@@ -19,6 +20,11 @@ export default function Register() {
   useEffect(() => {
     setFocus("nombre");
   }, [setFocus]);
+
+  const { token } = useJwt();
+  useEffect(() => {
+    token && navigate("/");
+  }, [token]);
 
   // MANEJO DEL ENVÍO FORMULARIO
   const onSubmit = async (data) => {

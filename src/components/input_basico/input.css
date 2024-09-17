@@ -25,6 +25,9 @@
 .input:focus {
   border: 2px solid rgb(187, 14, 202);
 }
+.input.active {
+  border: 2px solid rgb(241, 22, 22);
+}
 
 .descripcion {
   font-size: 12px;

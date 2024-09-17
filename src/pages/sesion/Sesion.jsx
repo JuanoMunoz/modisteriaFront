@@ -17,7 +17,7 @@ export default function InicioSesion() {
   const { token, saveToken } = useJwt();
   const navigate = useNavigate();
   useEffect(() => {
-    console.log(token);
+    token && navigate("/");
   }, [token]);
   useEffect(() => {
     setLoading((prev) => !prev);

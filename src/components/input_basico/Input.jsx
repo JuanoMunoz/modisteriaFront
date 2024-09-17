@@ -4,7 +4,19 @@ import ojoAbierto from "/ojoAbierto.png";
 import ojoCerrado from "/ojoCerrado.png";
 // eslint-disable-next-line react/display-name
 const Input = forwardRef(
-  ({ type, placeholder, description, canHidden, color, ...props }, ref) => {
+  (
+    {
+      type,
+      placeholder,
+      description,
+      error,
+      canHidden,
+      width,
+      color,
+      ...props
+    },
+    ref
+  ) => {
     const [showPassword, setShowPassword] = useState(false);
 
     const togglePasswordVisibility = () => {
@@ -15,8 +27,9 @@ const Input = forwardRef(
         <div className="input-wrapper">
           <input
             type={canHidden ? (showPassword ? "text" : "password") : type}
-            className="input"
+            className={`input ${error && error ? "active" : ""}`}
             placeholder={placeholder}
+            style={{ width: width ? width : "" }}
             ref={ref}
             {...props}
           />

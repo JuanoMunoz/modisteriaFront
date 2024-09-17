@@ -11,6 +11,12 @@
   background-color: #222;
   width: 40%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  padding-bottom: 40px;
+  box-sizing: border-box;
+  text-align: start;
 }
 .recogida {
   height: 100%;
@@ -52,6 +58,10 @@
   font-size: 2.3rem;
   font-weight: 900;
 }
+.talla-producto {
+  margin-left: 5px;
+  text-transform: uppercase;
+}
 .choice {
   flex-grow: 1;
   display: flex;
@@ -74,7 +84,48 @@
 .info-adicional {
   font-weight: 400;
   font-size: 0.9rem;
-  margin-left: 2rem;
+  margin-left: 2.4rem;
+}
+.info-agregar-direccion {
+  font-weight: 400;
+  font-size: 0.9rem;
+  margin-left: 2.4rem;
+  color: rgb(43, 43, 216);
+  transition: 0.2s ease-in-out;
+}
+.info-agregar-direccion:hover {
+  scale: 1.02;
+  color: rgb(43, 43, 216);
+  text-decoration: underline;
+}
+.number-address {
+  display: flex;
+  gap: 1rem;
+}
+.resumen-compra-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-left: 20px;
+}
+.label-number-address {
+  display: flex;
+  flex-direction: column;
+}
+.label-number-address h3 {
+  flex-grow: 1;
+}
+.label-number-address div {
+  flex-grow: 1;
+}
+.address-modal {
+  display: flex;
+  gap: 7rem;
+}
+.piso-depto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
 }
 .price-choice {
   width: 30%;
@@ -124,4 +175,94 @@ input[type="radio"]:not(:checked)::before {
 
 input[type="radio"]:hover {
   border-color: rgb(160, 10, 173);
+}
+
+.agregar-direccion {
+  width: 100%;
+  padding: 15px;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  transition: 0.2s ease-in-out;
+  color: white;
+}
+.agregar-direccion:hover {
+  background: rgb(187, 14, 202);
+  cursor: pointer;
+  scale: 1.01;
+}
+.add-address-title {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+.text-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 19px;
+}
+.separacion {
+  width: 50%;
+  height: 4px;
+  margin-left: 12.2rem;
+  background-color: rgb(187, 14, 202);
+}
+.separacion-resumen {
+  width: 100%;
+  height: 4px;
+  background-color: rgb(187, 14, 202);
+}
+.ficha-productos {
+  flex-grow: 1;
+  margin-bottom: 10px;
+  overflow: auto;
+  scrollbar-color: rgb(187, 14, 202) #222;
+}
+.ficha-producto {
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding-right: 30px;
+  padding-left: 20px;
+  height: 4rem;
+  align-items: center;
+}
+
+.info-price-ficha-tecnica {
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 5px 20px;
+}
+.info-price-ficha-tecnica span {
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.tipocalle-select {
+  width: 109%;
+  height: 45px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1.5px solid lightgrey;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  box-shadow: 0px 0px 20px -18px;
+  margin-top: 30px;
+  padding-right: 35px; /* Asegura que haya espacio suficiente para el ícono */
+  cursor: pointer;
+}
+
+.tipocalle-select:hover {
+  border: 2px solid lightgrey;
+  box-shadow: 0px 0px 20px -17px;
+}
+
+.tipocalle-select:active {
+  transform: scale(0.95);
+}
+
+.tipocalle-select:focus {
+  border: 2px solid rgb(187, 14, 202);
 }
