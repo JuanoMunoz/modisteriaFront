@@ -12,5 +12,5 @@ export default function useActiveUserInfo(id) {
       });
   }, []);
 
-  return { userData };
+  return { userData,setUserData };
 }

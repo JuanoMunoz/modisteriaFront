@@ -15,20 +15,23 @@ import useActiveUserInfo from "../../hooks/useActiveUserInfo";
 export default function Venta() {
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
+  const [elegirPago, setElegirPago] = useState(false);
   const { cartData, subtotal } = useCart();
   const navigate = useNavigate();
   const [address, setAddress] = useState(false);
-  const [domicilio, setDomicilio] = useState(15000);
   const [lugarEntrega, setLugarEntrega] = useState("");
   const [loading, setLoading] = useState(false);
-  const { userData } = useActiveUserInfo(payload?.id);
+  const { userData, setUserData } = useActiveUserInfo(payload?.id);
+  const [domicilio, setDomicilio] = useState();
   const handleChangeAddress = (e) => {
     setLugarEntrega(e.target.value);
   };
   const addressToggle = () => {
     setAddress(!address);
   };
-  console.log(userData?.direccion);
+  console.log(lugarEntrega);
+
+  const initialDomicilio = userData?.direccion ? 15000 : null;
   const handleAddressSubmit = async (data) => {
     setLoading(true);
     setAddress(false);
@@ -42,10 +45,15 @@ export default function Venta() {
         toast.success("Dirección agregada con éxito! ", {
           autoClose: 800,
           toastId: "direccion-ok",
-          onClose: () => {
-            navigate("/venta");
-          },
         });
+        axios
+          .get(
+            `https://modisteria-back-production.up.railway.app/api/usuarios/getUserById/${payload?.id}`
+          )
+          .then((res) => {
+            setUserData(res.data);
+            setDomicilio(15000);
+          });
       })
       .catch(() => {
         toast.error("Error al añadir dirección! ", {
@@ -58,9 +66,17 @@ export default function Venta() {
       });
   };
   useEffect(() => {
+    if (userData?.direccion) {
+      setDomicilio(15000);
+    } else {
+      setDomicilio(null);
+    }
+  }, [userData]);
+
+  useEffect(() => {
     if (lugarEntrega === "domicilio") return setTotal(subtotal + domicilio);
     setTotal(subtotal);
-  }, [lugarEntrega, subtotal]);
+  }, [lugarEntrega, subtotal, domicilio]);
   const [total, setTotal] = useState(null);
 
   const {
@@ -72,12 +88,20 @@ export default function Venta() {
     (!token || cartData.length == 0) && navigate("/");
   }, [token, cartData, navigate]);
 
+  const handlePassPayMethod = () => {
+    if (lugarEntrega === "domicilio" && !userData?.direccion) {
+      setAddress(true);
+      return;
+    }
+    if (lugarEntrega !== "domicilio" && lugarEntrega !== "modisteria") return;
+    setElegirPago(true);
+  };
   return (
     <>
       <Metadata title={"Venta - Modisteria Doña Luz"}></Metadata>
       {loading && <Loading></Loading>}
       <section className="venta-section">
-        <article className="recogida">
+        <article className={`recogida ${elegirPago ? "" : "activo"}`}>
           <h2>Elige la forma de entrega</h2>
           <label className="card-option">
             <div className="choice">
@@ -129,7 +153,9 @@ export default function Venta() {
               <span>Sin costo</span>
             </div>
           </label>
-          <button className="boton-continuar">Continuar</button>
+          <button onClick={handlePassPayMethod} className="boton-continuar">
+            Continuar
+          </button>
         </article>
         <article className="ficha-tecnica">
           <div>
