@@ -91,6 +91,15 @@ export default function Venta() {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const {
+    register: registerForm2,
+    handleSubmit: handleSubmitForm2,
+    formState: { errors: errorsForm2 },
+  } = useForm();
+
+  const handleTransferencia = (data) => {
+    console.log(data);
+  };
   useEffect(() => {
     (!token || cartData.length == 0) && navigate("/");
   }, [token, cartData, navigate]);
@@ -108,7 +117,7 @@ export default function Venta() {
       <Metadata title={"Venta - Modisteria Doña Luz"}></Metadata>
       {loading && <Loading></Loading>}
       <section className="venta-section">
-        {/* <article className={`recogida ${elegirPago ? "" : "activo"}`}>
+        <article className={`recogida ${elegirPago ? "" : "activo"}`}>
           <h2>Elige la forma de entrega</h2>
           <label className="card-option">
             <div className="choice">
@@ -163,7 +172,7 @@ export default function Venta() {
           <button onClick={handlePassPayMethod} className="boton-continuar">
             Continuar
           </button>
-        </article> */}
+        </article>
         <article className={`recogida ${elegirPago ? "" : "activo"}`}>
           <h2>Elige la forma de pago</h2>
           <label className="card-option">
@@ -238,7 +247,7 @@ export default function Venta() {
               <div key={value.itemId} className="ficha-producto">
                 <div>
                   {value.producto}{" "}
-                  <span className="talla-producto">{value.talla}</span>
+                  <span className="talla-producto">{value.size}</span>
                 </div>
                 <span>x{value.cantidad}</span>
               </div>
@@ -346,21 +355,43 @@ export default function Venta() {
         </form>
       </Modal>
       <Modal onClose={qrToggle} show={showFullQr}>
-        <div className="modal-qr">
+        <form
+          onSubmit={handleSubmitForm2(handleTransferencia)}
+          className="modal-qr"
+        >
           <img
             src="https://static.vecteezy.com/system/resources/previews/013/722/213/non_2x/sample-qr-code-icon-png.png"
             alt="qr"
             title="Qr Doña Luz"
           />
           <div>
-            <Input placeholder={"Nro. Comprobante"}></Input>
+            <Input
+              {...registerForm2("nroComprobante", {
+                required: true,
+                maxLength: 10,
+                minLength: 10,
+              })}
+              placeholder={"Nro. Comprobante"}
+              error={errorsForm2.nroComprobante}
+            ></Input>
 
-            <Input placeholder={"Valor enviado"}></Input>
+            <Input
+              {...registerForm2("valorEnviado", {
+                required: true,
+                validate: (value) => value == total,
+              })}
+              placeholder={"Valor enviado"}
+              error={errorsForm2.valorEnviado}
+            ></Input>
+            {errorsForm2.valorEnviado &&
+              toast.error(
+                "El valor enviado debe ser igual al total de la venta!"
+              )}
           </div>
           <button type="submit" className="agregar-direccion">
             Enviar Comprobante
           </button>
-        </div>
+        </form>
       </Modal>
       <ToastContainer></ToastContainer>
     </>
