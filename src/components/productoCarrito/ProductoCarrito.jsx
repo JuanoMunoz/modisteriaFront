@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import { Trash } from "../svg/Svg";
 import { useCart } from "../../context/CartContext";
 export default function ProductoCarrito({ data }) {
-  const [cantidad, setCantidad] = useState(1);
-  const { removeItem, updateQuantity } = useCart();
+  const { removeItem, updateQuantity, cartData } = useCart();
+  const [cantidad, setCantidad] = useState(data.cantidad);
   const handleMinusOne = () => {
     if (cantidad == 1) return;
     setCantidad(cantidad - 1);
   };
+  useEffect(() => {
+    setCantidad(data.cantidad);
+  }, [data.cantidad]);
   useEffect(() => {
     updateQuantity(data, cantidad);
   }, [cantidad]);
