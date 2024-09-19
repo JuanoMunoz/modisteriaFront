@@ -12,7 +12,7 @@ import {
   NewChat,
   ArrowDown,
 } from "../../components/svg/Svg";
-import Maniqui from "/maniqui.jpg";
+import citasImg from "/citas.jfif";
 export default function Citas() {
   const { token } = useJwt();
   const {
@@ -118,7 +118,7 @@ export default function Citas() {
         </div>
         {historial.length <= 6 ? (
           <div ref={emptyChat} className="empty-chat">
-            <img className="img-empty-chat" src={Maniqui} alt="" />
+            <img className="img-empty-chat" src={citasImg} alt="" />
             <div className="bg-overlay"></div>
             <div className="text-empty-chat">
               <span>ENVÍA UN MENSAJE PARA COMENZAR!</span>

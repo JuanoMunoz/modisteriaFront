@@ -107,6 +107,7 @@ export default function Venta() {
     <>
       <Metadata title={"Venta - Modisteria Doña Luz"}></Metadata>
       {loading && <Loading></Loading>}
+      <br /><br />
       <section className="venta-section">
         {/* <article className={`recogida ${elegirPago ? "" : "activo"}`}>
           <h2>Elige la forma de entrega</h2>
