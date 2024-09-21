@@ -1,0 +1,348 @@
+.miPerfil{
+    display: flex;
+    justify-content: center;
+}
+.contenedorPerfil{
+    display: flex;
+    gap:40px;
+}
+
+.titulo{
+    margin-bottom: 30px;
+}
+
+.titulo h1{
+    font-weight: bold;
+    font-size: 55px;
+}
+.titulo hr{
+    width: 130px;
+    background-color: rgb(187, 14, 202);
+    height: 5px;
+    position: relative;
+    bottom: 35px;
+    right: 50px;
+}
+
+.info1{
+    color: white;
+    background-color: black;
+    text-align: start;
+    padding: 20px;
+    width: 300px;
+    height: 230px;
+    border-radius: 10px;
+}
+.fotoPerfil{
+    width: 100px;
+    border-radius: 50%;
+    margin-bottom: 12px;
+    border: 3px solid rgb(187, 14, 202);
+}
+.imgNombre{
+    text-align: center;
+    margin-bottom: 20px;
+}
+.imgNombre span{
+    font-size: 18px;
+    font-weight: bolder;
+}
+.subtitulo{
+    font-weight: bold;
+    font-size: 17px;
+    margin-left: 30px;
+}
+
+.encabezado{
+    display: flex;
+    justify-content:space-around;
+}
+
+.infoGeneral{
+    width: 700px;
+    background-color: rgb(241, 237, 237);
+    color: black;
+    padding: 20px;
+    text-align: start;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+
+}
+.infoGeneral span{
+    font-size: 25px;
+    font-weight: bold;
+    margin-left: 20px;
+}
+.infoGeneral table{
+    margin-top: 20px;
+    height: 180px;
+    border-spacing: 60px 20px;
+    text-align: start;
+    border: 1px solid rgba(0, 0, 0, 0.199);
+}
+/*BOTON EDITAR*/
+.editInfo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgb(20, 20, 20);
+    border: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+    cursor: pointer;
+    transition-duration: 0.3s;
+    transition: 0.3s;
+    overflow: hidden;
+    position: relative;
+    text-decoration: none !important;
+    font-size: 10px;
+}
+
+.edit-svgIcon {
+    width: 17px;
+    transition-duration: 0.3s;
+}
+
+.edit-svgIcon path {
+    fill: white;
+}
+
+.editInfo:hover {
+    width: 120px;
+    border-radius: 50px;
+    transition-duration: 0.3s;
+    background-color: rgb(187, 14, 202);
+    align-items: center;
+}
+
+.editInfo:hover .edit-svgIcon {
+    width: 20px;
+    transition-duration: 0.3s;
+    transform: translateY(60%);
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    transform: rotate(360deg);
+}
+
+.editInfo::before {
+    display: none;
+    content: "Editar";
+    color: white;
+    transition-duration: 0.3s;
+    font-size: 2px;
+}
+
+.editInfo:hover::before {
+    display: block;
+    padding-right: 10px;
+    font-size: 13px;
+    opacity: 1;
+    transform: translateY(0px);
+    transition-duration: 0.3s;
+}
+
+.misCitas{
+    margin-top: 20px;
+    background-color: black;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: start;
+}
+
+.subtituloCitas{
+    font-size: 25px;
+    font-weight: bold;
+    margin-left: 100px;
+}
+
+.cartasCitas{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 40px;
+    text-align: start;
+}
+
+/*CARTA*/
+.carta {
+    --primary-clr: #ffffff;
+    --dot-clr: rgb(187, 14, 202);
+    --play: rgb(187, 14, 202);
+    width: 200px;
+    height: 170px;
+    border-radius: 10px;
+}
+    
+.carta {
+    font-family: "Arial";
+    color: black;
+    display: grid;
+    cursor: pointer;
+    grid-template-rows: 50px 1fr;
+    margin-bottom: 100px;
+    font-weight: bold;
+}
+
+.carta:hover .img-section {
+    transform: translateY(1em);
+}
+
+.carta-desc {
+    border-radius: 10px;
+    padding: 15px;
+    position: relative;
+    top: -10px;
+    display: grid;
+    gap: 10px;
+    background: var(--primary-clr);
+}
+
+.carta-time {
+    font-size: 1.6em;
+    font-weight: bold;
+}
+
+.carta-time span {
+    font-size: 15px;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.562);
+}
+
+.carta-time p{
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.img-section {
+    transition: 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    background: rgb(187, 14, 202);
+}
+
+.carta-header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.carta-title {
+    flex: 1;
+    font-size: 1em;
+    font-weight: 500;
+}
+
+.carta-title span{
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.486);
+}
+
+.carta-menu {
+    display: flex;
+    gap: 4px;
+    margin-inline: auto;
+    background-color: white;
+}
+
+.carta svg {
+    float: right;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.carta .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: black;
+}
+
+.carta .recent {
+    line-height: 0;
+    font-size: 0.8em;
+}
+
+.modal-header span{
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/*BOTON MODAL CANCELAR CITA*/
+.btnCancelarCita {
+    outline: none;
+    cursor: pointer;
+    border: none;
+    padding: 0.9rem 2rem;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    position: relative;
+    display: inline-block;
+    letter-spacing: 0.05rem;
+    font-weight: 700;
+    font-size: 17px;
+    border-radius: 500px;
+    overflow: hidden;
+    color: ghostwhite;
+    margin-top: 30px;
+    background-color: rgb(187, 14, 202);
+}
+
+.btnCancelarCita span {
+    position: relative;
+    z-index: 10;
+    transition: color 0.4s;
+    color: white;
+    font-size: 20px;
+}
+
+.btnCancelarCita:hover span {
+    color: rgb(255, 255, 255);
+}
+
+.btnCancelarCita::before,
+.btnCancelarCita::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.btnCancelarCita::before {
+    content: "";
+    background: #000;
+    width: 120%;
+    left: -10%;
+    transform: skew(30deg);
+    transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+}
+
+.btnCancelarCita:hover::before {
+    transform: translate3d(100%, 0, 0);
+}
+
+.modalConfirmar .btnCancelarCita{
+    margin-left: 20px;
+}
+
+.subtituloEditar{
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.bodyCambiarPassword span{
+    font-size: 15px;
+}
+.modalCambiarPassword span{
+    margin: 0px;
+}
+.modalActualizar span{
+    margin: 0px;
+}

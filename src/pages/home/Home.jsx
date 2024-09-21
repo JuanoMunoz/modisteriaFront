@@ -6,6 +6,42 @@ import { ToastContainer } from "react-toastify";
 export default function Home() {
   const [postIndex, setPostIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+
+  // Carrusel para la Sesión activa
+  const postsSesion = [
+    {
+      title:
+        "Bienvenido (Nombre del usuario). Nos alegra tenerte por acá, si deseas consultar tu perfil, puedes ir al apartado de mi perfil. ",
+      img: "https://i.pinimg.com/1200x/88/8b/9e/888b9e3daa7ff9f5e117f4757bf3d9a5.jpg",
+      published: "Modisteria D.L",
+      linkText: "Ir a mi Perfil",
+      tag: "Perfil",
+      type: "article",
+      link: "/perfil",
+    },
+    {
+      title:
+        "Si necesitas alguna prenda personalizada o un asesoramiento mas detallado, puedes agendar una cita con un asesor virtual exclusivamente para ti",
+      img: "https://i.pinimg.com/1200x/a8/30/95/a83095a92ff7b02b123ce68fc76ee749.jpg",
+      tag: "Citas",
+      published: "Modisteria D.L",
+      linkText: "Agendar Cita",
+      type: "article",
+      link: "/cita",
+    },
+    {
+      title:
+        "Si deseas ver una muestra de nuestros servicios, puedes ver las prendas disponibles en nuestro catálogo",
+      img: "https://i.pinimg.com/1200x/55/7f/34/557f3472cc354a2387040322b6d2e5f2.jpg",
+      tag: "Catálogo",
+      published: "Modisteria D.L",
+      linkText: "Catálogo",
+      type: "article",
+      link: "/catalogo",
+    },
+  ];
+
+  //Carrusel para cuando no hay Sesión
   const posts = [
     {
       title:
