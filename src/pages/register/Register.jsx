@@ -10,11 +10,19 @@ import constants from "../../assets/constants.d";
 import axios from "axios";
 import Loading from "../../components/loading/Loading";
 import { useNavigate } from "react-router-dom";
+import Modal from "../../components/modal/Modal";
+import OTP from "../../components/input_otp/Otp";
 import { useJwt } from "../../context/JWTContext";
 export default function Register() {
   // REACT HOOK FORM
   const { register, handleSubmit, watch, setFocus } = useForm();
   const [loading, setLoading] = useState(false);
+  const [registerData, setRegisterData] = useState(null);
+  const [showVerifyEmail, setShowVerifyEmail] = useState(false);
+  const [otpCode, setOtpCode] = useState(null);
+  const toggleModalVerifyEmail = () => {
+    setShowVerifyEmail(!showVerifyEmail);
+  };
   const navigate = useNavigate();
   //PONER EL FOCO AL INICIAR LA PÁGINA AL NOMBRE
   useEffect(() => {
@@ -26,6 +34,43 @@ export default function Register() {
     token && navigate("/");
   }, [token]);
 
+  const onChangeOTP = (otpArray) => {
+    setOtpCode(otpArray.join(""));
+  };
+  const handleVerifyMailCode = async () => {
+    if (otpCode.length !== 6) return;
+    axios
+      .post(
+        "https://modisteria-back-production.up.railway.app/api/usuarios/verifyUser",
+        {
+          nombre: registerData.nombre,
+          codigo: parseInt(otpCode),
+          email: registerData.correo,
+          telefono: registerData.telefono,
+          password: registerData.contrasenia,
+          roleId: 1,
+        }
+      )
+      .then((response) => {
+        toggleModalVerifyEmail();
+        toast.success(`${response.data.msg}`, {
+          position: "top-right",
+          toastId: "success-toast-fetch-register",
+          autoClose: 800,
+          onClose: () => {
+            navigate("/");
+          },
+        });
+      })
+
+      .catch((error) => {
+        toast.error(`${error.response.data.msg}!`, {
+          position: "top-right",
+          toastId: "error-toast-fetch-register",
+          autoClose: 1000,
+        });
+      });
+  };
   // MANEJO DEL ENVÍO FORMULARIO
   const onSubmit = async (data) => {
     console.log(data);
@@ -34,22 +79,19 @@ export default function Register() {
       .post(
         "https://modisteria-back-production.up.railway.app/api/usuarios/createUser",
         {
-          nombre: data.nombre,
           email: data.correo,
-          telefono: data.telefono,
-          password: data.contrasenia,
-          roleId: 1,
         }
       )
       .then((response) => {
         toast.success(`${response.data.msg}`, {
           position: "top-right",
           toastId: "success-toast-fetch-register",
-          autoClose: 1000,
-          onClose: setTimeout(() => {
-            navigate("/sesion");
-          }, 1000),
+          autoClose: 800,
+          onClose: () => {
+            toggleModalVerifyEmail();
+          },
         });
+        setRegisterData(data);
       })
 
       .catch((error) => {
@@ -159,6 +201,21 @@ export default function Register() {
           </form>
         </div>
       </div>
+      <Modal
+        show={showVerifyEmail}
+        onClose={toggleModalVerifyEmail}
+        className="modalPass"
+      >
+        <h2>Ingresa el Código</h2>
+        <div className="inputModal">
+          <OTP numInputs={6} onChange={onChangeOTP}></OTP>
+          <div>Revisa la bandeja de entrada de tu correo</div>
+        </div>
+
+        <button className="btn-registroSesion" onClick={handleVerifyMailCode}>
+          <span>Verificar Código</span>
+        </button>
+      </Modal>
       <ToastContainer></ToastContainer>
     </>
   );
