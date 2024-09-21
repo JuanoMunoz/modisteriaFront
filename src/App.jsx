@@ -9,6 +9,7 @@ import Estadisticas from "./pages/estadisticas/Estadisticas";
 import InicioSesion from "./pages/sesion/Sesion";
 import Catalogo from "./pages/catalogo/Catalogo";
 import Citas from "./pages/Citas/Citas";
+import Perfil from "./pages/perfil/Perfil";
 import { useJwt } from "./context/JWTContext";
 import Venta from "./pages/venta/Venta";
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="/cita" element={<Citas />}></Route>
           <Route path="/catalogo" element={<Catalogo />}></Route>
           <Route path="/venta" element={<Venta />}></Route>
+          <Route path="/perfil" element={<Perfil />}></Route>
         </Route>
         <Route path="/dashboard" element={<LayoutDashboard />}>
           <Route index element={<Estadisticas />}></Route>

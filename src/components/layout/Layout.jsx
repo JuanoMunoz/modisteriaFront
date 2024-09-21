@@ -78,7 +78,7 @@ export default function Layout() {
               <>
                 {" "}
                 <li className="navItem">
-                  <Link title="Perfil" to={"/"}>
+                  <Link title="Perfil" to={"/perfil"}>
                     {payload.nombre}
                   </Link>
                 </li>
