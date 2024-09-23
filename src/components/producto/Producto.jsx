@@ -3,10 +3,17 @@ import { useState, useEffect } from "react";
 import { Cart, Info } from "../../components/svg/Svg";
 import Modal from "../../components/modal/Modal";
 import { useCart } from "../../context/CartContext";
-import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
-
+import useDecodedJwt from "../../hooks/useJwt";
+import axios from "axios";
+import { useJwt } from "../../context/JWTContext";
+import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 export default function Product({ data, isLoading }) {
+  const { token } = useJwt();
+  const payload = useDecodedJwt(token);
+  const navigate = useNavigate();
+
   const [showModal, setShowModal] = useState(false);
   const { addItem, cartData, updateItem } = useCart();
   const [cantidad, setCantidad] = useState(1);
@@ -21,6 +28,7 @@ export default function Product({ data, isLoading }) {
   const toggleModal = () => {
     setShowModal(!showModal);
   };
+
   const handleMinusOne = () => {
     if (cantidad == 1) return;
     setCantidad(cantidad - 1);
@@ -31,7 +39,7 @@ export default function Product({ data, isLoading }) {
   const handleSetSize = (value) => {
     setSize(value);
   };
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!size) {
       if (listRef.current) {
         const buttons = listRef.current.querySelectorAll(".item-list-button");
@@ -62,22 +70,87 @@ export default function Product({ data, isLoading }) {
       });
       return;
     }
+    if (!token) {
+      toast.error("Inicia sesión para agregar al carrito!", {
+        autoClose: 1000,
+        toastId: "item-add",
+        onClose: () => {
+          navigate("/sesion");
+        },
+      });
+      return;
+    }
     const carritoData = {
-      itemId: uuidv4(),
-      ...data,
-      cantidad,
-      finalPrice,
-      size,
+      idPedido: uuidv4(),
+      catalogoId: data.id,
+      talla: size,
+      precioFinal: finalPrice,
+      cantidad: cantidad,
+      catalogo: {
+        producto: data.producto,
+        imagen: data.imagen,
+        precio: data.precio,
+      },
+      usuarioId: payload?.id,
     };
-    cartData.some(
-      (value) => value.id === carritoData.id && value.size === carritoData.size
-    )
-      ? updateItem(carritoData)
-      : addItem(carritoData);
-    toast.success("Item agregado con éxito! 😊", {
-      autoClose: 222,
-      toastId: "item-add",
-    });
+    const itemExistsOnCart = cartData.find(
+      (value) =>
+        value.catalogoId === carritoData.catalogoId &&
+        value.talla === carritoData.talla
+    );
+
+    itemExistsOnCart !== undefined
+      ? axios
+          .put(
+            `https://modisteria-back-production.up.railway.app/api/pedidos/updatePedido/${itemExistsOnCart.idPedido}`,
+            {
+              cantidad: itemExistsOnCart.cantidad + carritoData.cantidad,
+              precioFinal:
+                itemExistsOnCart.precioFinal + carritoData.precioFinal,
+            }
+          )
+          .then(() => {
+            const precioFinalUpdate =
+              itemExistsOnCart.precioFinal + carritoData.precioFinal;
+            const cantidadFinalUpdate =
+              itemExistsOnCart.cantidad + carritoData.cantidad;
+            updateItem(
+              {
+                ...itemExistsOnCart,
+                precioFinal: precioFinalUpdate,
+                cantidad: cantidadFinalUpdate,
+              },
+              itemExistsOnCart.id
+            ),
+              toast.success("Item actualizado con éxito! 😊", {
+                autoClose: 222,
+                toastId: "updateItem",
+              });
+          })
+          .catch((msg) => {
+            toast.error(msg, {
+              autoClose: 222,
+              toastId: "item-add-error",
+              to,
+            });
+          })
+      : axios
+          .post(
+            "https://modisteria-back-production.up.railway.app/api/pedidos/createPedido",
+            carritoData
+          )
+          .then(() => {
+            addItem(carritoData),
+              toast.success("Item agregado con éxito! 😊", {
+                autoClose: 222,
+              });
+          })
+          .catch((msg) => {
+            toast.error(msg, {
+              autoClose: 222,
+              toastId: "item-add-error",
+            });
+          });
   };
   useEffect(() => {
     setFinalPrice(initialPrice * cantidad);

@@ -23,6 +23,7 @@
   height: 100%;
   width: 60%;
   color: black;
+  display: none;
 }
 
 .card-option {
@@ -299,4 +300,8 @@ input[type="radio"]:hover {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.recogida.activo {
+  display: block;
 }

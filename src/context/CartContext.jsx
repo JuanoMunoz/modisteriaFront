@@ -1,5 +1,8 @@
 import { createContext, useContext, useState, useEffect } from "react";
-
+import axios from "axios";
+import { useJwt } from "./JWTContext";
+import useDecodedJwt from "../hooks/useJwt";
+import { json } from "react-router-dom";
 const CartContext = createContext();
 
 export function useCart() {
@@ -7,9 +10,9 @@ export function useCart() {
 }
 
 export default function CartProvider({ children }) {
-  const [cartData, setCartData] = useState(
-    JSON.parse(localStorage.getItem("carrito")) || []
-  );
+  const { token } = useJwt();
+  const payload = useDecodedJwt(token);
+  const [cartData, setCartData] = useState([]);
   const [subtotal, setSubtotal] = useState(0);
   const addItem = (data) => {
     setCartData((prev) => {
@@ -17,43 +20,35 @@ export default function CartProvider({ children }) {
     });
   };
   useEffect(() => {
+    axios
+      .get(
+        `https://modisteria-back-production.up.railway.app/api/pedidos/getPedidoById/${payload?.id}`
+      )
+      .then((res) => {
+        setCartData(res.data);
+      });
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem("carrito", JSON.stringify(cartData));
     setSubtotal(getSubtotal());
   }, [cartData]);
   const getSubtotal = () => {
-    return cartData.reduce((a, b) => a + b.finalPrice, 0);
+    return cartData.reduce((a, b) => a + b.precioFinal, 0);
   };
-  const updateQuantity = (data, cantidad) => {
-    const indexUpdate = cartData.findIndex(
-      (value) => data.itemId === value.itemId
-    );
+  const updateItem = (carritoData, id) => {
+    const indexUpdate = cartData.findIndex((data) => data.id === id);
     setCartData((prev) => {
       const newCartData = [...prev];
-      newCartData[indexUpdate] = {
-        ...newCartData[indexUpdate],
-        finalPrice: newCartData[indexUpdate].precio * cantidad,
-        cantidad: cantidad,
-      };
+      newCartData[indexUpdate] = carritoData;
       return newCartData;
     });
   };
-  const updateItem = (carritoData) => {
-    const indexUpdate = cartData.findIndex(
-      (data) => data.id === carritoData.id && data.size === carritoData.size
+  const removeItem = (idPedido) => {
+    setCartData((prev) => prev.filter((value) => value.idPedido !== idPedido));
+    axios.delete(
+      `https://modisteria-back-production.up.railway.app/api/pedidos/deletePedido/${idPedido}`
     );
-    setCartData((prev) => {
-      const newCartData = [...prev];
-      newCartData[indexUpdate] = {
-        ...newCartData[indexUpdate],
-        finalPrice:
-          newCartData[indexUpdate].finalPrice + carritoData.finalPrice,
-        cantidad: newCartData[indexUpdate].cantidad + carritoData.cantidad,
-      };
-      return newCartData;
-    });
-  };
-  const removeItem = (itemId) => {
-    setCartData((prev) => prev.filter((value) => value.itemId !== itemId));
   };
   return (
     <CartContext.Provider
@@ -63,7 +58,6 @@ export default function CartProvider({ children }) {
         removeItem,
         updateItem,
         subtotal,
-        updateQuantity,
       }}
     >
       {children}

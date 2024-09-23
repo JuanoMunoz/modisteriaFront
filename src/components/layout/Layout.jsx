@@ -119,7 +119,7 @@ export default function Layout() {
           </div>
           <div className="contenedorCarrito">
             {cartData.map((data) => (
-              <ProductoCarrito key={data.itemId} data={data} />
+              <ProductoCarrito key={data.idPedido} data={data} />
             ))}
           </div>
 

@@ -116,7 +116,8 @@ export default function Venta() {
     <>
       <Metadata title={"Venta - Modisteria Doña Luz"}></Metadata>
       {loading && <Loading></Loading>}
-      <br /><br />
+      <br />
+      <br />
       <section className="venta-section">
         <article className={`recogida ${elegirPago ? "" : "activo"}`}>
           <h2>Elige la forma de entrega</h2>
@@ -174,7 +175,7 @@ export default function Venta() {
             Continuar
           </button>
         </article>
-        <article className={`recogida ${elegirPago ? "" : "activo"}`}>
+        <article className={`recogida ${elegirPago ? "activo" : ""}`}>
           <h2>Elige la forma de pago</h2>
           <label className="card-option">
             <div className="choice">
@@ -245,10 +246,10 @@ export default function Venta() {
           </div>
           <div className="ficha-productos">
             {cartData.map((value) => (
-              <div key={value.itemId} className="ficha-producto">
+              <div key={value.idPedido} className="ficha-producto">
                 <div>
-                  {value.producto}{" "}
-                  <span className="talla-producto">{value.size}</span>
+                  {value?.catalogo.producto}{" "}
+                  <span className="talla-producto">{value.talla}</span>
                 </div>
                 <span>x{value.cantidad}</span>
               </div>
