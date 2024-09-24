@@ -17,6 +17,9 @@ import Input from "../../components/input_basico/Input";
 import useDecodedJwt from "../../hooks/useJwt";
 import { useJwt } from "../../context/JWTContext";
 import { Navigate } from "react-router-dom";
+import useFetch from "../../hooks/useFetch";
+import Loading from "../../components/loading/Loading";
+import { useForm } from "react-hook-form";
 
 export default function Perfil() {
   const { token } = useJwt();
@@ -47,7 +50,15 @@ export default function Perfil() {
   const toggleModal5 = () => {
     setShowModal5(!showModal5);
   };
+  const handleFirstPasswordSubmit = (data) => {
+    a;
+  };
 
+  const {
+    handleSubmit: handlePasswordSubmit,
+    register: registerPasswords,
+    formState: { errors: errorsPassword },
+  } = useForm();
   return (
     <>
       <Metadata title={"Perfil - Modistería Doña Luz"}></Metadata>
@@ -137,24 +148,34 @@ export default function Perfil() {
                 </tr>
 
                 <Modal show={showModal4} onClose={toggleModal4}>
-                  <div className="modalCambiarPassword">
+                  <form
+                    onSubmit={handlePasswordSubmit(handleFirstPasswordSubmit)}
+                    className="modalCambiarPassword"
+                  >
                     <span>Validar Contraseña</span>
                     <div className="bodyCambiarPassword">
                       <span>Ingresa tu contraseña actual</span>
                       <Input
+                        {...registerPasswords("contraseniaActual", {
+                          minLength: 8,
+                          required: true,
+                        })}
                         type={"password"}
                         placeholder={"Contraseña actual"}
                         canHidden
+                        description={
+                          errorsPassword.contraseniaActual &&
+                          "Mínimo 8 caracteres"
+                        }
+                        color={"#f00"}
+                        error={errorsPassword.contraseniaActual}
                       ></Input>
 
-                      <button
-                        className="btnCancelarCita"
-                        onClick={toggleModal5}
-                      >
+                      <button className="btnCancelarCita" type="submit">
                         <span>Validar</span>
                       </button>
                     </div>
-                  </div>
+                  </form>
                 </Modal>
 
                 <Modal show={showModal5} onClose={toggleModal5}>
@@ -185,19 +206,20 @@ export default function Perfil() {
                 <Input
                   type={"text"}
                   placeholder={"Nombre"}
-                  value={"Cristian Vélez Bolivar"}
+                  value={payload?.nombre}
                 ></Input>
 
                 <Input
                   type={"text"}
                   placeholder={"Telefono"}
-                  value={"3245397230"}
+                  value={payload?.telefono}
                 ></Input>
 
                 <Input
+                  onlyRead
                   type={"text"}
                   placeholder={"Correo"}
-                  value={"cristianvelez308@gmail.com"}
+                  value={payload?.email}
                 ></Input>
 
                 <button className="btnCancelarCita">

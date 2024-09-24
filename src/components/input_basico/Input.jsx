@@ -13,6 +13,7 @@ const Input = forwardRef(
       canHidden,
       width,
       color,
+      onlyRead,
       ...props
     },
     ref
@@ -31,6 +32,7 @@ const Input = forwardRef(
             placeholder={placeholder}
             style={{ width: width ? width : "" }}
             ref={ref}
+            readOnly={onlyRead}
             {...props}
           />
           <br />

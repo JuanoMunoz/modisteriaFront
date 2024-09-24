@@ -49,6 +49,7 @@ export default function Register() {
           telefono: registerData.telefono,
           password: registerData.contrasenia,
           roleId: 1,
+          estadoId: 1,
         }
       )
       .then((response) => {
@@ -58,7 +59,7 @@ export default function Register() {
           toastId: "success-toast-fetch-register",
           autoClose: 800,
           onClose: () => {
-            navigate("/");
+            navigate("/sesion");
           },
         });
       })
