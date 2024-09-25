@@ -13,9 +13,11 @@ import Loading from "../../components/loading/Loading";
 import useModals from "../../hooks/useSessionModals";
 import { useJwt } from "../../context/JWTContext";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
 export default function InicioSesion() {
   const { token, saveToken } = useJwt();
   const navigate = useNavigate();
+  const { fetchCartData } = useCart();
   useEffect(() => {
     token && navigate("/");
   }, [token]);
@@ -77,6 +79,7 @@ export default function InicioSesion() {
           autoClose: 1000,
           onClose: () => {
             navigate("/");
+            fetchCartData();
           },
         });
         saveToken(response.data.token);

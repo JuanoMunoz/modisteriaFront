@@ -11,11 +11,13 @@ import useFetch from "../../hooks/useFetch";
 export default function Catalogo() {
   const [page, setPage] = useState(1);
   const [catalogoData, setCatalogoData] = useState(null);
+  const [categoria, setCategoria] = useState(null);
   const [filterPrice, setFilterPrice] = useState(250000);
   const { debouncedValue } = useDebounce(filterPrice, 1000);
   const { fetchCatalagoData, isLoading, numberOfPages } = useCatalogoData(
     page,
-    debouncedValue
+    debouncedValue,
+    categoria
   );
   const handlePreviousPage = () => {
     if (page == 1) return;
@@ -40,7 +42,9 @@ export default function Catalogo() {
     };
     fetchData();
   }, []);
-
+  const handleCategoryChange = (e) => {
+    setCategoria(e.target.value);
+  };
   return (
     <>
       <Metadata title={"Catálogo - Modistería Doña Luz"}></Metadata>
@@ -66,11 +70,11 @@ export default function Catalogo() {
             {catalogoData &&
               catalogoData.map((value) => (
                 <div key={value.id}>
-                  <label className="categoria-option" htmlFor="radio1">
+                  <label className="categoria-option">
                     <input
                       type="radio"
                       value={value.id}
-                      id="radio1"
+                      onChange={handleCategoryChange}
                       name="categoria"
                     />
                     <span>{value.nombre}</span>

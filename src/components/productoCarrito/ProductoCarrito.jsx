@@ -5,9 +5,14 @@ import { toast } from "react-toastify";
 import useDebounce from "../../hooks/useDebounce";
 import axios from "axios";
 import useIsFirstRender from "../../hooks/useIsMount";
-export default function ProductoCarrito({ data }) {
-  const { removeItem, updateItem } = useCart();
-  const { debouncedValue } = useDebounce(data.cantidad, 3000);
+import { useJwt } from "../../context/JWTContext";
+export default function ProductoCarrito({ data, changeSubtotal }) {
+  const { token } = useJwt();
+  const { removeItem } = useCart();
+  const [cantidad, setCantidad] = useState(data.cantidad);
+  const [precioInicial, setPrecioInicial] = useState(data.catalogo.precio);
+  const [precioFinal, setPrecioFinal] = useState(data.precioFinal);
+  const { debouncedValue } = useDebounce(cantidad, 2000);
   const isFirstRender = useIsFirstRender();
   useEffect(() => {
     if (isFirstRender) return;
@@ -16,8 +21,9 @@ export default function ProductoCarrito({ data }) {
         `https://modisteria-back-production.up.railway.app/api/pedidos/updatePedido/${data.idPedido}`,
         {
           cantidad: debouncedValue,
-          precioFinal: data.catalogo.precio * data.cantidad,
-        }
+          precioFinal: precioFinal,
+        },
+        { headers: { "x-token": token } }
       )
       .then(() => {})
       .catch((msg) => {
@@ -29,24 +35,18 @@ export default function ProductoCarrito({ data }) {
   }, [debouncedValue]);
 
   const handleMinusOne = () => {
-    if (data.cantidad <= 1) return;
-    const newQuantity = data.cantidad - 1;
-    const itemChangeQuantity = {
-      ...data,
-      cantidad: newQuantity,
-      precioFinal: data.catalogo.precio * newQuantity,
-    };
-    updateItem(itemChangeQuantity, data.id);
+    if (cantidad <= 1) return;
+    setCantidad(cantidad - 1);
+    changeSubtotal((prev) => {
+      return prev - precioInicial;
+    });
   };
 
   const handlePlusOne = () => {
-    const newQuantity = data.cantidad + 1;
-    const itemChangeQuantity = {
-      ...data,
-      cantidad: newQuantity,
-      precioFinal: data.catalogo.precio * newQuantity,
-    };
-    updateItem(itemChangeQuantity, data.id);
+    setCantidad(cantidad + 1);
+    changeSubtotal((prev) => {
+      return prev + precioInicial;
+    });
   };
   const handleRemove = () => {
     removeItem(data.idPedido);
@@ -55,6 +55,10 @@ export default function ProductoCarrito({ data }) {
       position: "top-left",
     });
   };
+  useEffect(() => {
+    if (isFirstRender) return;
+    setPrecioFinal(cantidad * precioInicial);
+  }, [precioInicial, cantidad]);
   return (
     <div className="itemCarrito">
       <div className="imgCarrito">
@@ -66,12 +70,12 @@ export default function ProductoCarrito({ data }) {
           {data.talla}
         </span>
       </div>
-      <span>${data.precioFinal}</span>
+      <span>${precioFinal}</span>
       <div className="amount">
         <span onClick={handleMinusOne} className="quantity-button">
           -
         </span>
-        <span>{data.cantidad}</span>
+        <span>{cantidad}</span>
         <span onClick={handlePlusOne} className="quantity-button">
           +
         </span>

@@ -15,7 +15,7 @@ export default function Product({ data, isLoading }) {
   const navigate = useNavigate();
 
   const [showModal, setShowModal] = useState(false);
-  const { addItem, cartData, updateItem } = useCart();
+  const { cartData } = useCart();
   const [cantidad, setCantidad] = useState(1);
   const [title, setTitle] = useState("");
   const [sizes, setSizes] = useState([]);
@@ -28,7 +28,17 @@ export default function Product({ data, isLoading }) {
   const toggleModal = () => {
     setShowModal(!showModal);
   };
-
+  const pedidoAlreadyExists = async (catalogoId, talla) => {
+    try {
+      const response = await axios.get(
+        `https://modisteria-back-production.up.railway.app/api/pedidos/getPedidoById/1?catalogoId=${catalogoId}&talla=${talla}`,
+        { headers: { "x-token": token } }
+      );
+      return response.data;
+    } catch (err) {
+      return err;
+    }
+  };
   const handleMinusOne = () => {
     if (cantidad == 1) return;
     setCantidad(cantidad - 1);
@@ -93,46 +103,28 @@ export default function Product({ data, isLoading }) {
       },
       usuarioId: payload?.id,
     };
-    const itemExistsOnCart = cartData.find(
-      (value) =>
-        value.catalogoId === carritoData.catalogoId &&
-        value.talla === carritoData.talla
-    );
+    const response = await pedidoAlreadyExists(data.id, size);
 
-    itemExistsOnCart !== undefined
+    response.length === 1
       ? axios
           .put(
-            `https://modisteria-back-production.up.railway.app/api/pedidos/updatePedido/${itemExistsOnCart.idPedido}`,
+            `https://modisteria-back-production.up.railway.app/api/pedidos/updatePedido/${response[0].idPedido}`,
             {
-              cantidad: itemExistsOnCart.cantidad + carritoData.cantidad,
-              precioFinal:
-                itemExistsOnCart.precioFinal + carritoData.precioFinal,
+              cantidad: response[0].cantidad + carritoData.cantidad,
+              precioFinal: response[0].precioFinal + carritoData.precioFinal,
             },
             { headers: { "x-token": token } }
           )
           .then(() => {
-            const precioFinalUpdate =
-              itemExistsOnCart.precioFinal + carritoData.precioFinal;
-            const cantidadFinalUpdate =
-              itemExistsOnCart.cantidad + carritoData.cantidad;
-            updateItem(
-              {
-                ...itemExistsOnCart,
-                precioFinal: precioFinalUpdate,
-                cantidad: cantidadFinalUpdate,
-              },
-              itemExistsOnCart.id
-            ),
-              toast.success("Item actualizado con éxito! 😊", {
-                autoClose: 222,
-                toastId: "updateItem",
-              });
+            toast.success("Item actualizado con éxito! 😊", {
+              autoClose: 222,
+              toastId: "updateItem",
+            });
           })
           .catch((msg) => {
             toast.error(msg, {
               autoClose: 222,
               toastId: "item-add-error",
-              to,
             });
           })
       : axios
@@ -142,10 +134,9 @@ export default function Product({ data, isLoading }) {
             { headers: { "x-token": token } }
           )
           .then(() => {
-            addItem(carritoData),
-              toast.success("Item agregado con éxito! 😊", {
-                autoClose: 222,
-              });
+            toast.success("Item agregado con éxito! 😊", {
+              autoClose: 222,
+            });
           })
           .catch((msg) => {
             toast.error(msg, {

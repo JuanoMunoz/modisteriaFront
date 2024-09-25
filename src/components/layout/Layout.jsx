@@ -6,15 +6,24 @@ import Modal from "../modal/Modal";
 import { Logout } from "../svg/Svg";
 import { Outlet, Link, useNavigate, Navigate } from "react-router-dom";
 import { useState } from "react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { Cart } from "../svg/Svg";
 import { useCart } from "../../context/CartContext";
 import ProductoCarrito from "../productoCarrito/ProductoCarrito";
+import { useEffect } from "react";
 export default function Layout() {
   const [cartVisible, setCartVisible] = useState(false);
 
   const { token, cleanToken } = useJwt();
-  const { cartData, subtotal } = useCart();
+  const {
+    cartData,
+    subtotal,
+    emptyData,
+    fetchCartData,
+    setSubtotal,
+    isCartLoading,
+  } = useCart();
+
   const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
   const payload = useDecodedJwt(token);
@@ -24,19 +33,23 @@ export default function Layout() {
   const toggleCart = () => {
     setCartVisible((prev) => !prev);
   };
-
+  useEffect(() => {
+    if (!cartVisible) return;
+    fetchCartData();
+  }, [cartVisible]);
   const handleVenta = () => {
     toggleCart();
     navigate("/venta");
   };
   const logout = () => {
-    cleanToken();
     toogleModal();
     toast.success("sesión cerrada con éxito!", {
       toastId: "closeSession",
       autoClose: 400,
       onClose: () => {
         navigate("/");
+        cleanToken();
+        emptyData();
       },
     });
   };
@@ -118,9 +131,19 @@ export default function Layout() {
             <hr className="separacionCarrito" />
           </div>
           <div className="contenedorCarrito">
-            {cartData.map((data) => (
-              <ProductoCarrito key={data.idPedido} data={data} />
-            ))}
+            {isCartLoading ? (
+              <div className="container-loader">
+                <div className="loaderCart"></div>
+              </div>
+            ) : (
+              cartData.map((data) => (
+                <ProductoCarrito
+                  changeSubtotal={setSubtotal}
+                  key={data.idPedido}
+                  data={data}
+                />
+              ))
+            )}
           </div>
 
           <div className="acciones">

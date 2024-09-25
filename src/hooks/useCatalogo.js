@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-export default function useCatalogoData(page,price) {
+export default function useCatalogoData(page,price,categoria) {
   const [isLoading, setIsLoading] = useState(false);
   const [fetchCatalagoData, setFetchCatalogoData] = useState(null);
   const [numberOfPages, setNumberOfPages] = useState([]);
   useEffect(() => {
+    const url = categoria ?  `https://modisteria-back-production.up.railway.app/api/catalogos/getAllCatalogo?page=${page}&price=${price}&category=${categoria}` :  `https://modisteria-back-production.up.railway.app/api/catalogos/getAllCatalogo?page=${page}&price=${price}`
     const fetchCatalogo = async () => {
       setIsLoading(true);
       fetch(
-        `https://modisteria-back-production.up.railway.app/api/catalogos/getAllCatalogo?page=${page}&price=${price}`
+        url
       )
         .then((res) => res.json())
         .then((data) => {
@@ -24,6 +25,6 @@ export default function useCatalogoData(page,price) {
       behavior: 'smooth'
     }); 
     fetchCatalogo();
-  }, [page,price]);
+  }, [page,price,categoria]);
   return { fetchCatalagoData, isLoading,numberOfPages };
 }

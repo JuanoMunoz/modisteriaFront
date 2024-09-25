@@ -13,13 +13,10 @@ export default function CartProvider({ children }) {
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
   const [cartData, setCartData] = useState([]);
+  const [isCartLoading, setIsCartLoading] = useState(false);
   const [subtotal, setSubtotal] = useState(0);
-  const addItem = (data) => {
-    setCartData((prev) => {
-      return [...prev, data];
-    });
-  };
-  useEffect(() => {
+  const fetchCartData = async () => {
+    setIsCartLoading(true);
     axios
       .get(
         `https://modisteria-back-production.up.railway.app/api/pedidos/getPedidoById/${payload?.id}`,
@@ -27,24 +24,17 @@ export default function CartProvider({ children }) {
       )
       .then((res) => {
         setCartData(res.data);
+        setIsCartLoading(false);
       });
-  }, []);
-
+  };
   useEffect(() => {
-    localStorage.setItem("carrito", JSON.stringify(cartData));
     setSubtotal(getSubtotal());
   }, [cartData]);
   const getSubtotal = () => {
     return cartData.reduce((a, b) => a + b.precioFinal, 0);
   };
-  const updateItem = (carritoData, id) => {
-    const indexUpdate = cartData.findIndex((data) => data.id === id);
-    setCartData((prev) => {
-      const newCartData = [...prev];
-      newCartData[indexUpdate] = carritoData;
-      return newCartData;
-    });
-  };
+  const emptyData = () => setCartData([]);
+
   const removeItem = (idPedido) => {
     setCartData((prev) => prev.filter((value) => value.idPedido !== idPedido));
     axios.delete(
@@ -55,11 +45,13 @@ export default function CartProvider({ children }) {
   return (
     <CartContext.Provider
       value={{
-        addItem,
         cartData,
         removeItem,
-        updateItem,
         subtotal,
+        emptyData,
+        fetchCartData,
+        isCartLoading,
+        setSubtotal,
       }}
     >
       {children}

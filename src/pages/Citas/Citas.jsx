@@ -13,6 +13,7 @@ import {
   ArrowDown,
 } from "../../components/svg/Svg";
 import citasImg from "/citas.jfif";
+import { ToastContainer } from "react-toastify";
 export default function Citas() {
   const { token } = useJwt();
   const {
@@ -225,6 +226,7 @@ export default function Citas() {
           </form>
         </div>
       </section>
+      <ToastContainer></ToastContainer>
     </>
   );
 }
