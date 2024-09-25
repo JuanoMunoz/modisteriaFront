@@ -22,7 +22,7 @@ export default function Venta() {
   const [address, setAddress] = useState(false);
   const [lugarEntrega, setLugarEntrega] = useState("");
   const [loading, setLoading] = useState(false);
-  const { userData, setUserData } = useActiveUserInfo(payload?.id);
+  const { userData, setUserData } = useActiveUserInfo(payload?.id, token);
   const [domicilio, setDomicilio] = useState();
   const [showFullQr, setShowFullQr] = useState(false);
   const handleChangeAddress = (e) => {
@@ -37,8 +37,6 @@ export default function Venta() {
   const qrToggle = () => {
     setShowFullQr(!showFullQr);
   };
-  console.log(lugarEntrega);
-
   const handleAddressSubmit = async (data) => {
     setLoading(true);
     setAddress(false);
@@ -46,7 +44,8 @@ export default function Venta() {
     axios
       .put(
         `https://modisteria-back-production.up.railway.app/api/usuarios/updateUser/${payload?.id}`,
-        { direccion: direccionString }
+        { direccion: direccionString },
+        { headers: { "x-token": token } }
       )
       .then(() => {
         toast.success("Dirección agregada con éxito! ", {
@@ -55,7 +54,8 @@ export default function Venta() {
         });
         axios
           .get(
-            `https://modisteria-back-production.up.railway.app/api/usuarios/getUserById/${payload?.id}`
+            `https://modisteria-back-production.up.railway.app/api/usuarios/getUserById/${payload?.id}`,
+            { headers: { "x-token": token } }
           )
           .then((res) => {
             setUserData(res.data);

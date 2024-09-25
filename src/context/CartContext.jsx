@@ -22,7 +22,8 @@ export default function CartProvider({ children }) {
   useEffect(() => {
     axios
       .get(
-        `https://modisteria-back-production.up.railway.app/api/pedidos/getPedidoById/${payload?.id}`
+        `https://modisteria-back-production.up.railway.app/api/pedidos/getPedidoById/${payload?.id}`,
+        { headers: { "x-token": token } }
       )
       .then((res) => {
         setCartData(res.data);
@@ -47,7 +48,8 @@ export default function CartProvider({ children }) {
   const removeItem = (idPedido) => {
     setCartData((prev) => prev.filter((value) => value.idPedido !== idPedido));
     axios.delete(
-      `https://modisteria-back-production.up.railway.app/api/pedidos/deletePedido/${idPedido}`
+      `https://modisteria-back-production.up.railway.app/api/pedidos/deletePedido/${idPedido}`,
+      { headers: { "x-token": token } }
     );
   };
   return (

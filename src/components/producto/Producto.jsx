@@ -107,7 +107,8 @@ export default function Product({ data, isLoading }) {
               cantidad: itemExistsOnCart.cantidad + carritoData.cantidad,
               precioFinal:
                 itemExistsOnCart.precioFinal + carritoData.precioFinal,
-            }
+            },
+            { headers: { "x-token": token } }
           )
           .then(() => {
             const precioFinalUpdate =
@@ -137,7 +138,8 @@ export default function Product({ data, isLoading }) {
       : axios
           .post(
             "https://modisteria-back-production.up.railway.app/api/pedidos/createPedido",
-            carritoData
+            carritoData,
+            { headers: { "x-token": token } }
           )
           .then(() => {
             addItem(carritoData),

@@ -62,6 +62,9 @@
   width: 700px;
   background-color: rgb(241, 237, 237);
   color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   padding: 20px;
   text-align: start;
   border-radius: 10px;
@@ -349,6 +352,10 @@
 .modalCambiarPassword span {
   margin: 0px;
 }
+.modalActualizar .modalActualizarTitle {
+  font-size: 20px;
+}
 .modalActualizar span {
   margin: 0px;
+  font-size: 12px;
 }

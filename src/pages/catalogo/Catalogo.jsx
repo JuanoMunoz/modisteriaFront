@@ -1,5 +1,5 @@
 import "./catalogo.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Metadata from "../../components/metadata/Metadata";
 import Loading from "../../components/loading/Loading";
 import useCatalogoData from "../../hooks/useCatalogo";
@@ -7,9 +7,10 @@ import Product from "../../components/producto/Producto";
 import { ArrowRight, ArrowLeft } from "../../components/svg/Svg";
 import useDebounce from "../../hooks/useDebounce";
 import { ToastContainer } from "react-toastify";
-
+import useFetch from "../../hooks/useFetch";
 export default function Catalogo() {
   const [page, setPage] = useState(1);
+  const [catalogoData, setCatalogoData] = useState(null);
   const [filterPrice, setFilterPrice] = useState(250000);
   const { debouncedValue } = useDebounce(filterPrice, 1000);
   const { fetchCatalagoData, isLoading, numberOfPages } = useCatalogoData(
@@ -29,6 +30,17 @@ export default function Catalogo() {
     if (e.target.value > 250000 || e.target.value < 1) return;
     setFilterPrice(e.target.value);
   };
+  const { triggerFetch } = useFetch();
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await triggerFetch(
+        "https://modisteria-back-production.up.railway.app/api/categorias/getAllCategorias?type=prenda"
+      );
+      setCatalogoData(response.data);
+    };
+    fetchData();
+  }, []);
+
   return (
     <>
       <Metadata title={"Catálogo - Modistería Doña Luz"}></Metadata>
@@ -51,25 +63,20 @@ export default function Catalogo() {
 
           <h4>Filtrar por Categoria</h4>
           <div className="categorias">
-            <div>
-              <input type="radio" id="radio1" name="categoria" />
-              <label htmlFor="radio1">Camisetas</label>
-            </div>
-
-            <div>
-              <input type="radio" id="radio2" name="categoria" />
-              <label htmlFor="radio2">Polos</label>
-            </div>
-
-            <div>
-              <input type="radio" id="radio3" name="categoria" />
-              <label htmlFor="radio3">Faldas</label>
-            </div>
-
-            <div>
-              <input type="radio" id="radio4" name="categoria" />
-              <label htmlFor="radio4">Vestidos</label>
-            </div>
+            {catalogoData &&
+              catalogoData.map((value) => (
+                <div key={value.id}>
+                  <label className="categoria-option" htmlFor="radio1">
+                    <input
+                      type="radio"
+                      value={value.id}
+                      id="radio1"
+                      name="categoria"
+                    />
+                    <span>{value.nombre}</span>
+                  </label>
+                </div>
+              ))}
           </div>
         </div>
 

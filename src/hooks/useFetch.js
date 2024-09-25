@@ -2,13 +2,9 @@ import { useState, useCallback } from "react";
 import axios from "axios";
 
 export default function useFetch() {
-    const [responseData, setResponseData] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
     const triggerFetch = useCallback(async (url, method = 'GET', requestData = null, headers = {}) => {
         setLoading(true);
-        setError(null);
-
         try {
             let response;
             const config = { headers };
@@ -23,13 +19,13 @@ export default function useFetch() {
                 response = await axios.delete(url, config);
             }
 
-            setResponseData(response.data);
+            return ({ data:response.data,status: response.status });
         } catch (err) {
-            setError(err);
+            return({ data:err.response.data,status: err.response.status });
         } finally {
             setLoading(false);
         }
     }, []);
 
-    return { data: responseData, loading, error, triggerFetch };
+    return {loading, triggerFetch };
 }

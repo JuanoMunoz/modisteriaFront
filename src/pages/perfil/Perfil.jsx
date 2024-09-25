@@ -16,16 +16,26 @@ import Modal from "../../components/modal/Modal";
 import Input from "../../components/input_basico/Input";
 import useDecodedJwt from "../../hooks/useJwt";
 import { useJwt } from "../../context/JWTContext";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
 import Loading from "../../components/loading/Loading";
 import { useForm } from "react-hook-form";
-
+import { toast, ToastContainer } from "react-toastify";
+import useIsFirstRender from "../../hooks/useIsMount";
+import constants from "../../assets/constants.d";
 export default function Perfil() {
-  const { token } = useJwt();
+  const { token, cleanToken, saveToken } = useJwt();
   const payload = useDecodedJwt(token);
-  console.log(payload);
+  useEffect(() => {
+    if (isFirstRender) return;
+    navigate("/perfil");
+  }, [token]);
 
+  const isFirstRender = useIsFirstRender();
+  const navigate = useNavigate();
+  const [passwordAttempts, setPasswordAttemps] = useState(4);
+  const { triggerFetch: fetchIsYourPass } = useFetch();
+  const { triggerFetch: fetchChangePass } = useFetch();
   const [showModal, setShowModal] = useState(false);
   const toggleModal = () => {
     setShowModal(!showModal);
@@ -50,8 +60,86 @@ export default function Perfil() {
   const toggleModal5 = () => {
     setShowModal5(!showModal5);
   };
-  const handleFirstPasswordSubmit = (data) => {
-    a;
+  const colombianPhone = () => {
+    return constants.PHONE_REGEX.test(watch("telefono"));
+  };
+  useEffect(() => {
+    if (isFirstRender) return;
+    if (passwordAttempts === 4) return;
+    if (passwordAttempts > 1) {
+      toast.error(
+        `Contraseña incorrecta. Quedan ${passwordAttempts} intentos`,
+        { autoClose: 700 }
+      );
+      return;
+    } else if (passwordAttempts === 1) {
+      toast.error(`Contraseña incorrecta. Queda 1 intento`, { autoClose: 700 });
+      return;
+    } else {
+      toast.error("Demasiados intentos fallidos. Cerrando sesión!", {
+        toastId: "closeSession",
+        autoClose: 700,
+        onClose: () => {
+          navigate("/");
+          cleanToken();
+        },
+      });
+      return;
+    }
+  }, [passwordAttempts]);
+  const handleFirstPasswordSubmit = async (data) => {
+    const response = await fetchIsYourPass(
+      `https://modisteria-back-production.up.railway.app/api/usuarios/isYourCurrentPassword`,
+      "POST",
+      { email: payload?.email, password: data.contraseniaActual }
+    );
+    if (response && response.data.isYourCurrentPassword) {
+      setPasswordAttemps(4);
+      toast.success("Contraseña correcta! 😊", {
+        autoClose: 700,
+        onClose: () => {
+          toggleModal4();
+          toggleModal5();
+        },
+      });
+    } else {
+      setPasswordAttemps((prev) => prev - 1);
+    }
+  };
+
+  const handleNewPasswordSubmitLogic = async (data) => {
+    const response = await fetchChangePass(
+      `https://modisteria-back-production.up.railway.app/api/usuarios/resetCurrentPassword`,
+      "POST",
+      { email: payload?.email, newPassword: data.nuevaContrasenia },
+      { "x-token": token }
+    );
+
+    response.status !== 200
+      ? toast.error(response.data.msg, { autoClose: 700 })
+      : toast.success(response.data.msg, {
+          autoClose: 700,
+          onClose: () => {
+            toggleModal5();
+          },
+        });
+  };
+  const handleUpdateInfoLogic = async (data) => {
+    const response = await fetchChangePass(
+      `https://modisteria-back-production.up.railway.app/api/usuarios/updateInfo/${payload?.id}`,
+      "PUT",
+      { nombre: data.nombre, telefono: data.telefono },
+      { "x-token": token }
+    );
+    response.status !== 201
+      ? toast.error(response.data.msg, { autoClose: 700 })
+      : toast.success(response.data.msg, {
+          autoClose: 700,
+          onClose: () => {
+            toggleModal();
+            saveToken(response.data.token);
+          },
+        });
   };
 
   const {
@@ -59,6 +147,14 @@ export default function Perfil() {
     register: registerPasswords,
     formState: { errors: errorsPassword },
   } = useForm();
+  const {
+    handleSubmit: handleNewPasswordSubmit,
+    register: registerNewPasswords,
+    formState: { errors: errorsNewPasswords },
+    watch: watchNewPasswords,
+  } = useForm();
+  const { register, watch, handleSubmit: handleUpdateInfo } = useForm();
+
   return (
     <>
       <Metadata title={"Perfil - Modistería Doña Luz"}></Metadata>
@@ -74,21 +170,21 @@ export default function Perfil() {
             <div className="imgNombre">
               <img src={fotoPerfil} alt="" className="fotoPerfil" />
               <br />
-              <span>{payload.nombre}</span>
+              <span>{payload?.nombre}</span>
               <br />
             </div>
             <span>
               <span className="subtitulo">
                 <Key></Key>&nbsp;&nbsp;ID:
               </span>{" "}
-              #{payload.id}
+              #{payload?.id}
             </span>
             <br />
             <span>
               <span className="subtitulo">
                 <Rol></Rol>&nbsp;&nbsp;Rol:
               </span>{" "}
-              {payload.roleId === 1 ? "Cliente" : "Administrador"}
+              {payload?.role.nombre}
             </span>
           </div>
 
@@ -110,28 +206,28 @@ export default function Perfil() {
                     <User></User>&nbsp;&nbsp;Nombre
                   </th>
                   <td>:</td>
-                  <td>{payload.nombre}</td>
+                  <td>{payload?.nombre}</td>
                 </tr>
                 <tr>
                   <th>
                     <Phone></Phone>&nbsp;&nbsp;Telefono
                   </th>
                   <td>:</td>
-                  <td>{payload.telefono}</td>
+                  <td>{payload?.telefono}</td>
                 </tr>
                 <tr>
                   <th>
                     <Mail></Mail>&nbsp;&nbsp;Correo
                   </th>
                   <td>:</td>
-                  <td>{payload.email}</td>
+                  <td>{payload?.email}</td>
                 </tr>
                 <tr>
                   <th>
                     <Rol></Rol>&nbsp;&nbsp;Rol
                   </th>
                   <td>:</td>
-                  <td>{payload.roleId === 1 ? "Cliente" : "Administrador"}</td>
+                  <td>{payload?.role.nombre}</td>
                 </tr>
                 <tr>
                   <th>
@@ -179,61 +275,103 @@ export default function Perfil() {
                 </Modal>
 
                 <Modal show={showModal5} onClose={toggleModal5}>
-                  <div className="modalActualizar">
-                    <span>Cambiar Contraseña</span>
+                  <form
+                    onSubmit={handleNewPasswordSubmit(
+                      handleNewPasswordSubmitLogic
+                    )}
+                    className="modalActualizar"
+                  >
+                    <span className="modalActualizarTitle">
+                      Cambiar Contraseña
+                    </span>
                     <Input
+                      {...registerNewPasswords("nuevaContrasenia", {
+                        required: true,
+                        minLength: 8,
+                      })}
                       type={"password"}
                       placeholder={"Nueva Contraseña"}
                       canHidden
+                      description={
+                        errorsNewPasswords.nuevaContrasenia &&
+                        "Mínimo 8 caracteres"
+                      }
+                      color={"#f00"}
+                      error={errorsNewPasswords.nuevaContrasenia}
                     ></Input>
                     <Input
+                      {...registerNewPasswords("repetirNuevaContrasenia", {
+                        required: true,
+                        validate: () => {
+                          return (
+                            watchNewPasswords("nuevaContrasenia") ===
+                            watchNewPasswords("repetirNuevaContrasenia")
+                          );
+                        },
+                      })}
                       type={"password"}
                       placeholder={"Confirmar Contraseña"}
                       canHidden
+                      description={
+                        errorsNewPasswords.repetirNuevaContrasenia &&
+                        "Las contraseñas no coinciden"
+                      }
+                      color={"#f00"}
+                      error={errorsNewPasswords.repetirNuevaContrasenia}
                     ></Input>
 
                     <button className="btnCancelarCita">
                       <span>Actualizar</span>
                     </button>
-                  </div>
+                  </form>
                 </Modal>
               </table>
             </div>
 
             <Modal show={showModal} onClose={toggleModal}>
-              <div className="modal-headerEditar">
+              <form
+                onSubmit={handleUpdateInfo(handleUpdateInfoLogic)}
+                className="modal-headerEditar"
+              >
                 <span className="subtituloEditar">Edición de Información</span>
                 <Input
                   type={"text"}
-                  placeholder={"Nombre"}
-                  value={payload?.nombre}
+                  {...register("nombre", { required: true, minLength: 4 })}
+                  description={
+                    watch("nombre")?.length > 0
+                      ? "Debe tener al menos 4 caracteres"
+                      : ""
+                  }
+                  placeholder={payload?.nombre}
+                  color={watch("nombre")?.length < 4 ? "#f00" : "#000"}
                 ></Input>
-
                 <Input
                   type={"text"}
-                  placeholder={"Telefono"}
-                  value={payload?.telefono}
-                ></Input>
-
-                <Input
-                  onlyRead
-                  type={"text"}
-                  placeholder={"Correo"}
-                  value={payload?.email}
+                  {...register("telefono", {
+                    validate: colombianPhone,
+                    maxLength: 10,
+                  })}
+                  color={colombianPhone() ? "#000" : "#f00"}
+                  description={
+                    watch("telefono")?.length > 0
+                      ? "Ingrese un número válido (+57)"
+                      : ""
+                  }
+                  placeholder={payload?.telefono}
                 ></Input>
 
                 <button className="btnCancelarCita">
                   <span>Actualizar</span>
                 </button>
-              </div>
+              </form>
             </Modal>
 
             <div className="misCitas">
               <span className="subtituloCitas">Mis Citas</span>
 
               <div className="cartasCitas">
-                <div class="carta work">
-                  <div class="img-section">
+                <div className="carta work">
+                  <div className="img-section">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       transform="rotate(45)"
@@ -243,8 +381,8 @@ export default function Perfil() {
                       fill="none"
                       stroke="#fff"
                       strokeWidth="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       className="icon icon-tabler icons-tabler-outline icon-tabler-calendar-month"
                     >
                       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -261,18 +399,18 @@ export default function Perfil() {
                       <path d="M10.01 17h.005" />
                     </svg>{" "}
                   </div>
-                  <div class="carta-desc">
-                    <div class="carta-header">
-                      <div class="carta-title">
+                  <div className="carta-desc">
+                    <div className="carta-header">
+                      <div className="carta-title">
                         Cita <span>#1</span>
                       </div>
-                      <button class="carta-menu" onClick={toggleModal2}>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
+                      <button className="carta-menu" onClick={toggleModal2}>
+                        <div className="dot"></div>
+                        <div className="dot"></div>
+                        <div className="dot"></div>
                       </button>
                     </div>
-                    <div class="carta-time">
+                    <div className="carta-time">
                       3:01 <span>pm</span>
                       <br />
                       <p>
@@ -281,7 +419,7 @@ export default function Perfil() {
                         mollitia obcaecati
                       </p>
                     </div>
-                    <p class="recent">23/9/2024</p>
+                    <p className="recent">23/9/2024</p>
                   </div>
                 </div>
 
@@ -326,6 +464,7 @@ export default function Perfil() {
           </div>
         </div>
       </section>
+      <ToastContainer></ToastContainer>
     </>
   );
 }

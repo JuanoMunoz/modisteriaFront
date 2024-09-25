@@ -479,6 +479,11 @@ input[type="range"]:focus::-ms-fill-upper {
   --_clr-hover: rgb(187, 14, 202);
   --_clr-checked: black;
 }
+.filtros {
+  display: flex;
+  flex-direction: column;
+  margin-left: 30px;
+}
 .categorias > div {
   --_clr-current: var(--_clr-primary);
 
@@ -520,7 +525,12 @@ input[type="range"]:focus::-ms-fill-upper {
   background-color: var(--_clr-checked);
   border-radius: inherit;
 }
-
+.categoria-option {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
 .categorias label:hover,
 .categorias input[type="radio"]:focus-visible,
 .categorias input[type="radio"]:focus-visible + label,
