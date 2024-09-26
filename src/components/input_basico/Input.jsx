@@ -14,6 +14,7 @@ const Input = forwardRef(
       width,
       color,
       onlyRead,
+      defaultValue,
       ...props
     },
     ref
@@ -32,6 +33,7 @@ const Input = forwardRef(
             placeholder={placeholder}
             style={{ width: width ? width : "" }}
             ref={ref}
+            defaultValue={defaultValue && defaultValue}
             readOnly={onlyRead}
             {...props}
           />

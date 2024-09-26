@@ -70,5 +70,8 @@ export const postsNoSession = [
       type: "article",
       link: "/catalogo",
     },
-  ];
+];
+  
+export const imageExtensions = ['jpg', 'jpeg', 'png', 'bmp', 'tiff','heic', 'svg', 'webp', 'heif', 'ico'];
+
 export default constants

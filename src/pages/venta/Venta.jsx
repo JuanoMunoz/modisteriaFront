@@ -10,20 +10,28 @@ import Input from "../../components/input_basico/Input";
 import { useForm } from "react-hook-form";
 import Loading from "../../components/loading/Loading";
 import axios from "axios";
+import { QrCode } from "../../components/svg/Svg";
 import { toast, ToastContainer } from "react-toastify";
 import useActiveUserInfo from "../../hooks/useActiveUserInfo";
+import useIsFirstRender from "../../hooks/useIsMount";
+import { imageExtensions } from "../../assets/constants.d";
+import useFetch from "../../hooks/useFetch";
 export default function Venta() {
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
   const [elegirPago, setElegirPago] = useState(false);
   const [formaPago, setFormaPago] = useState("");
+  const isFirstRender = useIsFirstRender();
+  const { loading: loadingFetch, triggerFetch } = useFetch();
   const { cartData, subtotal } = useCart();
   const navigate = useNavigate();
   const [address, setAddress] = useState(false);
   const [lugarEntrega, setLugarEntrega] = useState("");
+  const [imagen, setImagen] = useState(null);
+  const [nombreComprobante, setNombreComprobante] = useState(payload?.id);
   const [loading, setLoading] = useState(false);
   const { userData, setUserData } = useActiveUserInfo(payload?.id, token);
-  const [domicilio, setDomicilio] = useState();
+  const [domicilio, setDomicilio] = useState(0);
   const [showFullQr, setShowFullQr] = useState(false);
   const handleChangeAddress = (e) => {
     setLugarEntrega(e.target.value);
@@ -76,7 +84,7 @@ export default function Venta() {
     if (userData?.direccion) {
       setDomicilio(15000);
     } else {
-      setDomicilio(null);
+      setDomicilio(0);
     }
   }, [userData]);
 
@@ -94,12 +102,37 @@ export default function Venta() {
   const {
     register: registerForm2,
     handleSubmit: handleSubmitForm2,
+    watch: watchComprobante,
     formState: { errors: errorsForm2 },
   } = useForm();
 
-  const handleTransferencia = (data) => {
-    console.log(data);
+  useEffect(() => {
+    if (isFirstRender) return;
+    if (!errorsForm2) return;
+    if (errorsForm2.imagen?.type === "required") {
+      toast.error("Ingresa la imagen con la transferencia!", {
+        toastId: "transferenciaImagen",
+        autoClose: 600,
+      });
+    }
+    if (errorsForm2.imagen?.type === "validate") {
+      toast.error("Solo se permiten imágenes!", {
+        toastId: "transferenciaImagenError",
+        autoClose: 600,
+      });
+    }
+  }, [errorsForm2.imagen]);
+
+  const isAnImage = (extension) => {
+    return imageExtensions.includes(extension);
   };
+  const handleTransferencia = async (data) => {
+    setNombreComprobante(data.nombreComprobante);
+    setImagen(data.imagen[0]);
+    qrToggle();
+    toast.success("Comprobante añadido con éxito!", { autoClose: 1500 });
+  };
+  const isCheckedChangeName = watchComprobante("incluirNombreComprobante");
   useEffect(() => {
     (!token || cartData.length == 0) && navigate("/");
   }, [token, cartData, navigate]);
@@ -112,10 +145,44 @@ export default function Venta() {
     if (lugarEntrega !== "domicilio" && lugarEntrega !== "modisteria") return;
     setElegirPago(true);
   };
+  const handleAddCotizacion = async () => {
+    if (formaPago === "transferencia" && !imagen) {
+      qrToggle();
+      return;
+    }
+    const formDataAdd = new FormData();
+    const ids = cartData.map((value) => value.id);
+    formDataAdd.append("nombrePersona", nombreComprobante);
+    lugarEntrega === "domicilio"
+      ? formDataAdd.append("valorDomicilio", domicilio)
+      : formDataAdd.append("valorDomicilio", 0);
+    formDataAdd.append("valorPrendas", subtotal);
+    formDataAdd.append("metodoPago", formaPago);
+    formDataAdd.append("pedidoId", ids);
+    formaPago === "transferencia"
+      ? formDataAdd.append("file", imagen)
+      : formDataAdd.append("file", null);
+
+    const response = await triggerFetch(
+      "https://modisteria-back-production.up.railway.app/api/cotizaciones/createCotizacion",
+      "POST",
+      formDataAdd,
+      {
+        "x-token": token,
+        "Content-Type": "multipart/form-data",
+      }
+    );
+    if (response.status === 201)
+      toast.success(`${response.data.msg}\nEspera tu correo de confirmación`, {
+        autoClose: 2000,
+      });
+    console.log(response);
+  };
   return (
     <>
       <Metadata title={"Venta - Modisteria Doña Luz"}></Metadata>
       {loading && <Loading></Loading>}
+      {loadingFetch && <Loading></Loading>}
       <br />
       <br />
       <section className="venta-section">
@@ -234,7 +301,7 @@ export default function Venta() {
               </span>
             </div>
           </label>
-          <button onClick={handlePassPayMethod} className="boton-continuar">
+          <button onClick={handleAddCotizacion} className="boton-continuar">
             Continuar
           </button>
         </article>
@@ -366,33 +433,48 @@ export default function Venta() {
             alt="qr"
             title="Qr Doña Luz"
           />
-          <div>
+          <div className="qrcode-data">
+            <label>
+              <input
+                type="checkbox"
+                {...registerForm2("incluirNombreComprobante")}
+              />
+              <span>¿Cambiar quién envía?</span>
+            </label>
             <Input
-              {...registerForm2("nroComprobante", {
+              {...registerForm2("nombreComprobante", {
                 required: true,
-                maxLength: 10,
-                minLength: 10,
+                minLength: 4,
               })}
-              placeholder={"Nro. Comprobante"}
-              error={errorsForm2.nroComprobante}
-            ></Input>
-
-            <Input
-              {...registerForm2("valorEnviado", {
-                required: true,
-                validate: (value) => value == total,
-              })}
-              placeholder={"Valor enviado"}
-              error={errorsForm2.valorEnviado}
-            ></Input>
-            {errorsForm2.valorEnviado &&
-              toast.error(
-                "El valor enviado debe ser igual al total de la venta!"
-              )}
+              defaultValue={payload?.nombre}
+              readOnly={!isCheckedChangeName}
+              placeholder={"Nombre Comprobante"}
+              error={errorsForm2.nombreComprobante}
+            />
           </div>
-          <button type="submit" className="agregar-direccion">
-            Enviar Comprobante
-          </button>
+          <div className="actions-qr">
+            <label className="subir-comprobante">
+              <input
+                {...registerForm2("imagen", {
+                  required: true,
+                  validate: () => {
+                    return isAnImage(
+                      watchComprobante("imagen")[0].name.split(".")[1]
+                    );
+                  },
+                })}
+                type="file"
+                accept="image/*"
+              />
+              <div>
+                {"Subir"}
+                <QrCode color={"#fff"} size={"24"}></QrCode>
+              </div>
+            </label>
+            <button type="submit" className="agregar-direccion">
+              Enviar Comprobante
+            </button>
+          </div>
         </form>
       </Modal>
       <ToastContainer></ToastContainer>
