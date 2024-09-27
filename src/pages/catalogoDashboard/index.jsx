@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"; 
 import {
   Box,
   Button,
@@ -28,6 +28,8 @@ const CatalogoDashboard = () => {
   const [selectedContact, setSelectedContact] = useState(null);
   const [contactToDelete, setContactToDelete] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,11 +41,16 @@ const CatalogoDashboard = () => {
         setData(respuesta.data.rows);
         console.log("Datos cargados: ", respuesta.data.rows);
       } else {
-        console.error("Error al obtener datos: ", respuesta);
+        handleError("Error al obtener datos: " + respuesta);
       }
     };
     fetchData();
   }, [triggerFetch]);
+
+  const handleError = (message) => {
+    setErrorMessage(message);
+    setOpenErrorModal(true);
+  };
 
   const handleEdit = (id) => {
     const contactToEdit = data.find((contact) => contact.id === id);
@@ -90,8 +97,6 @@ const CatalogoDashboard = () => {
         ? `https://modisteria-back-production.up.railway.app/api/catalogos/updateCatalogo/${selectedContact.id}`
         : "https://modisteria-back-production.up.railway.app/api/catalogos/createCatalogo";
 
-      console.log("Datos a enviar: ", formData);
-
       const response = await triggerFetch(
         url,
         method,
@@ -102,29 +107,26 @@ const CatalogoDashboard = () => {
 
       if (response.status === 200 || response.status === 201) {
         const newProduct = response.data;
+
         if (method === "POST") {
-          setData((prevData) => [...prevData, newProduct]);
+          const productWithId = { ...selectedContact, id: newProduct.id || Date.now() };
+          setData((prevData) => [...prevData, productWithId]);
         } else {
           setData((prevData) =>
             prevData.map((contact) =>
-              contact.id === selectedContact.id ? newProduct : contact
+              contact.id === selectedContact.id ? { ...contact, ...selectedContact } : contact
             )
           );
         }
+
         setOpenModal(false);
         setSelectedContact(null);
         setImageFile(null);
       } else {
-        console.error("Error al guardar los datos: ", response.data);
-        alert(
-          "Error al guardar los datos. Por favor, revisa la consola para más detalles."
-        );
+        handleError("Error al guardar los datos: " + response.data);
       }
     } catch (error) {
-      console.error("Error al realizar la solicitud:", error);
-      alert(
-        "Ocurrió un error al realizar la solicitud. Por favor, intenta nuevamente."
-      );
+      handleError("Error al realizar la solicitud: " + error.message);
     }
   };
 
@@ -143,26 +145,17 @@ const CatalogoDashboard = () => {
         { "x-token": token }
       );
 
-      console.log("Estado HTTP: ", response.status);
-
       if (response.status === 200 || response.status === 201) {
-        console.log("Respuesta de eliminación: ", response.data);
         setData((prevData) =>
           prevData.filter((contact) => contact.id !== contactToDelete.id)
         );
         setOpenDeleteDialog(false);
         setContactToDelete(null);
       } else {
-        console.error("Error inesperado al eliminar datos: ", response.data);
-        alert(
-          "Error inesperado al eliminar el producto. Revisa la consola para más información."
-        );
+        handleError("Error inesperado al eliminar datos: " + response.data);
       }
     } catch (error) {
-      console.error("Error al realizar la solicitud:", error);
-      alert(
-        "Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente."
-      );
+      handleError("Error al realizar la solicitud: " + error.message);
     }
   };
 
@@ -267,12 +260,12 @@ const CatalogoDashboard = () => {
           <DataGrid
             rows={data}
             columns={columns}
+            getRowId={(row) => row.id}
             components={{ Toolbar: GridToolbar }}
           />
         )}
       </Box>
 
-      {/* Modal for Adding/Editing Product */}
       <Dialog open={openModal} onClose={handleClose}>
         <DialogTitle>
           {selectedContact?.id ? "Editar Producto" : "Agregar Producto"}
@@ -362,6 +355,17 @@ const CatalogoDashboard = () => {
           <Button onClick={confirmDelete} color="error">
             Eliminar
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Error Modal */}
+      <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+        <DialogTitle>Error</DialogTitle>
+        <DialogContent>
+          <Typography>{errorMessage}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenErrorModal(false)}>Cerrar</Button>
         </DialogActions>
       </Dialog>
     </Box>
