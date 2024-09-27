@@ -1,151 +1,261 @@
-import { Box, Button } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import { mockDataContacts } from "../../components/data/mockData";
 import Header from "../../components/Header/Header";
 import { useTheme } from "@mui/material";
+import useFetch from "../../hooks/useFetch";
+import { useJwt } from "../../context/JWTContext";
 
 const Contacts = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
+    const { loading, triggerFetch } = useFetch();
+    const { token } = useJwt();
 
-  const handleEdit = (id) => {
-    // Lógica para editar el contacto
-    console.log("Edit contact with ID:", id);
-  };
+    const [data, setData] = useState([]);
+    const [openModal, setOpenModal] = useState(false);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [selectedUsuario, setSelectedUsuario] = useState(null);
+    const [usuarioToDelete, setUsuarioToDelete] = useState(null);
 
-  const handleDelete = (id) => {
-    // Lógica para eliminar el contacto
-    console.log("Delete contact with ID:", id);
-  };
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const respuesta = await triggerFetch(
+                    "https://modisteria-back-production.up.railway.app/api/usuarios/getAllUsers",
+                    "GET",
+                    null,
+                    { "x-token": token }
+                );
+                if (respuesta.status === 200 && respuesta.data) {
+                    const usuariosConId = respuesta.data.map(usuario => ({
+                        ...usuario,
+                        id: usuario.id || data.length + 1 
+                    }));
+                    setData(usuariosConId);
+                    console.log("Datos cargados: ", usuariosConId);
+                } else {
+                    console.error("Error al obtener datos: ", respuesta);
+                }
+            } catch (error) {
+                console.error("Error al realizar la solicitud:", error.message);
+                alert("Ocurrió un error al obtener los datos. Inténtalo nuevamente.");
+            }
+        };
+        fetchData();
+    }, [triggerFetch, token, data.length]); 
 
-  const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
-    {
-      field: "nombre",
-      headerName: "Nombre",
-      flex: 1,
-      cellClassName: "name-column--cell",
-    },
-    {
-      field: "email",
-      headerName: "Email",
-      flex: 1,
-    },
-    {
-      field: "telefono",
-      headerName: "Telefono",
-      flex: 1,
-    },
-    {
-      field: "password",
-      headerName: "Password",
-      flex: 1,
-    },
-    {
-      field: "direccion",
-      headerName: "Dirección",
-      flex: 1,
-    },
-    {
-      field: "estado",
-      headerName: "Estado",
-      flex: 1,
-    },
-    {
-      field: "rolId",
-      headerName: "rolId",
-      flex: 1,
-    },
-    {
-      field: "fecha_union",
-      headerName: "Fecha de Unión",
-      flex: 1,
-    },
-    {
-      field: "actions",
-      headerName: "Actions",
-      flex: 1,
-      renderCell: (params) => (
-        <Box>
-          <Button
-            // variant="contained"
-            color="primary"
-            onClick={() => handleEdit(params.row.id)}
-          >
-            <img
-              alt="editar"
-              width="20px"
-              height="20px"
-              src={`../../assets/editar.png`}
-              style={{ cursor: "pointer" }}
-            />
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => handleDelete(params.row.id)}
-            sx={{ ml: 1 }}
-          >
-            <img
-              alt="borrar"
-              width="20px"
-              height="20px"
-              src={`../../assets/borrar.png`}
-              style={{ cursor: "pointer" }}
-            />
-          </Button>
+    const handleEdit = (id) => {
+        const usuarioToEdit = data.find((usuario) => usuario.id === id);
+        setSelectedUsuario(usuarioToEdit);
+        setOpenModal(true);
+    };
+
+    const handleAdd = () => {
+        setSelectedUsuario({ nombre: "", email: "", telefono: "", password: "", direccion: "", roleId: "" });
+        setOpenModal(true);
+    };
+
+    const handleClose = () => {
+        setOpenModal(false);
+        setSelectedUsuario(null);
+    };
+
+    const handleSave = async () => {
+        try {
+            const method = selectedUsuario.id ? "PUT" : "POST";
+            const url = selectedUsuario.id 
+                ? `https://modisteria-back-production.up.railway.app/api/usuarios/updateUser/${selectedUsuario.id}`
+                : "https://modisteria-back-production.up.railway.app/api/usuarios/createUser";
+
+            const response = await triggerFetch(url, method, selectedUsuario, { "x-token": token });
+
+            if (response.status === 200 || response.status === 201) {
+                if (method === "PUT") {
+                    setData((prevData) =>
+                        prevData.map((usuario) =>
+                            usuario.id === selectedUsuario.id ? selectedUsuario : usuario
+                        )
+                    );
+                } else {
+                    const nuevoUsuario = { ...selectedUsuario, id: data.length + 1 }; // Generar ID
+                    setData((prevData) => [...prevData, nuevoUsuario]);
+                }
+                handleClose();
+            } else {
+                console.error("Error al guardar los datos: ", response.data);
+                alert("Error al guardar los datos. Revisa la consola para más detalles.");
+            }
+        } catch (error) {
+            console.error("Error al realizar la solicitud:", error.message);
+            alert("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
+        }
+    };
+
+    const handleDelete = (id) => {
+        const usuario = data.find((usuario) => usuario.id === id);
+        setUsuarioToDelete(usuario);
+        setOpenDeleteDialog(true);
+    };
+
+    const confirmDelete = async () => {
+        try {
+            const response = await triggerFetch(
+                `https://modisteria-back-production.up.railway.app/api/usuarios/deleteUser/${usuarioToDelete.id}`,
+                "DELETE",
+                null,
+                { "x-token": token }
+            );
+
+            if (response.status === 200 || response.status === 201) {
+                console.log("Respuesta de eliminación: ", response.data);
+                setData((prevData) => prevData.filter((usuario) => usuario.id !== usuarioToDelete.id));
+                setOpenDeleteDialog(false);
+                setUsuarioToDelete(null);
+            } else {
+                console.error("Error inesperado al eliminar datos: ", response.data);
+                alert("Error inesperado al eliminar el usuario. Revisa la consola para más información.");
+            }
+        } catch (error) {
+            console.error("Error al realizar la solicitud:", error.message);
+            alert("Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente.");
+        }
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setSelectedUsuario((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const columns = [
+        { field: "id", headerName: "ID", flex: 0.5 },
+        { field: "nombre", headerName: "Nombre", flex: 1 },
+        { field: "email", headerName: "Email", flex: 1 },
+        { field: "telefono", headerName: "Teléfono", flex: 1 },
+        { field: "direccion", headerName: "Dirección", flex: 1 },
+        { field: "roleId", headerName: "Role ID", flex: 1 },
+        {
+            field: "acciones",
+            headerName: "Acciones",
+            flex: 1,
+            renderCell: (params) => (
+                <Box>
+                    <Button color="primary" onClick={() => handleEdit(params.row.id)}>
+                        <img alt="editar" width="20px" height="20px" src="../../assets/editar.png" style={{ cursor: "pointer" }} />
+                    </Button>
+                    <Button variant="contained" color="error" onClick={() => handleDelete(params.row.id)} sx={{ ml: 1 }}>
+                        <img alt="borrar" width="20px" height="20px" src="../../assets/borrar.png" style={{ cursor: "pointer" }} />
+                    </Button>
+                </Box>
+            ),
+        },
+    ];
+
+    return (
+        <Box m="20px">
+            <Header title="USUARIOS" subtitle="Lista de usuarios" />
+            <Button variant="contained" color="primary" onClick={handleAdd} sx={{ mb: 2 }}>
+                Agregar Usuario
+            </Button>
+            <Box m="40px 0 0 0" height="75vh" sx={{
+                "& .MuiDataGrid-root": { border: "none" },
+                "& .MuiDataGrid-cell": { borderBottom: "none" },
+                "& .MuiDataGrid-columnHeaders": { backgroundColor: colors.blueAccent[700], borderBottom: "none" },
+                "& .MuiDataGrid-virtualScroller": { backgroundColor: colors.primary[400] },
+                "& .MuiDataGrid-footerContainer": { borderTop: "none", backgroundColor: colors.blueAccent[700] },
+                "& .MuiCheckbox-root": { color: `${colors.greenAccent[200]} !important` },
+                "& .MuiDataGrid-toolbarContainer .MuiButton-text": { color: `${colors.grey[100]} !important` },
+            }}>
+                {loading ? (
+                    <Typography>Cargando usuarios...</Typography>
+                ) : (
+                    <DataGrid rows={data} columns={columns} components={{ Toolbar: GridToolbar }} />
+                )}
+            </Box>
+
+            <Dialog open={openModal} onClose={handleClose}>
+                <DialogTitle>{selectedUsuario?.id ? "Editar Usuario" : "Agregar Usuario"}</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        margin="dense"
+                        name="nombre"
+                        label="Nombre"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        value={selectedUsuario?.nombre || ""}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        name="email"
+                        label="Email"
+                        type="email"
+                        fullWidth
+                        variant="outlined"
+                        value={selectedUsuario?.email || ""}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        name="telefono"
+                        label="Teléfono"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        value={selectedUsuario?.telefono || ""}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        name="password"
+                        label="Contraseña"
+                        type="password"
+                        fullWidth
+                        variant="outlined"
+                        value={selectedUsuario?.password || ""}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        name="direccion"
+                        label="Dirección"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        value={selectedUsuario?.direccion || ""}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        name="roleId"
+                        label="Role ID"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        value={selectedUsuario?.roleId || ""}
+                        onChange={handleInputChange}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Cancelar</Button>
+                    <Button onClick={handleSave}>Guardar</Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
+                <DialogTitle>Confirmar Eliminación</DialogTitle>
+                <DialogContent>
+                    <Typography>¿Estás seguro de que deseas eliminar el usuario "{usuarioToDelete?.nombre}"?</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenDeleteDialog(false)}>Cancelar</Button>
+                    <Button onClick={confirmDelete} color="error">Eliminar</Button>
+                </DialogActions>
+            </Dialog>
         </Box>
-      ),
-    },
-  ];
-
-  return (
-    <Box m="20px">
-      <Header
-        title="Usuarios"
-        subtitle="Usuarios Registrados en la plataforma"
-      />
-      <Box
-        m="40px 0 0 0"
-        height="75vh"
-        sx={{
-          "& .MuiDataGrid-root": {
-            border: "none",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "none",
-          },
-          "& .name-column--cell": {
-            color: colors.greenAccent[300],
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700],
-            borderBottom: "none",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
-          },
-          "& .MuiDataGrid-footerContainer": {
-            borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
-          },
-          "& .MuiCheckbox-root": {
-            color: `${colors.greenAccent[200]} !important`,
-          },
-          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-            color: `${colors.grey[100]} !important`,
-          },
-        }}
-      >
-        <DataGrid
-          rows={mockDataContacts}
-          columns={columns}
-          components={{ Toolbar: GridToolbar }}
-        />
-      </Box>
-    </Box>
-  );
+    );
 };
 
 export default Contacts;
