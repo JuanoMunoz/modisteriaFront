@@ -4,6 +4,8 @@ import useLLM from "../../hooks/useLLM";
 import "./citas.css";
 import videoSource from "/citasVideo.mp4";
 import { useJwt } from "../../context/JWTContext";
+import Modal from "../../components/modal/Modal";
+import { Calendar } from "../../components/svg/Svg";
 import {
   Asesor,
   Right,
@@ -13,9 +15,14 @@ import {
   ArrowDown,
 } from "../../components/svg/Svg";
 import citasImg from "/citas.jfif";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { imageExtensions } from "../../assets/constants.d";
+import useDecodedJwt from "../../hooks/useJwt";
+import useFetch from "../../hooks/useFetch";
 export default function Citas() {
   const { token } = useJwt();
+  const payload = useDecodedJwt(token);
   const {
     historial,
     sendMessage,
@@ -24,20 +31,96 @@ export default function Citas() {
     resetHistory,
   } = useLLM();
   const emptyChat = useRef();
-  const inputRef = useRef();
+  const [imagen, setImagen] = useState();
+  const inputImagen = useRef();
   const [inputValue, setInputValue] = useState("");
+  const [addCitaModal, setAddCitaModal] = useState(false);
   const [lastResponse, setLastResponse] = useState("");
+  const [fechaCita, setFechaCita] = useState(null);
+  const [objetivo, setObjetivo] = useState(null);
   const [sentMessage, setSentMessage] = useState("");
   const [hasClassActive, setHasClassActive] = useState(false);
+  const { triggerFetch } = useFetch();
+  const inputRef = useRef();
+  const handleChangeInputImagen = () => {
+    const extension = inputImagen.current.files[0].name.split(".")[1];
+    if (!imageExtensions.includes(extension)) {
+      toast.error("Solo aceptamos Imágenes de referencia!", {
+        toastId: "imagenReferencia",
+        autoClose: 1300,
+      });
+      setImagen(null);
+      return;
+    }
 
+    toast.success("Imagen agregada con éxito!", {
+      toastId: "imagenReferenciaSuccess",
+      autoClose: 1300,
+    });
+    setImagen(inputImagen.current.files[0]);
+  };
+  const toggleAddCita = () => {
+    setAddCitaModal(!addCitaModal);
+  };
+  const navigate = useNavigate();
   const handleInput = (e) => {
     setInputValue(e.target.value);
   };
   const handleReset = () => {
     setHasClassActive(false);
+    setFechaCita(null);
+    setObjetivo(null);
     resetHistory();
   };
+  const handleGoToSesion = (e) => {
+    e.preventDefault();
+    toast.error("Debes iniciar sesión\npara agendar una cita!", {
+      autoClose: 2000,
+      onClose: () => {
+        navigate("/sesion");
+      },
+    });
+  };
+  const handleAddCita = async () => {
+    if (!fechaCita || !objetivo) {
+      toast.error("No puedes agregar una cita!\nTe falta información.", {
+        toastId: "errorInfoCita",
+        autoClose: 1500,
+      });
+      return;
+    }
+    const [day, month, year, time] = fechaCita.split(/[-:]/);
+    const dateObject = `${year}-${month}-${day} ${time}:00`;
+    const formData = new FormData();
+    formData.append("fecha", dateObject);
+    formData.append("objetivo", objetivo);
+    formData.append("usuarioId", payload?.id);
+    imagen && formData.append("file", imagen);
+    const response = await triggerFetch(
+      "https://modisteria-back-production.up.railway.app/api/citas/createCita",
+      "POST",
+      formData,
+      {
+        "x-token": token,
+        "Content-Type": "multipart/form-data",
+      }
+    );
+    console.log(response);
 
+    if (response.status === 201) {
+      toggleAddCita();
+      toast.success(`${response.data.msg}!`, {
+        toastId: "addCitaBien",
+        autoClose: 2000,
+        onClose: () => navigate("/perfil"),
+      });
+    } else if (response.status === 400) {
+      toast.error(`${response.data.msg}!`, {
+        toastId: "addCitaMal",
+        autoClose: 2000,
+      });
+    }
+  };
   const submitQuestion = async (e) => {
     e.preventDefault();
     if (!hasClassActive) {
@@ -56,8 +139,11 @@ export default function Citas() {
   };
 
   const generateReport = async () => {
+    toggleAddCita();
     const response = await generarReporte();
-    console.log(response);
+    const dataCita = JSON.parse(response.trim());
+    setObjetivo(dataCita.objetivo);
+    setFechaCita(dataCita.fecha);
   };
 
   useEffect(() => {
@@ -69,7 +155,6 @@ export default function Citas() {
   const scrollToDiv = () => {
     asesorDiv.current.scrollIntoView({ behavior: "smooth" });
   };
-
   return (
     <>
       <Metadata title={"Citas - Modistería Doña Luz"}></Metadata>
@@ -101,7 +186,6 @@ export default function Citas() {
           </button>
         </div>
       </div>
-
       <section ref={asesorDiv} className="asesor">
         <div className="accionesTop">
           <button className="btnAccionesTop" onClick={handleReset}>
@@ -110,19 +194,31 @@ export default function Citas() {
               <NewChat></NewChat>
             </span>
           </button>
-          <button className="btnAccionesTop" onClick={generateReport}>
+          <button
+            title="agendarCita"
+            disabled={historial.length <= 8}
+            style={{
+              cursor: historial.length <= 8 ? "not-allowed" : "pointer",
+            }}
+            className="btnAccionesTop"
+            onClick={generateReport}
+          >
             {" "}
             <span>
               <Report></Report>
             </span>
           </button>
         </div>
-        {historial.length <= 6 ? (
+        {historial.length <= 8 ? (
           <div ref={emptyChat} className="empty-chat">
             <img className="img-empty-chat" src={citasImg} alt="" />
             <div className="bg-overlay"></div>
             <div className="text-empty-chat">
-              <span>ENVÍA UN MENSAJE PARA COMENZAR!</span>
+              <span>
+                {token
+                  ? "ENVÍA UN MENSAJE PARA COMENZAR!"
+                  : "Inicia Sesión para enviar un mensaje"}
+              </span>
               <div className="bouncing-arrow">
                 <ArrowDown color={"#bb0eca"} size={40}></ArrowDown>
               </div>
@@ -178,7 +274,10 @@ export default function Citas() {
         )}
 
         <div className="accionesAsesor">
-          <form onSubmit={submitQuestion} className="messageBox">
+          <form
+            onSubmit={token ? submitQuestion : handleGoToSesion}
+            className="messageBox"
+          >
             <div className="fileUploadWrapper">
               <label htmlFor="file">
                 <svg
@@ -209,7 +308,14 @@ export default function Citas() {
                 </svg>
                 <span className="tooltip">Agregar Imagen</span>
               </label>
-              <input type="file" id="file" name="file" />
+              <input
+                type="file"
+                ref={inputImagen}
+                onChange={token ? handleChangeInputImagen : handleGoToSesion}
+                id="file"
+                accept="image/*"
+                name="file"
+              />
             </div>
             <input
               required
@@ -226,6 +332,23 @@ export default function Citas() {
           </form>
         </div>
       </section>
+
+      <Modal show={addCitaModal} onClose={toggleAddCita}>
+        <Calendar color={"#fff"} size={"120"}></Calendar>
+        <h3>¿Agregar cita?</h3>
+        <div>
+          <h3>{fechaCita ? fechaCita : "No has añadido una fecha!"}</h3>
+          <h3>{objetivo ? objetivo : "No has añadido un objetivo!"}</h3>
+        </div>
+        <div className="logout">
+          <button onClick={toggleAddCita} className="btn-cancelar">
+            <span>Cancelar</span>
+          </button>
+          <button onClick={handleAddCita} className="btn-accion">
+            <span>Agendar</span>
+          </button>
+        </div>
+      </Modal>
       <ToastContainer></ToastContainer>
     </>
   );
