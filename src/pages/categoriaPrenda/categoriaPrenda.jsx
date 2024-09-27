@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"; 
 import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
@@ -7,76 +7,75 @@ import { useTheme } from "@mui/material";
 import useFetch from "../../hooks/useFetch";
 import { useJwt } from "../../context/JWTContext";
 
-const CitaDashboard = () => {
+const CategoriaPrenda = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const { loading, triggerFetch } = useFetch();
-    const { token } = useJwt(); // Obtener el token del contexto
+    const { token } = useJwt();
 
     const [data, setData] = useState([]);
     const [openModal, setOpenModal] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-    const [selectedCita, setSelectedCita] = useState(null);
-    const [citaToDelete, setCitaToDelete] = useState(null);
+    const [selectedCategoria, setSelectedCategoria] = useState(null);
+    const [categoriaToDelete, setCategoriaToDelete] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
-            if (!token) {
-                console.error("Falta el token. El usuario puede necesitar iniciar sesión.");
-                return; // Salir si no hay token
-            }
-
-            const respuesta = await triggerFetch("https://modisteria-back-production.up.railway.app/api/citas/getAllCitas", "GET", null, { "x-token": token });
+            const respuesta = await triggerFetch("https://modisteria-back-production.up.railway.app/api/categorias/getAllCategorias", "GET");
             if (respuesta.status === 200 && respuesta.data) {
-                const citasConId = respuesta.data.map(cita => ({
-                    ...cita,
-                    id: cita.id || data.length + 1 
-                }));
-                setData(citasConId);
-                console.log("Datos cargados: ", citasConId);
+                const categoriasConId = respuesta.data
+                    .filter(categoria => categoria.tipo === 'prenda') // Filtrar solo tipos 'prenda'
+                    .map(categoria => ({
+                        ...categoria,
+                        id: categoria.id || data.length + 1 
+                    }));
+                setData(categoriasConId);
+                console.log("Datos cargados: ", categoriasConId);
             } else {
                 console.error("Error al obtener datos: ", respuesta);
             }
         };
         fetchData();
-    }, [token, triggerFetch]);
+    }, [triggerFetch]);
 
     const handleEdit = (id) => {
-        const citaToEdit = data.find((cita) => cita.id === id);
-        setSelectedCita(citaToEdit);
+        const categoriaToEdit = data.find((categoria) => categoria.id === id);
+        setSelectedCategoria(categoriaToEdit);
         setOpenModal(true);
     };
 
     const handleAdd = () => {
-        setSelectedCita({ referencia: "", objetivo: "", usuarioId: "", estadoId: "", precio: "", tiempo: "", fecha: "" });
+        setSelectedCategoria({ nombre: "", descripcion: "", tipo: "prenda", estadoId: "" }); // Asignar tipo 'prenda' por defecto
         setOpenModal(true);
     };
 
     const handleClose = () => {
         setOpenModal(false);
-        setSelectedCita(null);
+        setSelectedCategoria(null);
     };
 
     const handleSave = async () => {
         try {
-            const method = selectedCita.id ? "PUT" : "POST";
-            const url = selectedCita.id 
-                ? `https://modisteria-back-production.up.railway.app/api/citas/updateCita/${selectedCita.id}`
-                : "https://modisteria-back-production.up.railway.app/api/citas/createCita";
+            const method = selectedCategoria.id ? "PUT" : "POST";
+            const url = selectedCategoria.id 
+                ? `https://modisteria-back-production.up.railway.app/api/categorias/updateCategoria/${selectedCategoria.id}`
+                : "https://modisteria-back-production.up.railway.app/api/categorias/createCategoria";
 
-            const response = await triggerFetch(url, method, selectedCita, { "x-token": token });
+            const response = await triggerFetch(url, method, selectedCategoria, { "x-token": token });
 
             if (response.status === 200 || response.status === 201) {
-                console.log(response.data.msg);
-                if (method === "PUT") {
-                    setData((prevData) =>
-                        prevData.map((cita) =>
-                            cita.id === selectedCita.id ? selectedCita : cita
-                        )
-                    );
-                } else {
-                    const newCita = { ...selectedCita, id: data.length + 1 }; 
-                    setData((prevData) => [...prevData, newCita]);
+                if (response.data.msg) {
+                    console.log(response.data.msg);
+                    if (method === "PUT") {
+                        setData((prevData) =>
+                            prevData.map((categoria) =>
+                                categoria.id === selectedCategoria.id ? selectedCategoria : categoria
+                            )
+                        );
+                    } else {
+                        const newCategoria = { ...selectedCategoria, id: data.length + 1 }; 
+                        setData((prevData) => [...prevData, newCategoria]);
+                    }
                 }
                 handleClose();
             } else {
@@ -90,15 +89,21 @@ const CitaDashboard = () => {
     };
 
     const handleDelete = (id) => {
-        const cita = data.find((cita) => cita.id === id);
-        setCitaToDelete(cita);
+        const categoria = data.find((categoria) => categoria.id === id);
+        setCategoriaToDelete(categoria);
         setOpenDeleteDialog(true);
     };
 
     const confirmDelete = async () => {
+        if (categoriaToDelete.estadoId === "activo") {
+            alert("No se puede eliminar la categoría porque está activa.");
+            setOpenDeleteDialog(false);
+            return;
+        }
+
         try {
             const response = await triggerFetch(
-                `https://modisteria-back-production.up.railway.app/api/citas/deleteCita/${citaToDelete.id}`,
+                `https://modisteria-back-production.up.railway.app/api/categorias/deleteCategoria/${categoriaToDelete.id}`,
                 "DELETE",
                 null,
                 { "x-token": token }
@@ -106,12 +111,12 @@ const CitaDashboard = () => {
 
             if (response.status === 200 || response.status === 201) {
                 console.log("Respuesta de eliminación: ", response.data);
-                setData((prevData) => prevData.filter((cita) => cita.id !== citaToDelete.id));
+                setData((prevData) => prevData.filter((categoria) => categoria.id !== categoriaToDelete.id));
                 setOpenDeleteDialog(false);
-                setCitaToDelete(null);
+                setCategoriaToDelete(null);
             } else {
                 console.error("Error inesperado al eliminar datos: ", response.data);
-                alert("Error inesperado al eliminar la cita. Revisa la consola para más información.");
+                alert("Error inesperado al eliminar la categoría. Revisa la consola para más información.");
             }
         } catch (error) {
             console.error("Error al realizar la solicitud:", error);
@@ -121,18 +126,14 @@ const CitaDashboard = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setSelectedCita((prev) => ({ ...prev, [name]: value }));
+        setSelectedCategoria((prev) => ({ ...prev, [name]: value }));
     };
 
     const columns = [
         { field: "id", headerName: "ID", flex: 0.5 },
-        { field: "referencia", headerName: "Referencia", flex: 1 },
-        { field: "objetivo", headerName: "Objetivo", flex: 1 },
-        { field: "usuarioId", headerName: "Usuario ID", flex: 1 },
+        { field: "nombre", headerName: "Nombre", flex: 1 },
+        { field: "descripcion", headerName: "Descripción", flex: 1 },
         { field: "estadoId", headerName: "Estado ID", flex: 1 },
-        { field: "precio", headerName: "Precio", flex: 1 },
-        { field: "tiempo", headerName: "Tiempo", flex: 1 },
-        { field: "fecha", headerName: "Fecha y Hora", flex: 1 }, // Cambiar el encabezado para reflejar el formato
         {
             field: "acciones",
             headerName: "Acciones",
@@ -152,9 +153,9 @@ const CitaDashboard = () => {
 
     return (
         <Box m="20px">
-            <Header title="CITAS" subtitle="Lista de citas" />
+            <Header title="CATEGORÍAS" subtitle="Lista de categorías" />
             <Button variant="contained" color="primary" onClick={handleAdd} sx={{ mb: 2 }}>
-                Agregar Cita
+                Agregar Categoría
             </Button>
             <Box m="40px 0 0 0" height="75vh" sx={{
                 "& .MuiDataGrid-root": { border: "none" },
@@ -166,7 +167,7 @@ const CitaDashboard = () => {
                 "& .MuiDataGrid-toolbarContainer .MuiButton-text": { color: `${colors.grey[100]} !important` },
             }}>
                 {loading ? (
-                    <Typography>Cargando citas...</Typography>
+                    <Typography>Cargando categorías...</Typography>
                 ) : (
                     <DataGrid 
                         rows={data} 
@@ -176,38 +177,28 @@ const CitaDashboard = () => {
                 )}
             </Box>
 
-            {/* Modal para Agregar/Editar Cita */}
+            {/* Modal para Agregar/Editar Categoría */}
             <Dialog open={openModal} onClose={handleClose}>
-                <DialogTitle>{selectedCita?.id ? "Editar Cita" : "Agregar Cita"}</DialogTitle>
+                <DialogTitle>{selectedCategoria?.id ? "Editar Categoría" : "Agregar Categoría"}</DialogTitle>
                 <DialogContent>
                     <TextField
                         margin="dense"
-                        name="referencia"
-                        label="Referencia"
+                        name="nombre"
+                        label="Nombre"
                         type="text"
                         fullWidth
                         variant="outlined"
-                        value={selectedCita?.referencia || ""}
+                        value={selectedCategoria?.nombre || ""}
                         onChange={handleInputChange}
                     />
                     <TextField
                         margin="dense"
-                        name="objetivo"
-                        label="Objetivo"
+                        name="descripcion"
+                        label="Descripción"
                         type="text"
                         fullWidth
                         variant="outlined"
-                        value={selectedCita?.objetivo || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="usuarioId"
-                        label="Usuario ID"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCita?.usuarioId || ""}
+                        value={selectedCategoria?.descripcion || ""}
                         onChange={handleInputChange}
                     />
                     <TextField
@@ -217,37 +208,7 @@ const CitaDashboard = () => {
                         type="text"
                         fullWidth
                         variant="outlined"
-                        value={selectedCita?.estadoId || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="precio"
-                        label="Precio"
-                        type="number"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCita?.precio || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="tiempo"
-                        label="Tiempo"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCita?.tiempo || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="fecha"
-                        label="Fecha y Hora"
-                        type="datetime-local"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCita?.fecha || ""}
+                        value={selectedCategoria?.estadoId || ""}
                         onChange={handleInputChange}
                     />
                 </DialogContent>
@@ -261,7 +222,7 @@ const CitaDashboard = () => {
             <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
                 <DialogTitle>Confirmar Eliminación</DialogTitle>
                 <DialogContent>
-                    <Typography>¿Estás seguro de que deseas eliminar la cita "{citaToDelete?.referencia}"?</Typography>
+                    <Typography>¿Estás seguro de que deseas eliminar la categoría "{categoriaToDelete?.nombre}"?</Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenDeleteDialog(false)}>Cancelar</Button>
@@ -272,4 +233,4 @@ const CitaDashboard = () => {
     );
 };
 
-export default CitaDashboard;
+export default CategoriaPrenda;

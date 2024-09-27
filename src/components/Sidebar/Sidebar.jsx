@@ -168,8 +168,15 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
             <Item
-              title="Categoria"
-              to="/dashboard/categoria"
+              title="Categoria Insumos"
+              to="/dashboard/categoriaInsumos"
+              icon={<ContactsOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Categoria Prendas"
+              to="/dashboard/categoriaPrenda"
               icon={<ContactsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -189,8 +196,15 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
             <Item
-              title="Prendas"
-              to="/dashboard/prenda"
+              title="Cotizaciones"
+              to="/dashboard/cotizacion"
+              icon={<ContactsOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="PQRs"
+              to="/dashboard/pqrs"
               icon={<ContactsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -201,22 +215,15 @@ const Sidebar = () => {
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
-              Pages
+              {/* Pages */}
             </Typography>
-            <Item
+            {/* <Item
               title="Calendario"
               to="/dashboard/calendar"
               icon={<CalendarTodayOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
-            <Item
-              title="FAQ Page"
-              to="/dashboard/faq"
-              icon={<HelpOutlineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+            /> */}
 
             <Typography
               variant="h6"
@@ -243,13 +250,6 @@ const Sidebar = () => {
               title="Line Chart"
               to="/dashboard/line"
               icon={<TimelineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Geography Chart"
-              to="/dashboard/geography"
-              icon={<MapOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />

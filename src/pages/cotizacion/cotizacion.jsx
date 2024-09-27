@@ -7,76 +7,84 @@ import { useTheme } from "@mui/material";
 import useFetch from "../../hooks/useFetch";
 import { useJwt } from "../../context/JWTContext";
 
-const CitaDashboard = () => {
+const Cotizacion = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const { loading, triggerFetch } = useFetch();
-    const { token } = useJwt(); // Obtener el token del contexto
+    const { token } = useJwt();
 
     const [data, setData] = useState([]);
     const [openModal, setOpenModal] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-    const [selectedCita, setSelectedCita] = useState(null);
-    const [citaToDelete, setCitaToDelete] = useState(null);
+    const [selectedCotizacion, setSelectedCotizacion] = useState(null);
+    const [cotizacionToDelete, setCotizacionToDelete] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             if (!token) {
-                console.error("Falta el token. El usuario puede necesitar iniciar sesión.");
-                return; // Salir si no hay token
+                console.error("No se ha proporcionado un token.");
+                return;
             }
 
-            const respuesta = await triggerFetch("https://modisteria-back-production.up.railway.app/api/citas/getAllCitas", "GET", null, { "x-token": token });
+            const respuesta = await triggerFetch(
+                "https://modisteria-back-production.up.railway.app/api/cotizaciones/getAllCotizaciones",
+                "GET",
+                null,
+                { "x-token": token }
+            );
+
             if (respuesta.status === 200 && respuesta.data) {
-                const citasConId = respuesta.data.map(cita => ({
-                    ...cita,
-                    id: cita.id || data.length + 1 
+                const cotizacionesConId = respuesta.data.map(cotizacion => ({
+                    ...cotizacion,
+                    id: cotizacion.id || data.length + 1 
                 }));
-                setData(citasConId);
-                console.log("Datos cargados: ", citasConId);
+                setData(cotizacionesConId);
+                console.log("Datos cargados: ", cotizacionesConId);
             } else {
                 console.error("Error al obtener datos: ", respuesta);
             }
         };
         fetchData();
-    }, [token, triggerFetch]);
+    }, [triggerFetch, token]);
 
     const handleEdit = (id) => {
-        const citaToEdit = data.find((cita) => cita.id === id);
-        setSelectedCita(citaToEdit);
+        const cotizacionToEdit = data.find((cotizacion) => cotizacion.id === id);
+        setSelectedCotizacion(cotizacionToEdit);
         setOpenModal(true);
     };
 
     const handleAdd = () => {
-        setSelectedCita({ referencia: "", objetivo: "", usuarioId: "", estadoId: "", precio: "", tiempo: "", fecha: "" });
+        setSelectedCotizacion({ estadoId: "", imagen: "", nombrePersona: "", valorDomicilio: "", valorPrendas: "", valorFinal: "", pedidoId: "", metodoPago: "" });
         setOpenModal(true);
     };
 
     const handleClose = () => {
         setOpenModal(false);
-        setSelectedCita(null);
+        setSelectedCotizacion(null);
     };
 
     const handleSave = async () => {
         try {
-            const method = selectedCita.id ? "PUT" : "POST";
-            const url = selectedCita.id 
-                ? `https://modisteria-back-production.up.railway.app/api/citas/updateCita/${selectedCita.id}`
-                : "https://modisteria-back-production.up.railway.app/api/citas/createCita";
+            const method = selectedCotizacion.id ? "PUT" : "POST";
+            const url = selectedCotizacion.id 
+                ? `https://modisteria-back-production.up.railway.app/api/cotizaciones/updateCotizacion/${selectedCotizacion.id}`
+                : "https://modisteria-back-production.up.railway.app/api/cotizaciones/createCotizacion";
 
-            const response = await triggerFetch(url, method, selectedCita, { "x-token": token });
+            const response = await triggerFetch(url, method, selectedCotizacion, { "x-token": token });
 
             if (response.status === 200 || response.status === 201) {
-                console.log(response.data.msg);
-                if (method === "PUT") {
-                    setData((prevData) =>
-                        prevData.map((cita) =>
-                            cita.id === selectedCita.id ? selectedCita : cita
-                        )
-                    );
-                } else {
-                    const newCita = { ...selectedCita, id: data.length + 1 }; 
-                    setData((prevData) => [...prevData, newCita]);
+                if (response.data.msg) {
+                    console.log(response.data.msg);
+                    if (method === "PUT") {
+                        setData((prevData) =>
+                            prevData.map((cotizacion) =>
+                                cotizacion.id === selectedCotizacion.id ? selectedCotizacion : cotizacion
+                            )
+                        );
+                    } else {
+                        const newCotizacion = { ...selectedCotizacion, id: data.length + 1 }; 
+                        setData((prevData) => [...prevData, newCotizacion]);
+                    }
                 }
                 handleClose();
             } else {
@@ -90,15 +98,15 @@ const CitaDashboard = () => {
     };
 
     const handleDelete = (id) => {
-        const cita = data.find((cita) => cita.id === id);
-        setCitaToDelete(cita);
+        const cotizacion = data.find((cotizacion) => cotizacion.id === id);
+        setCotizacionToDelete(cotizacion);
         setOpenDeleteDialog(true);
     };
 
     const confirmDelete = async () => {
         try {
             const response = await triggerFetch(
-                `https://modisteria-back-production.up.railway.app/api/citas/deleteCita/${citaToDelete.id}`,
+                `https://modisteria-back-production.up.railway.app/api/cotizaciones/deleteCotizacion/${cotizacionToDelete.id}`,
                 "DELETE",
                 null,
                 { "x-token": token }
@@ -106,12 +114,12 @@ const CitaDashboard = () => {
 
             if (response.status === 200 || response.status === 201) {
                 console.log("Respuesta de eliminación: ", response.data);
-                setData((prevData) => prevData.filter((cita) => cita.id !== citaToDelete.id));
+                setData((prevData) => prevData.filter((cotizacion) => cotizacion.id !== cotizacionToDelete.id));
                 setOpenDeleteDialog(false);
-                setCitaToDelete(null);
+                setCotizacionToDelete(null);
             } else {
                 console.error("Error inesperado al eliminar datos: ", response.data);
-                alert("Error inesperado al eliminar la cita. Revisa la consola para más información.");
+                alert("Error inesperado al eliminar la cotización. Revisa la consola para más información.");
             }
         } catch (error) {
             console.error("Error al realizar la solicitud:", error);
@@ -121,18 +129,19 @@ const CitaDashboard = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setSelectedCita((prev) => ({ ...prev, [name]: value }));
+        setSelectedCotizacion((prev) => ({ ...prev, [name]: value }));
     };
 
     const columns = [
         { field: "id", headerName: "ID", flex: 0.5 },
-        { field: "referencia", headerName: "Referencia", flex: 1 },
-        { field: "objetivo", headerName: "Objetivo", flex: 1 },
-        { field: "usuarioId", headerName: "Usuario ID", flex: 1 },
         { field: "estadoId", headerName: "Estado ID", flex: 1 },
-        { field: "precio", headerName: "Precio", flex: 1 },
-        { field: "tiempo", headerName: "Tiempo", flex: 1 },
-        { field: "fecha", headerName: "Fecha y Hora", flex: 1 }, // Cambiar el encabezado para reflejar el formato
+        { field: "imagen", headerName: "Imagen", flex: 1 },
+        { field: "nombrePersona", headerName: "Nombre Persona", flex: 1 },
+        { field: "valorDomicilio", headerName: "Valor Domicilio", flex: 1 },
+        { field: "valorPrendas", headerName: "Valor Prendas", flex: 1 },
+        { field: "valorFinal", headerName: "Valor Final", flex: 1 },
+        { field: "pedidoId", headerName: "Pedido ID", flex: 1 },
+        { field: "metodoPago", headerName: "Método de Pago", flex: 1 },
         {
             field: "acciones",
             headerName: "Acciones",
@@ -152,9 +161,9 @@ const CitaDashboard = () => {
 
     return (
         <Box m="20px">
-            <Header title="CITAS" subtitle="Lista de citas" />
+            <Header title="COTIZACIONES" subtitle="Lista de cotizaciones" />
             <Button variant="contained" color="primary" onClick={handleAdd} sx={{ mb: 2 }}>
-                Agregar Cita
+                Agregar Cotización
             </Button>
             <Box m="40px 0 0 0" height="75vh" sx={{
                 "& .MuiDataGrid-root": { border: "none" },
@@ -166,7 +175,7 @@ const CitaDashboard = () => {
                 "& .MuiDataGrid-toolbarContainer .MuiButton-text": { color: `${colors.grey[100]} !important` },
             }}>
                 {loading ? (
-                    <Typography>Cargando citas...</Typography>
+                    <Typography>Cargando cotizaciones...</Typography>
                 ) : (
                     <DataGrid 
                         rows={data} 
@@ -176,40 +185,10 @@ const CitaDashboard = () => {
                 )}
             </Box>
 
-            {/* Modal para Agregar/Editar Cita */}
+            {/* Modal para Agregar/Editar Cotización */}
             <Dialog open={openModal} onClose={handleClose}>
-                <DialogTitle>{selectedCita?.id ? "Editar Cita" : "Agregar Cita"}</DialogTitle>
+                <DialogTitle>{selectedCotizacion?.id ? "Editar Cotización" : "Agregar Cotización"}</DialogTitle>
                 <DialogContent>
-                    <TextField
-                        margin="dense"
-                        name="referencia"
-                        label="Referencia"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCita?.referencia || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="objetivo"
-                        label="Objetivo"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCita?.objetivo || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="usuarioId"
-                        label="Usuario ID"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCita?.usuarioId || ""}
-                        onChange={handleInputChange}
-                    />
                     <TextField
                         margin="dense"
                         name="estadoId"
@@ -217,37 +196,77 @@ const CitaDashboard = () => {
                         type="text"
                         fullWidth
                         variant="outlined"
-                        value={selectedCita?.estadoId || ""}
+                        value={selectedCotizacion?.estadoId || ""}
                         onChange={handleInputChange}
                     />
                     <TextField
                         margin="dense"
-                        name="precio"
-                        label="Precio"
-                        type="number"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCita?.precio || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="tiempo"
-                        label="Tiempo"
+                        name="imagen"
+                        label="Imagen"
                         type="text"
                         fullWidth
                         variant="outlined"
-                        value={selectedCita?.tiempo || ""}
+                        value={selectedCotizacion?.imagen || ""}
                         onChange={handleInputChange}
                     />
                     <TextField
                         margin="dense"
-                        name="fecha"
-                        label="Fecha y Hora"
-                        type="datetime-local"
+                        name="nombrePersona"
+                        label="Nombre Persona"
+                        type="text"
                         fullWidth
                         variant="outlined"
-                        value={selectedCita?.fecha || ""}
+                        value={selectedCotizacion?.nombrePersona || ""}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        name="valorDomicilio"
+                        label="Valor Domicilio"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        value={selectedCotizacion?.valorDomicilio || ""}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        name="valorPrendas"
+                        label="Valor Prendas"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        value={selectedCotizacion?.valorPrendas || ""}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        name="valorFinal"
+                        label="Valor Final"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        value={selectedCotizacion?.valorFinal || ""}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        name="pedidoId"
+                        label="Pedido ID"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        value={selectedCotizacion?.pedidoId || ""}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        name="metodoPago"
+                        label="Método de Pago"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        value={selectedCotizacion?.metodoPago || ""}
                         onChange={handleInputChange}
                     />
                 </DialogContent>
@@ -261,7 +280,7 @@ const CitaDashboard = () => {
             <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
                 <DialogTitle>Confirmar Eliminación</DialogTitle>
                 <DialogContent>
-                    <Typography>¿Estás seguro de que deseas eliminar la cita "{citaToDelete?.referencia}"?</Typography>
+                    <Typography>¿Estás seguro de que deseas eliminar la cotización "{cotizacionToDelete?.pedidoId}"?</Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenDeleteDialog(false)}>Cancelar</Button>
@@ -272,4 +291,4 @@ const CitaDashboard = () => {
     );
 };
 
-export default CitaDashboard;
+export default Cotizacion;

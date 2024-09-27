@@ -67,7 +67,7 @@ const Contacts = () => {
             const method = selectedUsuario.id ? "PUT" : "POST";
             const url = selectedUsuario.id 
                 ? `https://modisteria-back-production.up.railway.app/api/usuarios/updateUser/${selectedUsuario.id}`
-                : "https://modisteria-back-production.up.railway.app/api/usuarios/createUser";
+                : "https://modisteria-back-production.up.railway.app/api/usuarios/createUsuario";
 
             const response = await triggerFetch(url, method, selectedUsuario, { "x-token": token });
 

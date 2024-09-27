@@ -11,20 +11,20 @@ import Citas from "./pages/Citas/Citas";
 import Perfil from "./pages/perfil/Perfil";
 import Venta from "./pages/venta/Venta";
 import Contacts from "./pages/contacts/index";
-import Categoria from "./pages/categoria/categoria";
 import CitasDashboard from "./pages/citasDashboard/citas";
 import Insumo from "./pages/insumos/insumo";
 import Roles from "./pages/roles/roles";
 import Permisos from "./pages/permisos/permisos";
-import Prenda from "./pages/prenda/prenda";
 import Ventas from "./pages/ventas/index";
 import Bar from "./pages/bar/index";
 import Pie from "./pages/pie/index";
 import Line from "./pages/line/index";
-import FAQ from "./pages/faq/index";
-// import Calendar from "./pages/calendar/calendar";
 import Dashboard from "./pages/dashboard/index";
 import CatalogoDashboard from "./pages/catalogoDashboard/index";
+import Cotizacion from "./pages/cotizacion/cotizacion";
+import PQRs from "./pages/PQRs/PQRs";
+import CategoriaInsumos from "./pages/categoriaInsumo/categoriaInsumo";
+import CategoriaPrenda from "./pages/categoriaPrenda/categoriaPrenda";
 function App() {
   return (
     <>
@@ -42,17 +42,18 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="/dashboard/contacts" element={<Contacts />} />
           <Route path="/dashboard/catalogo" element={<CatalogoDashboard />} />
-          <Route path="/dashboard/categoria" element={<Categoria />} />
+          <Route path="/dashboard/categoriaInsumos" element={<CategoriaInsumos />} />
+          <Route path="/dashboard/categoriaPrenda" element={<CategoriaPrenda />} />
           <Route path="/dashboard/cita" element={<CitasDashboard />} />
           <Route path="/dashboard/insumo" element={<Insumo />} />
+          <Route path="/dashboard/cotizacion" element={<Cotizacion />} />
           <Route path="/dashboard/roles" element={<Roles />} />
           <Route path="/dashboard/permisos" element={<Permisos />} />
-          <Route path="/dashboard/prenda" element={<Prenda />} />
           <Route path="/dashboard/ventas" element={<Ventas />} />
           <Route path="/dashboard/bar" element={<Bar />} />
           <Route path="/dashboard/pie" element={<Pie />} />
           <Route path="/dashboard/line" element={<Line />} />
-          <Route path="/dashboard/faq" element={<FAQ />} />
+          <Route path="/dashboard/pqrs" element={<PQRs />} />
           {/* <Route path="/calendar" element={<Calendar />} /> */}
         </Route>
         <Route path="*" element={<Error404 />}></Route>
