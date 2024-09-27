@@ -1,19 +1,48 @@
 import { useState } from "react";
-import { formatDateSpanish, formaTime } from "../../assets/constants.d";
+import {
+  formatDateSpanish,
+  formaTime,
+  urlBase,
+} from "../../assets/constants.d";
 import { Cancel, Alert } from "../svg/Svg";
 import Modal from "../modal/Modal";
 import useFetch from "../../hooks/useFetch";
-export default function CitaComponente({ value, typeAppointment }) {
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+export default function CitaComponente({ value, typeAppointment, token }) {
   const [showModal2, setShowModal2] = useState(false);
   const toggleModal2 = () => {
     setShowModal2(!showModal2);
   };
+  const navigate = useNavigate();
   const { triggerFetch: deleteCita } = useFetch();
   const [showModal3, setShowModal3] = useState(false);
   const toggleModal3 = () => {
     setShowModal3(!showModal3);
   };
-  console.log(typeAppointment);
+
+  const handleCancelarCita = async () => {
+    const response = await deleteCita(
+      `${urlBase}citas/deleteCita/${value.id}`,
+      "DELETE",
+      null,
+      { "x-token": token }
+    );
+    if (response.status === 400) {
+      toast.error(`${response.data.message}!`, {
+        toastId: "errorDeleteCita",
+        autoClose: 1500,
+      });
+    } else if (response.status === 201) {
+      toast.success(`${response.data.msg} con éxito!`, {
+        toastId: "DeleteCita",
+        autoClose: 1500,
+        onClose: () => {
+          return navigate("/perfil");
+        },
+      });
+    }
+  };
 
   return (
     <div key={value.id} className="cartasCitas">
@@ -72,7 +101,13 @@ export default function CitaComponente({ value, typeAppointment }) {
             <span>
               Deseas cancelar la Cita del {formatDateSpanish(value.fecha)}?
             </span>
-            <button className="btnCancelarCita" onClick={toggleModal3}>
+            <button
+              className="btnCancelarCita"
+              onClick={() => {
+                toggleModal2();
+                toggleModal3();
+              }}
+            >
               <span>Continuar</span>
             </button>
           </div>
@@ -85,17 +120,18 @@ export default function CitaComponente({ value, typeAppointment }) {
           <div className="modalConfirmar">
             <Alert size={"150px"} color={"rgb(187, 25, 25)"}></Alert> <br />
             <span>Estas seguro de cancelar tu Cita con la modista?</span>
+            <br />
+            <span>Aún no se ha realizado la cotización</span>
             <div>
               <button
                 className="btnCancelarCita"
                 onClick={() => {
                   toggleModal3();
-                  toggleModal2();
                 }}
               >
                 <span>Cancelar</span>
               </button>
-              <button className="btnCancelarCita">
+              <button onClick={handleCancelarCita} className="btnCancelarCita">
                 <span>Confirmar</span>
               </button>
             </div>
@@ -103,20 +139,16 @@ export default function CitaComponente({ value, typeAppointment }) {
         </Modal>
       )}
       {typeAppointment === "10" && (
-        <Modal show={showModal3} onClose={toggleModal3}>
+        <Modal show={showModal2} onClose={toggleModal2}>
           <div className="modalConfirmar">
             <Alert size={"150px"} color={"rgb(187, 25, 25)"}></Alert> <br />
-            <span>Estas seguro de cancelar tu Cita con la modista?</span>
+            <span>Información sobre cita</span>
+            <span>Tiempo estimado: 4 horas</span>
+            <span>Precio cita: $40000</span>
             <button className="btnCancelarCita">
               <span>Confirmar</span>
             </button>
-            <button
-              className="btnCancelarCita"
-              onClick={() => {
-                toggleModal3();
-                toggleModal2();
-              }}
-            >
+            <button className="btnCancelarCita" onClick={handleCancelarCita}>
               <span>Cancelar</span>
             </button>
           </div>

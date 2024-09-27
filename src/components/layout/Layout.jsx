@@ -13,7 +13,6 @@ import ProductoCarrito from "../productoCarrito/ProductoCarrito";
 import { useEffect } from "react";
 export default function Layout() {
   const [cartVisible, setCartVisible] = useState(false);
-
   const { token, cleanToken } = useJwt();
   const {
     cartData,
@@ -86,7 +85,7 @@ export default function Layout() {
             <li className="navItem">
               <Link to={"/cita"}>Citas</Link>
             </li>
-            {token ? (
+            {payload?.role.id === 2 ? (
               <li className="navItem">
                 <Link title="Perfil" to={"/dashboard"}>
                   Dashboard

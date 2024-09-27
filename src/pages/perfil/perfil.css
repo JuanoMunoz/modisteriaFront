@@ -452,3 +452,92 @@
   text-decoration: underline;
   scale: 1.12;
 }
+
+.ultimaVenta {
+  margin-top: 20px; /* Espacio superior */
+  padding: 10px; /* Espaciado interno */
+  text-align: left; /* Alinear el texto a la izquierda */
+  margin-left: 40px;
+}
+
+.ultimaVenta h1 {
+  font-size: 4rem; /* Tamaño de fuente */
+  font-weight: bold; /* Negrita */
+  margin: 0; /* Eliminar margen */
+}
+
+.ultimaVenta h1 span {
+  display: block; /* Hacer que "Venta" esté en una nueva línea */
+  font-size: 3rem; /* Tamaño de fuente para "Venta" */
+  font-weight: normal; /* Peso normal para "Venta" */
+}
+
+.misVentas {
+  margin-top: 120px;
+  background-color: black;
+  padding: 30px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  text-align: start;
+  width: 745px;
+}
+
+.fechaFactura {
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-align: left; /* Alinear a la izquierda */
+  border-bottom: 2px solid rgb(187, 14, 202); /* Línea debajo de la fecha */
+  padding-bottom: 10px; /* Espacio debajo de la fecha */
+}
+
+.nombreFactura {
+  color: white;
+  font-size: 18px;
+  margin: 15px 0; /* Espacio alrededor del nombre */
+}
+
+.productosFactura {
+  display: flex;
+  flex-direction: column; /* Cambiar a columna para disposición vertical */
+  gap: 20px; /* Espacio entre productos */
+}
+
+.producto {
+  background-color: rgb(45, 45, 45);
+  color: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.3s;
+}
+
+.producto:hover {
+  background-color: rgb(187, 14, 202);
+}
+
+.producto h4 {
+  font-size: 18px;
+  margin: 5px 0;
+  font-weight: bold;
+}
+
+.producto p {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 2px 0;
+}
+
+.valoresFactura {
+  margin-top: 20px; /* Espacio superior */
+  color: white; /* Color del texto */
+}
+
+.valoresFactura p {
+  font-size: 16px; /* Tamaño de la fuente para los valores */
+  margin: 5px 0; /* Espacio entre las líneas */
+}

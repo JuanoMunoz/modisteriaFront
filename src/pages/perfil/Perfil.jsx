@@ -19,7 +19,10 @@ import useFetch from "../../hooks/useFetch";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import useIsFirstRender from "../../hooks/useIsMount";
-import constants, { urlBase } from "../../assets/constants.d";
+import constants, {
+  formatDateSpanish,
+  urlBase,
+} from "../../assets/constants.d";
 import Loading from "../../components/loading/Loading";
 import CitaComponente from "../../components/CitaComponente/CitaComponente";
 export default function Perfil() {
@@ -34,10 +37,14 @@ export default function Perfil() {
   const navigate = useNavigate();
   const [passwordAttempts, setPasswordAttemps] = useState(4);
   const [myAppointments, setMyAppointments] = useState();
-  const [typeAppointment, setTypeAppointment] = useState(null);
+  const [typeAppointment, setTypeAppointment] = useState("9");
+  const [lastSale, setLastSale] = useState(false);
   const { triggerFetch: fetchIsYourPass } = useFetch();
   const { triggerFetch: fetchChangePass } = useFetch();
+  console.log(lastSale);
   const { triggerFetch: fetchYourAppointments, loading: loadingAppointments } =
+    useFetch();
+  const { triggerFetch: fetchYourLastSale, loading: loadingLastSle } =
     useFetch();
   const [showModal, setShowModal] = useState(false);
   const toggleModal = () => {
@@ -46,6 +53,36 @@ export default function Perfil() {
   const onChangeTypeAppointment = (e) => {
     setTypeAppointment(e.target.value);
   };
+  console.log(lastSale[0]?.cotizacion.cotizacion_pedidos);
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetchYourAppointments(
+        `${urlBase}citas/getCitaByUserId/${payload?.id}${
+          typeAppointment !== null
+            ? `?estadoId=${typeAppointment}`
+            : "?estadoId=9"
+        }`,
+        "GET",
+        null,
+        { "x-token": token }
+      );
+      setMyAppointments(response.data);
+    };
+    fetchData();
+  }, [typeAppointment]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetchYourLastSale(
+        `${urlBase}ventas/getVentaByUsuarioId/${payload?.id}`,
+        "GET",
+        null,
+        { "x-token": token }
+      );
+      if (!Array.isArray(response.data)) return;
+      setLastSale([response.data[0]]);
+    };
+    fetchData();
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchYourAppointments(
@@ -257,6 +294,13 @@ export default function Perfil() {
                 </label>
               </div>
             </div>
+            {lastSale && (
+              <div class="ultimaVenta">
+                <h1>
+                  Última <span>Venta</span>
+                </h1>
+              </div>
+            )}
           </div>
 
           <div className="info2">
@@ -442,6 +486,7 @@ export default function Perfil() {
                 myAppointments.map((value) => (
                   <CitaComponente
                     typeAppointment={typeAppointment}
+                    token={token}
                     key={value.id}
                     value={value}
                   />
@@ -466,10 +511,39 @@ export default function Perfil() {
                 </div>
               )}
             </div>
-
             <div className="misDomicilios" style={{ color: "#000" }}>
               <span></span>
             </div>
+            {lastSale &&
+              lastSale.map((cita) => (
+                <div key={cita.id} class="misVentas">
+                  <div class="fechaFactura">
+                    Fecha: {formatDateSpanish(cita.fecha)}
+                  </div>
+                  <div class="nombreFactura">
+                    <h4>
+                      Nombre del Cliente:{" "}
+                      <span>{cita?.cotizacion.nombrePersona}</span>
+                    </h4>
+                  </div>
+                  <div class="productosFactura">
+                    {cita?.cotizacion.cotizacion_pedidos.map((pedido, idx) => (
+                      <div class="producto">
+                        <h4>Producto {idx + 1}</h4>
+                        <p>Cantidad: {pedido.pedido.cantidad}</p>
+                        <p>Precio: ${pedido.pedido.precioFinal}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div class="valoresFactura">
+                    <p>
+                      Valor del Domicilio: ${cita.cotizacion.valorDomicilio}
+                    </p>
+                    <p>Valor de las Prendas: ${cita.cotizacion.valorPrendas}</p>
+                    <p>Total: ${cita.cotizacion.valorFinal}</p>
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
       </section>

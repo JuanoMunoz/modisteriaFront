@@ -125,7 +125,11 @@ const useLLM = () => {
               )}).
 5. Si la fecha o la hora propuesta está dentro de una franja de citas ya agendadas, debes prohibir la cita y sugerir alternativas fuera de ese rango.
 
-Aquí están las franjas ocupadas: ${text}.  Si te solicitan una cita dentro de esas franjas horarias, debes informar al usuario que esa cita ya está ocupada y ofrecer alternativas que no interfieran con ese horario. Si no hay tiempo disponible ese mismo día, debes sugerir otra fecha hábil. Tu objetivo será poder llegar a un acuerdo con el usuario sí la cita que requiere no se puede agendar, PRIMERO DILE QUE LA FECHA NO SE PUEDE Y EXPLICALE EL PORQUÉ, luego dale alternativas que estén disponibles y cerca al día que el quiere, SI NO LLEGAN A UN ACUERDO SIMPLEMENTE MANDA NULL SIN COMILLAS EN FECHA EN TU RESPUESTA A GENERAR REPORTE.`,
+${
+  text === ""
+    ? "Por el momento no hay citas agendadas, sientete libre de agendar en el horario que quieras siempre que se cumplan las reglas pertinentes"
+    : `Aquí están las franjas ocupadas: ${text}}.  Si te solicitan una cita dentro de esas franjas horarias, debes informar al usuario que esa cita ya está ocupada y ofrecer alternativas que no interfieran con ese horario. Si no hay tiempo disponible ese mismo día, debes sugerir otra fecha hábil.`
+} Tu objetivo será poder llegar a un acuerdo con el usuario sí la cita que requiere no se puede agendar, PRIMERO DILE QUE LA FECHA NO SE PUEDE Y EXPLICALE EL PORQUÉ, luego dale alternativas que estén disponibles y cerca al día que el quiere, SI NO LLEGAN A UN ACUERDO SIMPLEMENTE MANDA NULL SIN COMILLAS EN FECHA EN TU RESPUESTA A GENERAR REPORTE.`,
             },
           ],
         },
@@ -141,7 +145,7 @@ Aquí están las franjas ocupadas: ${text}.  Si te solicitan una cita dentro de 
           role: "user",
           parts: [
             {
-              text: `Ok, ahora te voy a dar la información de la persona a la que vas a entender, se trata de ${payload?.nombre}. trata a esta persona cordialmente. al finalizar la cita recuerdale que en su correo ${payload?.email} se le avisará cuando la modista acepte la cita. además, recuerdale que para terminar la cita debe darle al botón de "agregar cita" arriba a la derecha`,
+              text: `Ok, ahora te voy a dar la información de la persona a la que vas a entender, se trata de ${payload?.nombre}. trata a esta persona cordialmente. al finalizar la cita recuerdale que en su correo PERSONAL, EL QUE PERTENECE AL USUARIO QUE TE HABLA ( ${payload?.email}) se le avisará cuando la modista acepte la cita. además, recuerdale que para terminar la cita debe darle al botón de "agregar cita" arriba a la derecha`,
             },
           ],
         },
