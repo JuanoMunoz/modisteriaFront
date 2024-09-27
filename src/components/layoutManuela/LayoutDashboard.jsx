@@ -24,7 +24,7 @@ export default function LayoutDashboard() {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <div className="app">
-            <Sidebar isSidebar={isSidebar} />
+            <Sidebar nombre={payload?.nombre} isSidebar={isSidebar} />
             <main className="content">
               <Topbar setIsSidebar={setIsSidebar} />
               <Outlet></Outlet>

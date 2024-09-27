@@ -4,7 +4,11 @@
 }
 .contenedorPerfil {
   display: flex;
-  gap: 40px;
+  gap: 110px;
+}
+
+.change-tipo-cita {
+  margin-top: 8rem;
 }
 
 .titulo {
@@ -152,8 +156,15 @@
   margin-top: 20px;
   background-color: black;
   padding: 30px;
+  box-sizing: border-box;
   border-radius: 10px;
   text-align: start;
+  display: flex;
+  width: 745px;
+  overflow-x: auto;
+  flex-direction: row-reverse;
+  gap: 20px;
+  scroll-behavior: smooth;
 }
 
 .subtituloCitas {
@@ -163,11 +174,9 @@
 }
 
 .cartasCitas {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-shrink: 0;
   gap: 20px;
-  margin-top: 40px;
-  text-align: start;
 }
 
 /*CARTA*/
@@ -198,6 +207,8 @@
   border-radius: 10px;
   padding: 15px;
   position: relative;
+  height: 100%;
+  box-sizing: border-box;
   top: -10px;
   display: grid;
   gap: 10px;
@@ -272,6 +283,12 @@
 .modal-header span {
   font-weight: bold;
   font-size: 18px;
+}
+.modal-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 /*BOTON MODAL CANCELAR CITA*/
@@ -358,4 +375,80 @@
 .modalActualizar span {
   margin: 0px;
   font-size: 12px;
+}
+
+.change-tipo-cita {
+  background-color: black;
+  padding: 30px;
+  border-radius: 12px;
+  color: white;
+  max-width: 300px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.change-tipo-cita h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: whitesmoke;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.change-tipo-cita .options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.change-tipo-cita .option {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #333;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 18px;
+  position: relative;
+}
+
+.change-tipo-cita .option:hover {
+  background-color: rgb(187, 14, 202);
+}
+
+.change-tipo-cita .option input {
+  margin-right: 15px;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  position: relative;
+  transition: 0.3s;
+}
+
+.change-tipo-cita .option input:checked {
+  background-color: rgb(111, 19, 120);
+  border: 2px solid rgb(187, 14, 202);
+}
+
+.change-tipo-cita .option label {
+  cursor: pointer;
+}
+
+.cartas-sin-citas h1 {
+  color: white;
+}
+.cartas-sin-citas h4 {
+  color: rgb(245, 233, 211);
+}
+.agendar-cita-boton-no-cita {
+  color: rgb(74, 148, 222);
+  margin-left: 5px;
+  cursor: pointer;
+}
+.agendar-cita-boton-no-cita:hover {
+  text-decoration: underline;
+  scale: 1.12;
 }

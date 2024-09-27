@@ -8,8 +8,6 @@ import {
   Mail,
   Rol,
   Key,
-  Cancel,
-  Alert,
   Password,
 } from "../../components/svg/Svg";
 import Modal from "../../components/modal/Modal";
@@ -18,11 +16,12 @@ import useDecodedJwt from "../../hooks/useJwt";
 import { useJwt } from "../../context/JWTContext";
 import { Navigate, useNavigate } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
-import Loading from "../../components/loading/Loading";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import useIsFirstRender from "../../hooks/useIsMount";
-import constants from "../../assets/constants.d";
+import constants, { urlBase } from "../../assets/constants.d";
+import Loading from "../../components/loading/Loading";
+import CitaComponente from "../../components/CitaComponente/CitaComponente";
 export default function Perfil() {
   const { token, cleanToken, saveToken } = useJwt();
   const payload = useDecodedJwt(token);
@@ -34,22 +33,35 @@ export default function Perfil() {
   const isFirstRender = useIsFirstRender();
   const navigate = useNavigate();
   const [passwordAttempts, setPasswordAttemps] = useState(4);
+  const [myAppointments, setMyAppointments] = useState();
+  const [typeAppointment, setTypeAppointment] = useState(null);
   const { triggerFetch: fetchIsYourPass } = useFetch();
   const { triggerFetch: fetchChangePass } = useFetch();
+  const { triggerFetch: fetchYourAppointments, loading: loadingAppointments } =
+    useFetch();
   const [showModal, setShowModal] = useState(false);
   const toggleModal = () => {
     setShowModal(!showModal);
   };
-
-  const [showModal2, setShowModal2] = useState(false);
-  const toggleModal2 = () => {
-    setShowModal2(!showModal2);
+  const onChangeTypeAppointment = (e) => {
+    setTypeAppointment(e.target.value);
   };
-
-  const [showModal3, setShowModal3] = useState(false);
-  const toggleModal3 = () => {
-    setShowModal3(!showModal3);
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetchYourAppointments(
+        `${urlBase}citas/getCitaByUserId/${payload?.id}${
+          typeAppointment !== null
+            ? `?estadoId=${typeAppointment}`
+            : "?estadoId=9"
+        }`,
+        "GET",
+        null,
+        { "x-token": token }
+      );
+      setMyAppointments(response.data);
+    };
+    fetchData();
+  }, [typeAppointment]);
 
   const [showModal4, setShowModal4] = useState(false);
   const toggleModal4 = () => {
@@ -158,6 +170,7 @@ export default function Perfil() {
   return (
     <>
       <Metadata title={"Perfil - Modistería Doña Luz"}></Metadata>
+      {loadingAppointments && <Loading></Loading>}
       {!token && <Navigate to={"/"} replace={true} />}
       <div className="titulo">
         <h1>Mi Perfil</h1>
@@ -166,26 +179,84 @@ export default function Perfil() {
 
       <section className="miPerfil">
         <div className="contenedorPerfil">
-          <div className="info1">
-            <div className="imgNombre">
-              <img src={fotoPerfil} alt="" className="fotoPerfil" />
+          <div>
+            <div className="info1">
+              <div className="imgNombre">
+                <img src={fotoPerfil} alt="" className="fotoPerfil" />
+                <br />
+                <span>{payload?.nombre}</span>
+                <br />
+              </div>
+              <span>
+                <span className="subtitulo">
+                  <Key></Key>&nbsp;&nbsp;ID:
+                </span>{" "}
+                #{payload?.id}
+              </span>
               <br />
-              <span>{payload?.nombre}</span>
-              <br />
+              <span>
+                <span className="subtitulo">
+                  <Rol></Rol>&nbsp;&nbsp;Rol:
+                </span>{" "}
+                {payload?.role.nombre}
+              </span>
             </div>
-            <span>
-              <span className="subtitulo">
-                <Key></Key>&nbsp;&nbsp;ID:
-              </span>{" "}
-              #{payload?.id}
-            </span>
-            <br />
-            <span>
-              <span className="subtitulo">
-                <Rol></Rol>&nbsp;&nbsp;Rol:
-              </span>{" "}
-              {payload?.role.nombre}
-            </span>
+            <div className="change-tipo-cita">
+              <h2>TIPO CITA</h2>
+              <div className="options">
+                <label for="por-aprobar" className="option">
+                  <input
+                    type="radio"
+                    defaultChecked
+                    id="por-aprobar"
+                    name="tipoCita"
+                    value="9"
+                    onChange={onChangeTypeAppointment}
+                  />
+                  <span>Por aprobar</span>
+                </label>
+                <label for="aprobada" className="option">
+                  <input
+                    type="radio"
+                    id="aprobada"
+                    name="tipoCita"
+                    value="10"
+                    onChange={onChangeTypeAppointment}
+                  />
+                  <div>Aprobada</div>
+                </label>
+                <label for="aceptada" className="option">
+                  <input
+                    type="radio"
+                    id="aceptada"
+                    name="tipoCita"
+                    value="11"
+                    onChange={onChangeTypeAppointment}
+                  />
+                  <span>Aceptada</span>
+                </label>
+                <label for="cancelada" className="option">
+                  <input
+                    type="radio"
+                    id="cancelada"
+                    name="tipoCita"
+                    value="12"
+                    onChange={onChangeTypeAppointment}
+                  />
+                  <span>Cancelada</span>
+                </label>
+                <label for="terminada" className="option">
+                  <input
+                    type="radio"
+                    id="terminada"
+                    name="tipoCita"
+                    value="13"
+                    onChange={onChangeTypeAppointment}
+                  />
+                  <span>Terminada</span>
+                </label>
+              </div>
+            </div>
           </div>
 
           <div className="info2">
@@ -365,101 +436,39 @@ export default function Perfil() {
                 </button>
               </form>
             </Modal>
-
             <div className="misCitas">
               <span className="subtituloCitas">Mis Citas</span>
-
-              <div className="cartasCitas">
-                <div className="carta work">
-                  <div className="img-section">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      transform="rotate(45)"
-                      width="100"
-                      height="100"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#fff"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="icon icon-tabler icons-tabler-outline icon-tabler-calendar-month"
-                    >
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
-                      <path d="M16 3v4" />
-                      <path d="M8 3v4" />
-                      <path d="M4 11h16" />
-                      <path d="M7 14h.013" />
-                      <path d="M10.01 14h.005" />
-                      <path d="M13.01 14h.005" />
-                      <path d="M16.015 14h.005" />
-                      <path d="M13.015 17h.005" />
-                      <path d="M7.01 17h.005" />
-                      <path d="M10.01 17h.005" />
-                    </svg>{" "}
-                  </div>
-                  <div className="carta-desc">
-                    <div className="carta-header">
-                      <div className="carta-title">
-                        Cita <span>#1</span>
-                      </div>
-                      <button className="carta-menu" onClick={toggleModal2}>
-                        <div className="dot"></div>
-                        <div className="dot"></div>
-                        <div className="dot"></div>
-                      </button>
-                    </div>
-                    <div className="carta-time">
-                      3:01 <span>pm</span>
-                      <br />
-                      <p>
-                        Lorem ipsum dolor sit, amet consectetur adipisicing
-                        elit. Officia voluptas reiciendis saepe rerum suscipit
-                        mollitia obcaecati
-                      </p>
-                    </div>
-                    <p className="recent">23/9/2024</p>
-                  </div>
-                </div>
-
-                <Modal show={showModal2} onClose={toggleModal2}>
-                  <div className="modal-header">
-                    <Cancel color={"rgb(187, 25, 25)"} size={"150px"}></Cancel>
-                    <br />
-                    <span>Deseas cancelar la Cita del dia 23/9/2024?</span>
-                    <button className="btnCancelarCita" onClick={toggleModal3}>
-                      <span>Continuar</span>
-                    </button>
-                  </div>
-                </Modal>
-
-                {/*MODAL DE CONFIRMACIÓN*/}
-                <Modal show={showModal3} onClose={toggleModal3}>
-                  <div className="modalConfirmar">
-                    <Alert size={"150px"} color={"rgb(187, 25, 25)"}></Alert>{" "}
-                    <br />
-                    <span>
-                      Estas seguro de cancelar tu Cita con la modista?
-                    </span>
-                    <button className="btnCancelarCita">
-                      <span>Confirmar</span>
-                    </button>
-                    <button
-                      className="btnCancelarCita"
+              {myAppointments?.length >= 1 ? (
+                myAppointments.map((value) => (
+                  <CitaComponente
+                    typeAppointment={typeAppointment}
+                    key={value.id}
+                    value={value}
+                  />
+                ))
+              ) : (
+                <div
+                  className="cartas-sin-citas
+                "
+                >
+                  <h1>Sin Citas con este Estado </h1>
+                  <h4>
+                    No cuentas con ninguna cita asociada este tipo.{" "}
+                    <span
                       onClick={() => {
-                        toggleModal3();
-                        toggleModal2();
+                        navigate("/cita");
                       }}
+                      className="agendar-cita-boton-no-cita"
                     >
-                      <span>Cancelar</span>
-                    </button>
-                  </div>
-                </Modal>
-              </div>
+                      Agendar cita
+                    </span>
+                  </h4>
+                </div>
+              )}
             </div>
-            <div className="misDomicilios">
-              <span>Mis Domicilios</span>
+
+            <div className="misDomicilios" style={{ color: "#000" }}>
+              <span></span>
             </div>
           </div>
         </div>
