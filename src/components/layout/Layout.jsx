@@ -86,7 +86,17 @@ export default function Layout() {
             <li className="navItem">
               <Link to={"/cita"}>Citas</Link>
             </li>
-            <li className="navItem">Nosotros</li>
+            {token ? (
+              <li className="navItem">
+                <Link title="Perfil" to={"/dashboard"}>
+                  Dashboard
+                </Link>
+              </li>
+            ) : (
+              <li className="navItem">
+                <Link to={"/nosotros"}>Nosotros</Link>
+              </li>
+            )}
             {token ? (
               <>
                 {" "}
