@@ -18,6 +18,8 @@ const Insumos = () => {
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedInsumo, setSelectedInsumo] = useState(null);
     const [insumoToDelete, setInsumoToDelete] = useState(null);
+    const [openErrorModal, setOpenErrorModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -30,10 +32,12 @@ const Insumos = () => {
                     }));
                     setData(insumosConId);
                 } else {
-                    console.error("Error al obtener datos: ", respuesta);
+                    setErrorMessage("Error al obtener datos.");
+                    setOpenErrorModal(true);
                 }
             } catch (error) {
-                console.error("Error al realizar la solicitud:", error);
+                setErrorMessage("Error al realizar la solicitud.");
+                setOpenErrorModal(true);
             }
         };
         fetchData();
@@ -57,7 +61,8 @@ const Insumos = () => {
 
     const handleSave = async () => {
         if (!selectedInsumo.nombre || !selectedInsumo.cantidad) {
-            alert("Por favor, completa todos los campos requeridos.");
+            setErrorMessage("Por favor, completa todos los campos requeridos.");
+            setOpenErrorModal(true);
             return;
         }
 
@@ -81,12 +86,12 @@ const Insumos = () => {
                 });
                 handleClose();
             } else {
-                console.error("Error al guardar los datos: ", response.data);
-                alert("Error al guardar los datos. Revisa la consola para más detalles.");
+                setErrorMessage("Error al guardar los datos. Revisa la consola para más detalles.");
+                setOpenErrorModal(true);
             }
         } catch (error) {
-            console.error("Error al realizar la solicitud:", error);
-            alert("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
+            setErrorMessage("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
+            setOpenErrorModal(true);
         }
     };
 
@@ -98,7 +103,8 @@ const Insumos = () => {
 
     const confirmDelete = async () => {
         if (insumoToDelete.estadoId === "activo") {
-            alert("No se puede eliminar el insumo porque está activo.");
+            setErrorMessage("No se puede eliminar el insumo porque está activo.");
+            setOpenErrorModal(true);
             setOpenDeleteDialog(false);
             return;
         }
@@ -112,17 +118,16 @@ const Insumos = () => {
             );
 
             if (response.status === 200 || response.status === 201) {
-                console.log("Respuesta de eliminación: ", response.data);
                 setData((prevData) => prevData.filter((insumo) => insumo.id !== insumoToDelete.id));
                 setOpenDeleteDialog(false);
                 setInsumoToDelete(null);
             } else {
-                console.error("Error inesperado al eliminar datos: ", response.data);
-                alert("Error inesperado al eliminar el insumo. Revisa la consola para más información.");
+                setErrorMessage("Error inesperado al eliminar el insumo. Revisa la consola para más información.");
+                setOpenErrorModal(true);
             }
         } catch (error) {
-            console.error("Error al realizar la solicitud:", error);
-            alert("Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente.");
+            setErrorMessage("Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente.");
+            setOpenErrorModal(true);
         }
     };
 
@@ -241,6 +246,16 @@ const Insumos = () => {
                 <DialogActions>
                     <Button onClick={() => setOpenDeleteDialog(false)} color="primary">Cancelar</Button>
                     <Button onClick={confirmDelete} color="error">Eliminar</Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+                <DialogTitle>Error</DialogTitle>
+                <DialogContent>
+                    <Typography>{errorMessage}</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenErrorModal(false)} color="primary">Cerrar</Button>
                 </DialogActions>
             </Dialog>
         </Box>

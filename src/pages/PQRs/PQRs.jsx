@@ -18,6 +18,8 @@ const PQRs = () => {
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedPQR, setSelectedPQR] = useState(null);
     const [pqrToDelete, setPqrToDelete] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(""); 
+    const [openErrorModal, setOpenErrorModal] = useState(false); 
 
     useEffect(() => {
         const fetchData = async () => {
@@ -29,16 +31,20 @@ const PQRs = () => {
                         id: pqr.id || data.length + 1 
                     }));
                     setData(pqrsConId);
-                    console.log("Datos cargados: ", pqrsConId);
                 } else {
-                    console.error("Error al obtener datos: ", respuesta);
+                    handleError("Error al obtener datos.");
                 }
             } catch (error) {
-                console.error("Error al realizar la solicitud:", error.response ? error.response.data : error.message);
+                handleError(error.response ? error.response.data : error.message);
             }
         };
         fetchData();
     }, [triggerFetch, token]);
+
+    const handleError = (message) => {
+        setErrorMessage(message);
+        setOpenErrorModal(true);
+    };
 
     const handleEdit = (id) => {
         const pqrToEdit = data.find((pqr) => pqr.id === id);
@@ -78,12 +84,10 @@ const PQRs = () => {
                 }
                 handleClose();
             } else {
-                console.error("Error al guardar los datos: ", response.data);
-                alert("Error al guardar los datos. Revisa la consola para más detalles.");
+                handleError("Error al guardar los datos.");
             }
         } catch (error) {
-            console.error("Error al realizar la solicitud:", error);
-            alert("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
+            handleError("Ocurrió un error al realizar la solicitud.");
         }
     };
 
@@ -103,17 +107,14 @@ const PQRs = () => {
             );
 
             if (response.status === 200 || response.status === 201) {
-                console.log("Respuesta de eliminación: ", response.data);
                 setData((prevData) => prevData.filter((pqr) => pqr.id !== pqrToDelete.id));
                 setOpenDeleteDialog(false);
                 setPqrToDelete(null);
             } else {
-                console.error("Error inesperado al eliminar datos: ", response.data);
-                alert("Error inesperado al eliminar el PQR. Revisa la consola para más información.");
+                handleError("Error inesperado al eliminar datos.");
             }
         } catch (error) {
-            console.error("Error al realizar la solicitud:", error);
-            alert("Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente.");
+            handleError("Ocurrió un error al realizar la solicitud de eliminación.");
         }
     };
 
@@ -171,7 +172,6 @@ const PQRs = () => {
                 )}
             </Box>
 
-            {/* Modal para Agregar/Editar PQR */}
             <Dialog open={openModal} onClose={handleClose}>
                 <DialogTitle>{selectedPQR?.id ? "Editar PQR" : "Agregar PQR"}</DialogTitle>
                 <DialogContent>
@@ -222,7 +222,6 @@ const PQRs = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Diálogo de Confirmación de Eliminación */}
             <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
                 <DialogTitle>Confirmar Eliminación</DialogTitle>
                 <DialogContent>
@@ -231,6 +230,16 @@ const PQRs = () => {
                 <DialogActions>
                     <Button onClick={() => setOpenDeleteDialog(false)}>Cancelar</Button>
                     <Button onClick={confirmDelete} color="error">Eliminar</Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+                <DialogTitle>Error</DialogTitle>
+                <DialogContent>
+                    <Typography>{errorMessage}</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenErrorModal(false)}>Cerrar</Button>
                 </DialogActions>
             </Dialog>
         </Box>

@@ -18,25 +18,31 @@ const CategoriaPrenda = () => {
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedCategoria, setSelectedCategoria] = useState(null);
     const [categoriaToDelete, setCategoriaToDelete] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(""); 
+    const [openErrorModal, setOpenErrorModal] = useState(false); 
 
     useEffect(() => {
         const fetchData = async () => {
             const respuesta = await triggerFetch("https://modisteria-back-production.up.railway.app/api/categorias/getAllCategorias", "GET");
             if (respuesta.status === 200 && respuesta.data) {
                 const categoriasConId = respuesta.data
-                    .filter(categoria => categoria.tipo === 'prenda') // Filtrar solo tipos 'prenda'
+                    .filter(categoria => categoria.tipo === 'prenda')
                     .map(categoria => ({
                         ...categoria,
                         id: categoria.id || data.length + 1 
                     }));
                 setData(categoriasConId);
-                console.log("Datos cargados: ", categoriasConId);
             } else {
-                console.error("Error al obtener datos: ", respuesta);
+                handleError("Error al obtener datos.");
             }
         };
         fetchData();
     }, [triggerFetch]);
+
+    const handleError = (message) => {
+        setErrorMessage(message);
+        setOpenErrorModal(true);
+    };
 
     const handleEdit = (id) => {
         const categoriaToEdit = data.find((categoria) => categoria.id === id);
@@ -45,7 +51,7 @@ const CategoriaPrenda = () => {
     };
 
     const handleAdd = () => {
-        setSelectedCategoria({ nombre: "", descripcion: "", tipo: "prenda", estadoId: "" }); // Asignar tipo 'prenda' por defecto
+        setSelectedCategoria({ nombre: "", descripcion: "", tipo: "prenda", estadoId: "" });
         setOpenModal(true);
     };
 
@@ -79,12 +85,10 @@ const CategoriaPrenda = () => {
                 }
                 handleClose();
             } else {
-                console.error("Error al guardar los datos: ", response.data);
-                alert("Error al guardar los datos. Revisa la consola para más detalles.");
+                handleError("Error al guardar los datos. Revisa la consola para más detalles.");
             }
         } catch (error) {
-            console.error("Error al realizar la solicitud:", error);
-            alert("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
+            handleError("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
         }
     };
 
@@ -96,7 +100,7 @@ const CategoriaPrenda = () => {
 
     const confirmDelete = async () => {
         if (categoriaToDelete.estadoId === "activo") {
-            alert("No se puede eliminar la categoría porque está activa.");
+            handleError("No se puede eliminar la categoría porque está activa.");
             setOpenDeleteDialog(false);
             return;
         }
@@ -115,12 +119,10 @@ const CategoriaPrenda = () => {
                 setOpenDeleteDialog(false);
                 setCategoriaToDelete(null);
             } else {
-                console.error("Error inesperado al eliminar datos: ", response.data);
-                alert("Error inesperado al eliminar la categoría. Revisa la consola para más información.");
+                handleError("Error inesperado al eliminar la categoría. Revisa la consola para más información.");
             }
         } catch (error) {
-            console.error("Error al realizar la solicitud:", error);
-            alert("Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente.");
+            handleError("Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente.");
         }
     };
 
@@ -227,6 +229,17 @@ const CategoriaPrenda = () => {
                 <DialogActions>
                     <Button onClick={() => setOpenDeleteDialog(false)}>Cancelar</Button>
                     <Button onClick={confirmDelete} color="error">Eliminar</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Modal para mostrar errores */}
+            <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+                <DialogTitle>Error</DialogTitle>
+                <DialogContent>
+                    <Typography>{errorMessage}</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenErrorModal(false)}>Cerrar</Button>
                 </DialogActions>
             </Dialog>
         </Box>

@@ -17,7 +17,6 @@ import Roles from "./pages/roles/roles";
 import Permisos from "./pages/permisos/permisos";
 import Ventas from "./pages/ventas/index";
 import Bar from "./pages/bar/index";
-import Pie from "./pages/pie/index";
 import Line from "./pages/line/index";
 import Dashboard from "./pages/dashboard/index";
 import CatalogoDashboard from "./pages/catalogoDashboard/index";
@@ -51,7 +50,6 @@ function App() {
           <Route path="/dashboard/permisos" element={<Permisos />} />
           <Route path="/dashboard/ventas" element={<Ventas />} />
           <Route path="/dashboard/bar" element={<Bar />} />
-          <Route path="/dashboard/pie" element={<Pie />} />
           <Route path="/dashboard/line" element={<Line />} />
           <Route path="/dashboard/pqrs" element={<PQRs />} />
           {/* <Route path="/calendar" element={<Calendar />} /> */}

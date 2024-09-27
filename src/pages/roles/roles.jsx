@@ -16,6 +16,8 @@ const Roles = () => {
     const [data, setData] = useState([]);
     const [openModal, setOpenModal] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [openErrorDialog, setOpenErrorDialog] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     const [selectedRol, setSelectedRol] = useState(null);
     const [rolToDelete, setRolToDelete] = useState(null);
 
@@ -36,7 +38,8 @@ const Roles = () => {
                 console.log("Datos cargados: ", rolesConId);
             } else {
                 console.error("Error al obtener datos: ", respuesta);
-                alert(respuesta.data?.msg || "Error desconocido"); 
+                setErrorMessage(respuesta.data?.msg || "Error desconocido");
+                setOpenErrorDialog(true);
             }
         };
         fetchData();
@@ -82,11 +85,13 @@ const Roles = () => {
                 handleClose();
             } else {
                 console.error("Error al guardar los datos: ", response.data);
-                alert("Error al guardar los datos. Revisa la consola para más detalles.");
+                setErrorMessage("Error al guardar los datos. Revisa la consola para más detalles.");
+                setOpenErrorDialog(true);
             }
         } catch (error) {
             console.error("Error al realizar la solicitud:", error);
-            alert("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
+            setErrorMessage("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
+            setOpenErrorDialog(true);
         }
     };
 
@@ -113,11 +118,13 @@ const Roles = () => {
                 setRolToDelete(null);
             } else {
                 console.error("Error inesperado al eliminar datos: ", response.data);
-                alert(response.data.message || "Error inesperado al eliminar el rol. Revisa la consola para más información.");
+                setErrorMessage(response.data.message || "Error inesperado al eliminar el rol. Revisa la consola para más información.");
+                setOpenErrorDialog(true);
             }
         } catch (error) {
             console.error("Error al realizar la solicitud:", error);
-            alert("Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente.");
+            setErrorMessage("Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente.");
+            setOpenErrorDialog(true);
         }
     };
 
@@ -224,6 +231,16 @@ const Roles = () => {
                 <DialogActions>
                     <Button onClick={() => setOpenDeleteDialog(false)}>Cancelar</Button>
                     <Button onClick={confirmDelete} color="error">Eliminar</Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={openErrorDialog} onClose={() => setOpenErrorDialog(false)}>
+                <DialogTitle>Error</DialogTitle>
+                <DialogContent>
+                    <Typography>{errorMessage}</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenErrorDialog(false)}>Cerrar</Button>
                 </DialogActions>
             </Dialog>
         </Box>

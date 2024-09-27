@@ -18,6 +18,8 @@ const Permisos = () => {
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedPermiso, setSelectedPermiso] = useState(null);
     const [permisoToDelete, setPermisoToDelete] = useState(null);
+    const [openErrorModal, setOpenErrorModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -26,7 +28,8 @@ const Permisos = () => {
                 setData(respuesta.data);
                 console.log("Datos cargados: ", respuesta.data);
             } else {
-                console.error("Error al obtener datos: ", respuesta);
+                setErrorMessage("Error al obtener datos. Revisa la consola para más detalles.");
+                setOpenErrorModal(true);
             }
         };
         fetchData();
@@ -69,12 +72,13 @@ const Permisos = () => {
                 }
                 handleClose();
             } else {
-                console.error("Error al guardar los datos: ", response.data);
-                alert("Error al guardar los datos. Revisa la consola para más detalles.");
+                setErrorMessage("Error al guardar los datos. Revisa la consola para más detalles.");
+                setOpenErrorModal(true);
             }
         } catch (error) {
             console.error("Error al realizar la solicitud:", error);
-            alert("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
+            setErrorMessage("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
+            setOpenErrorModal(true);
         }
     };
 
@@ -86,7 +90,8 @@ const Permisos = () => {
 
     const confirmDelete = async () => {
         if (permisoToDelete.estadoId === "activo") {
-            alert("No se puede eliminar el permiso porque está activo.");
+            setErrorMessage("No se puede eliminar el permiso porque está activo.");
+            setOpenErrorModal(true);
             setOpenDeleteDialog(false);
             return;
         }
@@ -104,12 +109,13 @@ const Permisos = () => {
                 setOpenDeleteDialog(false);
                 setPermisoToDelete(null);
             } else {
-                console.error("Error inesperado al eliminar datos: ", response.data);
-                alert("Error inesperado al eliminar el permiso. Revisa la consola para más información.");
+                setErrorMessage("Error inesperado al eliminar el permiso. Revisa la consola para más información.");
+                setOpenErrorModal(true);
             }
         } catch (error) {
             console.error("Error al realizar la solicitud:", error);
-            alert("Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente.");
+            setErrorMessage("Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente.");
+            setOpenErrorModal(true);
         }
     };
 
@@ -210,6 +216,16 @@ const Permisos = () => {
                 <DialogActions>
                     <Button onClick={() => setOpenDeleteDialog(false)}>Cancelar</Button>
                     <Button onClick={confirmDelete} color="error">Eliminar</Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+                <DialogTitle>Error</DialogTitle>
+                <DialogContent>
+                    <Typography>{errorMessage}</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenErrorModal(false)}>Cerrar</Button>
                 </DialogActions>
             </Dialog>
         </Box>
