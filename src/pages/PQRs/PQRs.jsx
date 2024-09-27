@@ -7,7 +7,7 @@ import { useTheme } from "@mui/material";
 import useFetch from "../../hooks/useFetch";
 import { useJwt } from "../../context/JWTContext";
 
-const Categoria = () => {
+const PQRs = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const { loading, triggerFetch } = useFetch();
@@ -16,64 +16,65 @@ const Categoria = () => {
     const [data, setData] = useState([]);
     const [openModal, setOpenModal] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-    const [selectedCategoria, setSelectedCategoria] = useState(null);
-    const [categoriaToDelete, setCategoriaToDelete] = useState(null);
+    const [selectedPQR, setSelectedPQR] = useState(null);
+    const [pqrToDelete, setPqrToDelete] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
-            const respuesta = await triggerFetch("https://modisteria-back-production.up.railway.app/api/categorias/getAllCategorias", "GET");
-            if (respuesta.status === 200 && respuesta.data) {
-                const categoriasConId = respuesta.data.map(categoria => ({
-                    ...categoria,
-                    id: categoria.id || data.length + 1 
-                }));
-                setData(categoriasConId);
-                console.log("Datos cargados: ", categoriasConId);
-            } else {
-                console.error("Error al obtener datos: ", respuesta);
+            try {
+                const respuesta = await triggerFetch("https://modisteria-back-production.up.railway.app/api/pqrs/getAllPQRS", "GET", null, { "x-token": token });
+                if (respuesta.status === 200 && respuesta.data) {
+                    const pqrsConId = respuesta.data.map(pqr => ({
+                        ...pqr,
+                        id: pqr.id || data.length + 1 
+                    }));
+                    setData(pqrsConId);
+                    console.log("Datos cargados: ", pqrsConId);
+                } else {
+                    console.error("Error al obtener datos: ", respuesta);
+                }
+            } catch (error) {
+                console.error("Error al realizar la solicitud:", error.response ? error.response.data : error.message);
             }
         };
         fetchData();
-    }, [triggerFetch]);
+    }, [triggerFetch, token]);
 
     const handleEdit = (id) => {
-        const categoriaToEdit = data.find((categoria) => categoria.id === id);
-        setSelectedCategoria(categoriaToEdit);
+        const pqrToEdit = data.find((pqr) => pqr.id === id);
+        setSelectedPQR(pqrToEdit);
         setOpenModal(true);
     };
 
     const handleAdd = () => {
-        setSelectedCategoria({ nombre: "", descripcion: "", tipo: "", estadoId: "" });
+        setSelectedPQR({ tipo: "", motivo: "", domicilioId: "", usuarioId: "" });
         setOpenModal(true);
     };
 
     const handleClose = () => {
         setOpenModal(false);
-        setSelectedCategoria(null);
+        setSelectedPQR(null);
     };
 
     const handleSave = async () => {
         try {
-            const method = selectedCategoria.id ? "PUT" : "POST";
-            const url = selectedCategoria.id 
-                ? `https://modisteria-back-production.up.railway.app/api/categorias/updateCategoria/${selectedCategoria.id}`
-                : "https://modisteria-back-production.up.railway.app/api/categorias/createCategoria";
+            const method = selectedPQR.id ? "PUT" : "POST";
+            const url = selectedPQR.id 
+                ? `https://modisteria-back-production.up.railway.app/api/pqrs/updatePQRS/${selectedPQR.id}`
+                : "https://modisteria-back-production.up.railway.app/api/pqrs/createPQRS";
 
-            const response = await triggerFetch(url, method, selectedCategoria, { "x-token": token });
+            const response = await triggerFetch(url, method, selectedPQR, { "x-token": token });
 
             if (response.status === 200 || response.status === 201) {
-                if (response.data.msg) {
-                    console.log(response.data.msg);
-                    if (method === "PUT") {
-                        setData((prevData) =>
-                            prevData.map((categoria) =>
-                                categoria.id === selectedCategoria.id ? selectedCategoria : categoria
-                            )
-                        );
-                    } else {
-                        const newCategoria = { ...selectedCategoria, id: data.length + 1 }; 
-                        setData((prevData) => [...prevData, newCategoria]);
-                    }
+                if (method === "PUT") {
+                    setData((prevData) =>
+                        prevData.map((pqr) =>
+                            pqr.id === selectedPQR.id ? selectedPQR : pqr
+                        )
+                    );
+                } else {
+                    const newPQR = { ...selectedPQR, id: data.length + 1 }; 
+                    setData((prevData) => [...prevData, newPQR]);
                 }
                 handleClose();
             } else {
@@ -87,21 +88,15 @@ const Categoria = () => {
     };
 
     const handleDelete = (id) => {
-        const categoria = data.find((categoria) => categoria.id === id);
-        setCategoriaToDelete(categoria);
+        const pqr = data.find((pqr) => pqr.id === id);
+        setPqrToDelete(pqr);
         setOpenDeleteDialog(true);
     };
 
     const confirmDelete = async () => {
-        if (categoriaToDelete.estadoId === "activo") {
-            alert("No se puede eliminar la categoría porque está activa.");
-            setOpenDeleteDialog(false);
-            return;
-        }
-
         try {
             const response = await triggerFetch(
-                `https://modisteria-back-production.up.railway.app/api/categorias/deleteCategoria/${categoriaToDelete.id}`,
+                `https://modisteria-back-production.up.railway.app/api/pqrs/deletePQRS/${pqrToDelete.id}`,
                 "DELETE",
                 null,
                 { "x-token": token }
@@ -109,12 +104,12 @@ const Categoria = () => {
 
             if (response.status === 200 || response.status === 201) {
                 console.log("Respuesta de eliminación: ", response.data);
-                setData((prevData) => prevData.filter((categoria) => categoria.id !== categoriaToDelete.id));
+                setData((prevData) => prevData.filter((pqr) => pqr.id !== pqrToDelete.id));
                 setOpenDeleteDialog(false);
-                setCategoriaToDelete(null);
+                setPqrToDelete(null);
             } else {
                 console.error("Error inesperado al eliminar datos: ", response.data);
-                alert("Error inesperado al eliminar la categoría. Revisa la consola para más información.");
+                alert("Error inesperado al eliminar el PQR. Revisa la consola para más información.");
             }
         } catch (error) {
             console.error("Error al realizar la solicitud:", error);
@@ -124,15 +119,15 @@ const Categoria = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setSelectedCategoria((prev) => ({ ...prev, [name]: value }));
+        setSelectedPQR((prev) => ({ ...prev, [name]: value }));
     };
 
     const columns = [
         { field: "id", headerName: "ID", flex: 0.5 },
-        { field: "nombre", headerName: "Nombre", flex: 1 },
-        { field: "descripcion", headerName: "Descripción", flex: 1 },
         { field: "tipo", headerName: "Tipo", flex: 1 },
-        { field: "estadoId", headerName: "Estado ID", flex: 1 },
+        { field: "motivo", headerName: "Motivo", flex: 1 },
+        { field: "domicilioId", headerName: "Domicilio ID", flex: 1 },
+        { field: "usuarioId", headerName: "Usuario ID", flex: 1 },
         {
             field: "acciones",
             headerName: "Acciones",
@@ -152,9 +147,9 @@ const Categoria = () => {
 
     return (
         <Box m="20px">
-            <Header title="CATEGORÍAS" subtitle="Lista de categorías" />
+            <Header title="PQRs" subtitle="Lista de PQRs" />
             <Button variant="contained" color="primary" onClick={handleAdd} sx={{ mb: 2 }}>
-                Agregar Categoría
+                Agregar PQR
             </Button>
             <Box m="40px 0 0 0" height="75vh" sx={{
                 "& .MuiDataGrid-root": { border: "none" },
@@ -166,7 +161,7 @@ const Categoria = () => {
                 "& .MuiDataGrid-toolbarContainer .MuiButton-text": { color: `${colors.grey[100]} !important` },
             }}>
                 {loading ? (
-                    <Typography>Cargando categorías...</Typography>
+                    <Typography>Cargando PQRs...</Typography>
                 ) : (
                     <DataGrid 
                         rows={data} 
@@ -176,30 +171,10 @@ const Categoria = () => {
                 )}
             </Box>
 
-            {/* Modal para Agregar/Editar Categoría */}
+            {/* Modal para Agregar/Editar PQR */}
             <Dialog open={openModal} onClose={handleClose}>
-                <DialogTitle>{selectedCategoria?.id ? "Editar Categoría" : "Agregar Categoría"}</DialogTitle>
+                <DialogTitle>{selectedPQR?.id ? "Editar PQR" : "Agregar PQR"}</DialogTitle>
                 <DialogContent>
-                    <TextField
-                        margin="dense"
-                        name="nombre"
-                        label="Nombre"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCategoria?.nombre || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="descripcion"
-                        label="Descripción"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCategoria?.descripcion || ""}
-                        onChange={handleInputChange}
-                    />
                     <TextField
                         margin="dense"
                         name="tipo"
@@ -207,17 +182,37 @@ const Categoria = () => {
                         type="text"
                         fullWidth
                         variant="outlined"
-                        value={selectedCategoria?.tipo || ""}
+                        value={selectedPQR?.tipo || ""}
                         onChange={handleInputChange}
                     />
                     <TextField
                         margin="dense"
-                        name="estadoId"
-                        label="Estado ID"
+                        name="motivo"
+                        label="Motivo"
                         type="text"
                         fullWidth
                         variant="outlined"
-                        value={selectedCategoria?.estadoId || ""}
+                        value={selectedPQR?.motivo || ""}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        name="domicilioId"
+                        label="Domicilio ID"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        value={selectedPQR?.domicilioId || ""}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        name="usuarioId"
+                        label="Usuario ID"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        value={selectedPQR?.usuarioId || ""}
                         onChange={handleInputChange}
                     />
                 </DialogContent>
@@ -231,7 +226,7 @@ const Categoria = () => {
             <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
                 <DialogTitle>Confirmar Eliminación</DialogTitle>
                 <DialogContent>
-                    <Typography>¿Estás seguro de que deseas eliminar la categoría "{categoriaToDelete?.nombre}"?</Typography>
+                    <Typography>¿Estás seguro de que deseas eliminar el PQR con ID "{pqrToDelete?.id}"?</Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenDeleteDialog(false)}>Cancelar</Button>
@@ -242,4 +237,4 @@ const Categoria = () => {
     );
 };
 
-export default Categoria;
+export default PQRs;
