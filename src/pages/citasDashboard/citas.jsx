@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from "@mui/material";
+import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, MenuItem } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header/Header";
@@ -11,35 +11,40 @@ const CitaDashboard = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const { loading, triggerFetch } = useFetch();
-    const { token } = useJwt(); // Obtener el token del contexto
+    const { token } = useJwt();
 
     const [data, setData] = useState([]);
     const [openModal, setOpenModal] = useState(false);
-    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [openErrorDialog, setOpenErrorDialog] = useState(false);
     const [selectedCita, setSelectedCita] = useState(null);
-    const [citaToDelete, setCitaToDelete] = useState(null);
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
             if (!token) {
-                console.error("Falta el token. El usuario puede necesitar iniciar sesión.");
-                return; // Salir si no hay token
+                console.error("No se ha proporcionado un token.");
+                return;
             }
 
-            const respuesta = await triggerFetch("https://modisteria-back-production.up.railway.app/api/citas/getAllCitas", "GET", null, { "x-token": token });
+            const respuesta = await triggerFetch(
+                "https://modisteria-back-production.up.railway.app/api/citas/getAllCitas",
+                "GET",
+                null,
+                { "x-token": token }
+            );
+
             if (respuesta.status === 200 && respuesta.data) {
                 const citasConId = respuesta.data.map(cita => ({
                     ...cita,
                     id: cita.id || data.length + 1 
                 }));
                 setData(citasConId);
-                console.log("Datos cargados: ", citasConId);
             } else {
                 console.error("Error al obtener datos: ", respuesta);
             }
         };
         fetchData();
-    }, [token, triggerFetch]);
+    }, [triggerFetch, token]);
 
     const handleEdit = (id) => {
         const citaToEdit = data.find((cita) => cita.id === id);
@@ -48,7 +53,7 @@ const CitaDashboard = () => {
     };
 
     const handleAdd = () => {
-        setSelectedCita({ referencia: "", objetivo: "", usuarioId: "", estadoId: "", precio: "", tiempo: "", fecha: "" });
+        setSelectedCita({ referencia: "", objetivo: "", usuarioId: "", estadoId: "", precio: "", tiempo: "" });
         setOpenModal(true);
     };
 
@@ -59,69 +64,49 @@ const CitaDashboard = () => {
 
     const handleSave = async () => {
         try {
-            const method = selectedCita.id ? "PUT" : "POST";
-            const url = selectedCita.id 
-                ? `https://modisteria-back-production.up.railway.app/api/citas/updateCita/${selectedCita.id}`
-                : "https://modisteria-back-production.up.railway.app/api/citas/createCita";
+            const updatedCita = { ...selectedCita };
 
-            const response = await triggerFetch(url, method, selectedCita, { "x-token": token });
-
-            if (response.status === 200 || response.status === 201) {
-                console.log(response.data.msg);
-                if (method === "PUT") {
-                    setData((prevData) =>
-                        prevData.map((cita) =>
-                            cita.id === selectedCita.id ? selectedCita : cita
-                        )
-                    );
-                } else {
-                    const newCita = { ...selectedCita, id: data.length + 1 }; 
-                    setData((prevData) => [...prevData, newCita]);
-                }
-                handleClose();
-            } else {
-                console.error("Error al guardar los datos: ", response.data);
-                alert("Error al guardar los datos. Revisa la consola para más detalles.");
-            }
-        } catch (error) {
-            console.error("Error al realizar la solicitud:", error);
-            alert("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
-        }
-    };
-
-    const handleDelete = (id) => {
-        const cita = data.find((cita) => cita.id === id);
-        setCitaToDelete(cita);
-        setOpenDeleteDialog(true);
-    };
-
-    const confirmDelete = async () => {
-        try {
             const response = await triggerFetch(
-                `https://modisteria-back-production.up.railway.app/api/citas/deleteCita/${citaToDelete.id}`,
-                "DELETE",
-                null,
+                selectedCita.id
+                    ? `https://modisteria-back-production.up.railway.app/api/citas/updateCita/${selectedCita.id}`
+                    : "https://modisteria-back-production.up.railway.app/api/citas/createCita",
+                selectedCita.id ? "PUT" : "POST",
+                updatedCita,
                 { "x-token": token }
             );
 
             if (response.status === 200 || response.status === 201) {
-                console.log("Respuesta de eliminación: ", response.data);
-                setData((prevData) => prevData.filter((cita) => cita.id !== citaToDelete.id));
-                setOpenDeleteDialog(false);
-                setCitaToDelete(null);
+                setData((prevData) =>
+                    selectedCita.id
+                        ? prevData.map((cita) => (cita.id === selectedCita.id ? updatedCita : cita))
+                        : [...prevData, { ...updatedCita, id: response.data.id }]
+                );
+                handleClose();
             } else {
-                console.error("Error inesperado al eliminar datos: ", response.data);
-                alert("Error inesperado al eliminar la cita. Revisa la consola para más información.");
+                setErrorMessage(response.data.msg || "Error al guardar los datos");
+                setOpenErrorDialog(true);
             }
         } catch (error) {
-            console.error("Error al realizar la solicitud:", error);
-            alert("Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente.");
+            setErrorMessage("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
+            setOpenErrorDialog(true);
         }
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setSelectedCita((prev) => ({ ...prev, [name]: value }));
+        const updatedValue = name === "estadoId" ? Number(value) : value;
+        setSelectedCita((prev) => ({ ...prev, [name]: updatedValue }));
+    };
+
+    const getEstadoTexto = (estadoId) => {
+        switch (estadoId) {
+            case 9: return "Por Aprobar";
+            case 10: return "Aprobada";
+            case 11: return "Aceptada";
+            case 12: return "Cancelada";
+            case 13: return "Terminada";
+            default: return "Desconocido";
+        }
     };
 
     const columns = [
@@ -129,10 +114,14 @@ const CitaDashboard = () => {
         { field: "referencia", headerName: "Referencia", flex: 1 },
         { field: "objetivo", headerName: "Objetivo", flex: 1 },
         { field: "usuarioId", headerName: "Usuario ID", flex: 1 },
-        { field: "estadoId", headerName: "Estado ID", flex: 1 },
+        {
+            field: "estadoId",
+            headerName: "Estado",
+            flex: 1,
+            valueGetter: (params) => getEstadoTexto(params.row.estadoId)
+        },
         { field: "precio", headerName: "Precio", flex: 1 },
         { field: "tiempo", headerName: "Tiempo", flex: 1 },
-        { field: "fecha", headerName: "Fecha y Hora", flex: 1 }, // Cambiar el encabezado para reflejar el formato
         {
             field: "acciones",
             headerName: "Acciones",
@@ -149,6 +138,22 @@ const CitaDashboard = () => {
             ),
         },
     ];
+
+    const handleDelete = async (id) => {
+        const response = await triggerFetch(
+            `https://modisteria-back-production.up.railway.app/api/citas/deleteCita/${id}`,
+            "DELETE",
+            null,
+            { "x-token": token }
+        );
+
+        if (response.status === 200 || response.status === 201) {
+            setData((prevData) => prevData.filter((cita) => cita.id !== id));
+        } else {
+            setErrorMessage("Error al eliminar la cita");
+            setOpenErrorDialog(true);
+        }
+    };
 
     return (
         <Box m="20px">
@@ -177,79 +182,49 @@ const CitaDashboard = () => {
             </Box>
 
             {/* Modal para Agregar/Editar Cita */}
-            <Dialog open={openModal} onClose={handleClose}>
+            <Dialog open={openModal} onClose={handleClose} maxWidth="sm" fullWidth>
                 <DialogTitle>{selectedCita?.id ? "Editar Cita" : "Agregar Cita"}</DialogTitle>
                 <DialogContent>
                     <TextField
                         margin="dense"
-                        name="referencia"
-                        label="Referencia"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCita?.referencia || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="objetivo"
-                        label="Objetivo"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCita?.objetivo || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="usuarioId"
-                        label="Usuario ID"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCita?.usuarioId || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
                         name="estadoId"
-                        label="Estado ID"
-                        type="text"
+                        label="Estado"
+                        select
                         fullWidth
                         variant="outlined"
                         value={selectedCita?.estadoId || ""}
                         onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="precio"
-                        label="Precio"
-                        type="number"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCita?.precio || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="tiempo"
-                        label="Tiempo"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCita?.tiempo || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="fecha"
-                        label="Fecha y Hora"
-                        type="datetime-local"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCita?.fecha || ""}
-                        onChange={handleInputChange}
-                    />
+                    >
+                        <MenuItem value={9}>Por Aprobar</MenuItem>
+                        <MenuItem value={10}>Aprobada</MenuItem>
+                        <MenuItem value={11}>Aceptada</MenuItem>
+                        <MenuItem value={12}>Cancelada</MenuItem>
+                        <MenuItem value={13}>Terminada</MenuItem>
+                    </TextField>
+                    {selectedCita?.estadoId === 10 && ( 
+                        <>
+                            <TextField
+                                margin="dense"
+                                name="precio"
+                                label="Precio"
+                                type="number"
+                                fullWidth
+                                variant="outlined"
+                                value={selectedCita?.precio || ""}
+                                onChange={handleInputChange}
+                            />
+                            <TextField
+                                margin="dense"
+                                name="tiempo"
+                                label="Tiempo"
+                                type="text"
+                                fullWidth
+                                variant="outlined"
+                                value={selectedCita?.tiempo || ""}
+                                onChange={handleInputChange}
+                            />
+                        </>
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancelar</Button>
@@ -257,15 +232,14 @@ const CitaDashboard = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Diálogo de Confirmación de Eliminación */}
-            <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
-                <DialogTitle>Confirmar Eliminación</DialogTitle>
+            {/* Modal de Error */}
+            <Dialog open={openErrorDialog} onClose={() => setOpenErrorDialog(false)}>
+                <DialogTitle>Error</DialogTitle>
                 <DialogContent>
-                    <Typography>¿Estás seguro de que deseas eliminar la cita "{citaToDelete?.referencia}"?</Typography>
+                    <Typography>{errorMessage}</Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setOpenDeleteDialog(false)}>Cancelar</Button>
-                    <Button onClick={confirmDelete} color="error">Eliminar</Button>
+                    <Button onClick={() => setOpenErrorDialog(false)}>Cerrar</Button>
                 </DialogActions>
             </Dialog>
         </Box>

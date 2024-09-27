@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from "@mui/material";
+import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, MenuItem } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header/Header";
@@ -16,6 +16,7 @@ const Cotizacion = () => {
     const [data, setData] = useState([]);
     const [openModal, setOpenModal] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [openErrorDialog, setOpenErrorDialog] = useState(false);
     const [selectedCotizacion, setSelectedCotizacion] = useState(null);
     const [cotizacionToDelete, setCotizacionToDelete] = useState(null);
 
@@ -65,27 +66,22 @@ const Cotizacion = () => {
 
     const handleSave = async () => {
         try {
-            const method = selectedCotizacion.id ? "PUT" : "POST";
-            const url = selectedCotizacion.id 
-                ? `https://modisteria-back-production.up.railway.app/api/cotizaciones/updateCotizacion/${selectedCotizacion.id}`
-                : "https://modisteria-back-production.up.railway.app/api/cotizaciones/createCotizacion";
+            const updatedCotizacion = { ...selectedCotizacion };
 
-            const response = await triggerFetch(url, method, selectedCotizacion, { "x-token": token });
+            const response = await triggerFetch(
+                `https://modisteria-back-production.up.railway.app/api/cotizaciones/updateCotizacion/${selectedCotizacion.id}`,
+                "PUT",
+                updatedCotizacion,
+                { "x-token": token }
+            );
 
             if (response.status === 200 || response.status === 201) {
-                if (response.data.msg) {
-                    console.log(response.data.msg);
-                    if (method === "PUT") {
-                        setData((prevData) =>
-                            prevData.map((cotizacion) =>
-                                cotizacion.id === selectedCotizacion.id ? selectedCotizacion : cotizacion
-                            )
-                        );
-                    } else {
-                        const newCotizacion = { ...selectedCotizacion, id: data.length + 1 }; 
-                        setData((prevData) => [...prevData, newCotizacion]);
-                    }
-                }
+                console.log(response.data.msg);
+                setData((prevData) =>
+                    prevData.map((cotizacion) =>
+                        cotizacion.id === selectedCotizacion.id ? updatedCotizacion : cotizacion
+                    )
+                );
                 handleClose();
             } else {
                 console.error("Error al guardar los datos: ", response.data);
@@ -100,7 +96,11 @@ const Cotizacion = () => {
     const handleDelete = (id) => {
         const cotizacion = data.find((cotizacion) => cotizacion.id === id);
         setCotizacionToDelete(cotizacion);
-        setOpenDeleteDialog(true);
+        if (cotizacion.estadoId !== 3) {
+            setOpenErrorDialog(true);
+        } else {
+            setOpenDeleteDialog(true);
+        }
     };
 
     const confirmDelete = async () => {
@@ -129,19 +129,35 @@ const Cotizacion = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setSelectedCotizacion((prev) => ({ ...prev, [name]: value }));
+        const updatedValue = name === "estadoId" ? Number(value) : value;
+        setSelectedCotizacion((prev) => ({ ...prev, [name]: updatedValue }));
+    };
+
+    // Función para convertir estadoId a texto
+    const getEstadoTexto = (estadoId) => {
+        switch (estadoId) {
+            case 3: return "Pendiente";
+            case 4: return "Aceptado";
+            case 5: return "Rechazado";
+            default: return "Desconocido";
+        }
     };
 
     const columns = [
         { field: "id", headerName: "ID", flex: 0.5 },
-        { field: "estadoId", headerName: "Estado ID", flex: 1 },
-        { field: "imagen", headerName: "Imagen", flex: 1 },
         { field: "nombrePersona", headerName: "Nombre Persona", flex: 1 },
+        { field: "imagen", headerName: "Imagen", flex: 1 },
         { field: "valorDomicilio", headerName: "Valor Domicilio", flex: 1 },
         { field: "valorPrendas", headerName: "Valor Prendas", flex: 1 },
         { field: "valorFinal", headerName: "Valor Final", flex: 1 },
-        { field: "pedidoId", headerName: "Pedido ID", flex: 1 },
         { field: "metodoPago", headerName: "Método de Pago", flex: 1 },
+        { field: "pedidoId", headerName: "Pedido ID", flex: 1 },
+        {
+            field: "estadoId",
+            headerName: "Estado",
+            flex: 1,
+            valueGetter: (params) => getEstadoTexto(params.row.estadoId) 
+        },
         {
             field: "acciones",
             headerName: "Acciones",
@@ -186,89 +202,23 @@ const Cotizacion = () => {
             </Box>
 
             {/* Modal para Agregar/Editar Cotización */}
-            <Dialog open={openModal} onClose={handleClose}>
+            <Dialog open={openModal} onClose={handleClose} maxWidth="sm" fullWidth>
                 <DialogTitle>{selectedCotizacion?.id ? "Editar Cotización" : "Agregar Cotización"}</DialogTitle>
                 <DialogContent>
                     <TextField
                         margin="dense"
                         name="estadoId"
-                        label="Estado ID"
-                        type="text"
+                        label="Estado"
+                        select
                         fullWidth
                         variant="outlined"
                         value={selectedCotizacion?.estadoId || ""}
                         onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="imagen"
-                        label="Imagen"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCotizacion?.imagen || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="nombrePersona"
-                        label="Nombre Persona"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCotizacion?.nombrePersona || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="valorDomicilio"
-                        label="Valor Domicilio"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCotizacion?.valorDomicilio || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="valorPrendas"
-                        label="Valor Prendas"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCotizacion?.valorPrendas || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="valorFinal"
-                        label="Valor Final"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCotizacion?.valorFinal || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="pedidoId"
-                        label="Pedido ID"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCotizacion?.pedidoId || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="metodoPago"
-                        label="Método de Pago"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCotizacion?.metodoPago || ""}
-                        onChange={handleInputChange}
-                    />
+                    >
+                        <MenuItem value={3}>Pendiente</MenuItem>
+                        <MenuItem value={4}>Aceptado</MenuItem>
+                        <MenuItem value={5}>Rechazado</MenuItem>
+                    </TextField>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancelar</Button>
@@ -280,11 +230,22 @@ const Cotizacion = () => {
             <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
                 <DialogTitle>Confirmar Eliminación</DialogTitle>
                 <DialogContent>
-                    <Typography>¿Estás seguro de que deseas eliminar la cotización "{cotizacionToDelete?.pedidoId}"?</Typography>
+                    <Typography>¿Estás seguro de que deseas eliminar la cotización?</Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenDeleteDialog(false)}>Cancelar</Button>
                     <Button onClick={confirmDelete} color="error">Eliminar</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Modal de Error al intentar eliminar */}
+            <Dialog open={openErrorDialog} onClose={() => setOpenErrorDialog(false)}>
+                <DialogTitle>Error</DialogTitle>
+                <DialogContent>
+                    <Typography>No puedes eliminar esta cotización porque su estado no es "Pendiente".</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenErrorDialog(false)}>Cerrar</Button>
                 </DialogActions>
             </Dialog>
         </Box>

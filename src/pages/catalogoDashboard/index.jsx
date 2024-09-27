@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from "@mui/material";
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+    Typography,
+    Switch,
+} from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header/Header";
@@ -40,15 +50,15 @@ const CatalogoDashboard = () => {
     };
 
     const handleAdd = () => {
-        setSelectedContact({ producto: "", precio: "", descripcion: "", imagen: "", talla: "", categoriaId: "", estadoId: "" });
-        setImageFile(null); 
+        setSelectedContact({ producto: "", precio: "", descripcion: "", imagen: "", talla: "", categoriaId: "", estadoId: "2" });
+        setImageFile(null);
         setOpenModal(true);
     };
 
     const handleClose = () => {
         setOpenModal(false);
         setSelectedContact(null);
-        setImageFile(null); 
+        setImageFile(null);
     };
 
     const handleSave = async () => {
@@ -61,7 +71,7 @@ const CatalogoDashboard = () => {
             formData.append("categoriaId", selectedContact.categoriaId);
             formData.append("estadoId", selectedContact.estadoId);
             if (imageFile) {
-                formData.append("imagen", imageFile); 
+                formData.append("imagen", imageFile);
             }
 
             const method = selectedContact.id ? "PUT" : "POST";
@@ -69,9 +79,7 @@ const CatalogoDashboard = () => {
                 ? `https://modisteria-back-production.up.railway.app/api/catalogos/updateCatalogo/${selectedContact.id}`
                 : "https://modisteria-back-production.up.railway.app/api/catalogos/createCatalogo";
 
-            console.log("Datos a enviar: ", formData);
-
-            const response = await triggerFetch(url, method, formData, { "x-token": token }, true); 
+            const response = await triggerFetch(url, method, formData, { "x-token": token }, true);
 
             if (response.status === 200 || response.status === 201) {
                 const newProduct = response.data;
@@ -86,7 +94,7 @@ const CatalogoDashboard = () => {
                 }
                 setOpenModal(false);
                 setSelectedContact(null);
-                setImageFile(null); 
+                setImageFile(null);
             } else {
                 console.error("Error al guardar los datos: ", response.data);
                 alert("Error al guardar los datos. Por favor, revisa la consola para más detalles.");
@@ -112,10 +120,7 @@ const CatalogoDashboard = () => {
                 { "x-token": token }
             );
 
-            console.log("Estado HTTP: ", response.status);
-
             if (response.status === 200 || response.status === 201) {
-                console.log("Respuesta de eliminación: ", response.data);
                 setData((prevData) => prevData.filter((contact) => contact.id !== contactToDelete.id));
                 setOpenDeleteDialog(false);
                 setContactToDelete(null);
@@ -135,7 +140,20 @@ const CatalogoDashboard = () => {
     };
 
     const handleFileChange = (e) => {
-        setImageFile(e.target.files[0]); 
+        setImageFile(e.target.files[0]);
+    };
+
+    const handleSwitchChange = async (id) => {
+        const updatedData = data.map((contact) => {
+            if (contact.id === id) {
+                const newEstado = contact.estadoId === "1" ? "2" : "1"; 
+                return { ...contact, estadoId: newEstado }; 
+            }
+            return contact;
+        });
+        setData(updatedData); 
+        const url = `https://modisteria-back-production.up.railway.app/api/catalogos/updateCatalogo/${id}`;
+        await triggerFetch(url, "PUT", { estadoId: newEstado }, { "x-token": token });
     };
 
     const columns = [
@@ -146,7 +164,17 @@ const CatalogoDashboard = () => {
         { field: "imagen", headerName: "Imagen", flex: 1 },
         { field: "talla", headerName: "Talla", flex: 1 },
         { field: "categoriaId", headerName: "Categoría ID", flex: 1 },
-        { field: "estadoId", headerName: "Estado ID", flex: 1 },
+        {
+            field: "estadoId",
+            headerName: "Estado",
+            flex: 1,
+            renderCell: (params) => (
+                <Switch
+                    checked={params.value === "1"} 
+                    onChange={() => handleSwitchChange(params.row.id)} 
+                />
+            ),
+        },
         {
             field: "acciones",
             headerName: "Acciones",
@@ -187,7 +215,7 @@ const CatalogoDashboard = () => {
                 )}
             </Box>
 
-            {/* Modal for Adding/Editing Product */}
+
             <Dialog open={openModal} onClose={handleClose}>
                 <DialogTitle>{selectedContact?.id ? "Editar Producto" : "Agregar Producto"}</DialogTitle>
                 <DialogContent>
@@ -245,13 +273,16 @@ const CatalogoDashboard = () => {
                         margin="dense"
                         name="estadoId"
                         label="Estado ID"
-                        type="text"
+                        type="hidden" 
                         fullWidth
                         variant="outlined"
                         value={selectedContact?.estadoId || ""}
                         onChange={handleInputChange}
                     />
-                    <input type="file" accept="image/*" onChange={handleFileChange} />
+                    <Button variant="contained" component="label" sx={{ mt: 2 }}>
+                        Subir Imagen
+                        <input type="file" hidden onChange={handleFileChange} />
+                    </Button>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancelar</Button>
@@ -259,11 +290,9 @@ const CatalogoDashboard = () => {
                 </DialogActions>
             </Dialog>
 
+            {/* Delete Confirmation Dialog */}
             <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
-                <DialogTitle>Confirmar Eliminación</DialogTitle>
-                <DialogContent>
-                    <Typography>¿Estás seguro de que deseas eliminar el producto "{contactToDelete?.producto}"?</Typography>
-                </DialogContent>
+                <DialogTitle>¿Estás seguro de que quieres eliminar este producto?</DialogTitle>
                 <DialogActions>
                     <Button onClick={() => setOpenDeleteDialog(false)}>Cancelar</Button>
                     <Button onClick={confirmDelete} color="error">Eliminar</Button>
