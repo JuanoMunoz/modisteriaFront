@@ -27,6 +27,8 @@ const Contacts = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedUsuario, setSelectedUsuario] = useState(null);
   const [usuarioToDelete, setUsuarioToDelete] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [openErrorModal, setOpenErrorModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,13 +45,15 @@ const Contacts = () => {
             id: usuario.id || data.length + 1,
           }));
           setData(usuariosConId);
-          console.log("Datos cargados: ", usuariosConId);
         } else {
-          console.error("Error al obtener datos: ", respuesta);
+          setErrorMessage("Error al obtener datos.");
+          setOpenErrorModal(true);
         }
       } catch (error) {
-        console.error("Error al realizar la solicitud:", error.message);
-        alert("Ocurrió un error al obtener los datos. Inténtalo nuevamente.");
+        setErrorMessage(
+          "Ocurrió un error al obtener los datos. Inténtalo nuevamente."
+        );
+        setOpenErrorModal(true);
       }
     };
     fetchData();
@@ -98,19 +102,21 @@ const Contacts = () => {
             )
           );
         } else {
-          const nuevoUsuario = { ...selectedUsuario, id: data.length + 1 }; // Generar ID
+          const nuevoUsuario = { ...selectedUsuario, id: data.length + 1 };
           setData((prevData) => [...prevData, nuevoUsuario]);
         }
         handleClose();
       } else {
-        console.error("Error al guardar los datos: ", response.data);
-        alert(
+        setErrorMessage(
           "Error al guardar los datos. Revisa la consola para más detalles."
         );
+        setOpenErrorModal(true);
       }
     } catch (error) {
-      console.error("Error al realizar la solicitud:", error.message);
-      alert("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
+      setErrorMessage(
+        "Ocurrió un error al realizar la solicitud. Inténtalo nuevamente."
+      );
+      setOpenErrorModal(true);
     }
   };
 
@@ -130,23 +136,22 @@ const Contacts = () => {
       );
 
       if (response.status === 200 || response.status === 201) {
-        console.log("Respuesta de eliminación: ", response.data);
         setData((prevData) =>
           prevData.filter((usuario) => usuario.id !== usuarioToDelete.id)
         );
         setOpenDeleteDialog(false);
         setUsuarioToDelete(null);
       } else {
-        console.error("Error inesperado al eliminar datos: ", response.data);
-        alert(
+        setErrorMessage(
           "Error inesperado al eliminar el usuario. Revisa la consola para más información."
         );
+        setOpenErrorModal(true);
       }
     } catch (error) {
-      console.error("Error al realizar la solicitud:", error.message);
-      alert(
+      setErrorMessage(
         "Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente."
       );
+      setOpenErrorModal(true);
     }
   };
 
@@ -290,6 +295,7 @@ const Contacts = () => {
               onChange={handleInputChange}
             />
           )}
+
           <TextField
             margin="dense"
             name="direccion"
@@ -333,6 +339,16 @@ const Contacts = () => {
           <Button onClick={confirmDelete} color="error">
             Eliminar
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+        <DialogTitle>Error</DialogTitle>
+        <DialogContent>
+          <Typography>{errorMessage}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenErrorModal(false)}>Cerrar</Button>
         </DialogActions>
       </Dialog>
     </Box>
