@@ -133,7 +133,6 @@ const Cotizacion = () => {
         setSelectedCotizacion((prev) => ({ ...prev, [name]: updatedValue }));
     };
 
-    // Función para convertir estadoId a texto
     const getEstadoTexto = (estadoId) => {
         switch (estadoId) {
             case 3: return "Pendiente";
@@ -201,7 +200,6 @@ const Cotizacion = () => {
                 )}
             </Box>
 
-            {/* Modal para Agregar/Editar Cotización */}
             <Dialog open={openModal} onClose={handleClose} maxWidth="sm" fullWidth>
                 <DialogTitle>{selectedCotizacion?.id ? "Editar Cotización" : "Agregar Cotización"}</DialogTitle>
                 <DialogContent>
@@ -238,7 +236,6 @@ const Cotizacion = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Modal de Error al intentar eliminar */}
             <Dialog open={openErrorDialog} onClose={() => setOpenErrorDialog(false)}>
                 <DialogTitle>Error</DialogTitle>
                 <DialogContent>

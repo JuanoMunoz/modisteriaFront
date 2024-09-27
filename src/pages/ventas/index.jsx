@@ -15,6 +15,8 @@ const Ventas = () => {
 
     const [data, setData] = useState([]);
     const [openModal, setOpenModal] = useState(false);
+    const [errorModalOpen, setErrorModalOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     const [newVenta, setNewVenta] = useState({ fecha: "", cotizacionId: "", estadoId: "" });
 
     useEffect(() => {
@@ -26,7 +28,8 @@ const Ventas = () => {
             } else {
                 console.error("Error al obtener datos: ", respuesta);
                 if (respuesta.status === 401) {
-                    alert("No autorizado: verifica el token.");
+                    setErrorMessage("No autorizado: verifica el token.");
+                    setErrorModalOpen(true);
                 }
             }
         };
@@ -42,6 +45,10 @@ const Ventas = () => {
         setOpenModal(false);
     };
 
+    const handleErrorClose = () => {
+        setErrorModalOpen(false);
+    };
+
     const handleSave = async () => {
         try {
             const response = await triggerFetch("https://modisteria-back-production.up.railway.app/api/ventas/createVenta", "POST", newVenta, { "x-token": token });
@@ -52,11 +59,13 @@ const Ventas = () => {
                 handleClose();
             } else {
                 console.error("Error al guardar los datos: ", response.data);
-                alert("Error al guardar los datos. Revisa la consola para más detalles.");
+                setErrorMessage("Error al guardar los datos. Revisa la consola para más detalles.");
+                setErrorModalOpen(true);
             }
         } catch (error) {
             console.error("Error al realizar la solicitud:", error);
-            alert("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
+            setErrorMessage("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
+            setErrorModalOpen(true);
         }
     };
 
@@ -132,6 +141,16 @@ const Ventas = () => {
                 <DialogActions>
                     <Button onClick={handleClose}>Cancelar</Button>
                     <Button onClick={handleSave}>Guardar</Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={errorModalOpen} onClose={handleErrorClose}>
+                <DialogTitle>Error</DialogTitle>
+                <DialogContent>
+                    <Typography>{errorMessage}</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleErrorClose}>Cerrar</Button>
                 </DialogActions>
             </Dialog>
         </Box>

@@ -7,18 +7,20 @@ import { useTheme } from "@mui/material";
 import useFetch from "../../hooks/useFetch";
 import { useJwt } from "../../context/JWTContext";
 
-const Categoria = () => {
+const CategoriaInsumo = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const { loading, triggerFetch } = useFetch();
     const { token } = useJwt();
 
     const [data, setData] = useState([]);
-    const [filteredData, setFilteredData] = useState([]); // Estado para datos filtrados
+    const [filteredData, setFilteredData] = useState([]);
     const [openModal, setOpenModal] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedCategoria, setSelectedCategoria] = useState(null);
     const [categoriaToDelete, setCategoriaToDelete] = useState(null);
+    const [openErrorModal, setOpenErrorModal] = useState(false); 
+    const [errorMessage, setErrorMessage] = useState(""); 
 
     useEffect(() => {
         const fetchData = async () => {
@@ -28,14 +30,13 @@ const Categoria = () => {
                     ...categoria,
                     id: categoria.id || data.length + 1 
                 }));
-                
-                // Filtramos los datos para que solo queden aquellos de tipo "Insumo"
                 const categoriasFiltradas = categoriasConId.filter(categoria => categoria.tipo === "insumo");
                 setData(categoriasConId);
-                setFilteredData(categoriasFiltradas); // Guardamos los datos filtrados
-                console.log("Datos cargados: ", categoriasFiltradas);
+                setFilteredData(categoriasFiltradas);
             } else {
                 console.error("Error al obtener datos: ", respuesta);
+                setErrorMessage("Error al obtener datos. Revisa la consola para más detalles.");
+                setOpenErrorModal(true);
             }
         };
         fetchData();
@@ -91,11 +92,13 @@ const Categoria = () => {
                 handleClose();
             } else {
                 console.error("Error al guardar los datos: ", response.data);
-                alert("Error al guardar los datos. Revisa la consola para más detalles.");
+                setErrorMessage("Error al guardar los datos. Revisa la consola para más detalles.");
+                setOpenErrorModal(true);
             }
         } catch (error) {
             console.error("Error al realizar la solicitud:", error);
-            alert("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
+            setErrorMessage("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
+            setOpenErrorModal(true);
         }
     };
 
@@ -107,7 +110,8 @@ const Categoria = () => {
 
     const confirmDelete = async () => {
         if (categoriaToDelete.estadoId === "activo") {
-            alert("No se puede eliminar la categoría porque está activa.");
+            setErrorMessage("No se puede eliminar la categoría porque está activa.");
+            setOpenErrorModal(true);
             setOpenDeleteDialog(false);
             return;
         }
@@ -121,18 +125,19 @@ const Categoria = () => {
             );
 
             if (response.status === 200 || response.status === 201) {
-                console.log("Respuesta de eliminación: ", response.data);
                 setData((prevData) => prevData.filter((categoria) => categoria.id !== categoriaToDelete.id));
-                setFilteredData((prevData) => prevData.filter((categoria) => categoria.id !== categoriaToDelete.id)); // También filtramos en los datos filtrados
+                setFilteredData((prevData) => prevData.filter((categoria) => categoria.id !== categoriaToDelete.id));
                 setOpenDeleteDialog(false);
                 setCategoriaToDelete(null);
             } else {
                 console.error("Error inesperado al eliminar datos: ", response.data);
-                alert("Error inesperado al eliminar la categoría. Revisa la consola para más información.");
+                setErrorMessage("Error inesperado al eliminar la categoría. Revisa la consola para más información.");
+                setOpenErrorModal(true);
             }
         } catch (error) {
             console.error("Error al realizar la solicitud:", error);
-            alert("Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente.");
+            setErrorMessage("Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente.");
+            setOpenErrorModal(true);
         }
     };
 
@@ -182,14 +187,14 @@ const Categoria = () => {
                     <Typography>Cargando categorías...</Typography>
                 ) : (
                     <DataGrid 
-                        rows={filteredData} // Usamos los datos filtrados
+                        rows={filteredData}
                         columns={columns} 
                         components={{ Toolbar: GridToolbar }} 
                     />
                 )}
             </Box>
 
-            {/* Modal para Agregar/Editar Categoría */}
+
             <Dialog open={openModal} onClose={handleClose}>
                 <DialogTitle>{selectedCategoria?.id ? "Editar Categoría" : "Agregar Categoría"}</DialogTitle>
                 <DialogContent>
@@ -213,7 +218,6 @@ const Categoria = () => {
                         value={selectedCategoria?.descripcion || ""}
                         onChange={handleInputChange}
                     />
-                    {/* Campo tipo eliminado de la vista */}
                     <TextField
                         margin="dense"
                         name="estadoId"
@@ -231,7 +235,6 @@ const Categoria = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Diálogo de Confirmación de Eliminación */}
             <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
                 <DialogTitle>Confirmar Eliminación</DialogTitle>
                 <DialogContent>
@@ -242,8 +245,18 @@ const Categoria = () => {
                     <Button onClick={confirmDelete} color="error">Eliminar</Button>
                 </DialogActions>
             </Dialog>
+
+            <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+                <DialogTitle>Error</DialogTitle>
+                <DialogContent>
+                    <Typography>{errorMessage}</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenErrorModal(false)}>Cerrar</Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };
 
-export default Categoria;
+export default CategoriaInsumo;
