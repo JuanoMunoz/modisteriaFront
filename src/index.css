@@ -22,12 +22,11 @@ body,
 .content {
   height: 100%;
   width: 100%;
-  font-family: "Source Sans Pro", sans-serif;
+  font-family: "Comfortaa", sans-serif;
 }
 
 .app {
   display: flex;
-  position: relative;
 }
 
 ::-webkit-scrollbar {
@@ -51,7 +50,7 @@ body,
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: rgb(187, 14, 202);
   text-decoration: inherit;
 }
 

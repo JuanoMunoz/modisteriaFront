@@ -22,31 +22,55 @@ const Dashboard = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [cotizaciones, setCotizaciones] = useState([]);
   const [insumos, setInsumos] = useState([]);
-  
+
   useEffect(() => {
     const fetchData = async () => {
-
-      const ventasResponse = await triggerFetch("https://modisteria-back-production.up.railway.app/api/ventas/getAllVentas", "GET", null, { "x-token": token });
+      const ventasResponse = await triggerFetch(
+        "https://modisteria-back-production.up.railway.app/api/ventas/getAllVentas",
+        "GET",
+        null,
+        { "x-token": token }
+      );
       if (ventasResponse.status === 200) {
         setVentas(ventasResponse.data);
       }
 
-      const pqrsResponse = await triggerFetch("https://modisteria-back-production.up.railway.app/api/pqrs/getAllPQRS", "GET", null, { "x-token": token });
+      const pqrsResponse = await triggerFetch(
+        "https://modisteria-back-production.up.railway.app/api/pqrs/getAllPQRS",
+        "GET",
+        null,
+        { "x-token": token }
+      );
       if (pqrsResponse.status === 200) {
         setPqrs(pqrsResponse.data);
       }
 
-      const usuariosResponse = await triggerFetch("https://modisteria-back-production.up.railway.app/api/usuarios/getAllUsers", "GET", null, { "x-token": token });
+      const usuariosResponse = await triggerFetch(
+        "https://modisteria-back-production.up.railway.app/api/usuarios/getAllUsers",
+        "GET",
+        null,
+        { "x-token": token }
+      );
       if (usuariosResponse.status === 200) {
         setUsuarios(usuariosResponse.data);
       }
 
-      const cotizacionesResponse = await triggerFetch("https://modisteria-back-production.up.railway.app/api/cotizaciones/getAllCotizaciones", "GET", null, { "x-token": token });
+      const cotizacionesResponse = await triggerFetch(
+        "https://modisteria-back-production.up.railway.app/api/cotizaciones/getAllCotizaciones",
+        "GET",
+        null,
+        { "x-token": token }
+      );
       if (cotizacionesResponse.status === 200) {
         setCotizaciones(cotizacionesResponse.data);
       }
 
-      const insumosResponse = await triggerFetch("https://modisteria-back-production.up.railway.app/api/insumos/getAllInsumos", "GET", null, { "x-token": token });
+      const insumosResponse = await triggerFetch(
+        "https://modisteria-back-production.up.railway.app/api/insumos/getAllInsumos",
+        "GET",
+        null,
+        { "x-token": token }
+      );
       if (insumosResponse.status === 200) {
         setInsumos(insumosResponse.data);
       }
@@ -56,85 +80,175 @@ const Dashboard = () => {
   }, [triggerFetch, token]);
 
   return (
-    <Box m="20px">
-
+    <div style={{ margin: " 0 20px", boxSizing: "border-box", height: "70vh" }}>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="DASHBOARD" subtitle="Bienvenida a tu dashboard" />
       </Box>
 
-      <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gridAutoRows="140px" gap="20px">
-
-        <Box gridColumn="span 3" backgroundColor={colors.primary[400]} display="flex" alignItems="center" justifyContent="center">
+      <Box
+        display="grid"
+        gridTemplateColumns="repeat(12, 1fr)"
+        gridAutoRows="140px"
+        gap="20px"
+      >
+        <Box
+          gridColumn="span 3"
+          backgroundColor={colors.primary[400]}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
           <Box display="flex" flexDirection="column" alignItems="center">
-            <EmailIcon sx={{ color: colors.greenAccent[600], fontSize: "26px" }} />
+            <EmailIcon sx={{ color: colors.purple[200], fontSize: "26px" }} />
             <Typography variant="h4" color={colors.grey[100]} fontWeight="bold">
               {pqrs.length}
             </Typography>
-            <Typography variant="h6" color={colors.greenAccent[500]} fontWeight="600">
+            <Typography
+              variant="h6"
+              color={colors.purple[500]}
+              fontWeight="600"
+            >
               PQRs pendientes por revisar
             </Typography>
           </Box>
         </Box>
 
-        <Box gridColumn="span 3" backgroundColor={colors.primary[400]} display="flex" alignItems="center" justifyContent="center">
+        <Box
+          gridColumn="span 3"
+          backgroundColor={colors.primary[400]}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
           <Box display="flex" flexDirection="column" alignItems="center">
-            <PointOfSaleIcon sx={{ color: colors.greenAccent[600], fontSize: "26px" }} />
+            <PointOfSaleIcon
+              sx={{ color: colors.purple[200], fontSize: "26px" }}
+            />
             <Typography variant="h4" color={colors.grey[100]} fontWeight="bold">
               {ventas.length}
             </Typography>
-            <Typography variant="h6" color={colors.greenAccent[500]} fontWeight="600">
+            <Typography
+              variant="h6"
+              color={colors.purple[500]}
+              fontWeight="600"
+            >
               Cantidad ventas realizadas
             </Typography>
           </Box>
         </Box>
 
-        <Box gridColumn="span 3" backgroundColor={colors.primary[400]} display="flex" alignItems="center" justifyContent="center">
+        <Box
+          gridColumn="span 3"
+          backgroundColor={colors.primary[400]}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
           <Box display="flex" flexDirection="column" alignItems="center">
-            <PersonAddIcon sx={{ color: colors.greenAccent[600], fontSize: "26px" }} />
+            <PersonAddIcon
+              sx={{ color: colors.purple[200], fontSize: "26px" }}
+            />
             <Typography variant="h4" color={colors.grey[100]} fontWeight="bold">
               {usuarios.length}
             </Typography>
-            <Typography variant="h6" color={colors.greenAccent[500]} fontWeight="600">
+            <Typography
+              variant="h6"
+              color={colors.purple[500]}
+              fontWeight="600"
+            >
               Usuarios registrados
             </Typography>
           </Box>
         </Box>
 
-        <Box gridColumn="span 3" backgroundColor={colors.primary[400]} display="flex" alignItems="center" justifyContent="center">
+        <Box
+          gridColumn="span 3"
+          backgroundColor={colors.primary[400]}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
           <Box display="flex" flexDirection="column" alignItems="center">
-            <TrafficIcon sx={{ color: colors.greenAccent[600], fontSize: "26px" }} />
+            <TrafficIcon sx={{ color: colors.purple[200], fontSize: "26px" }} />
             <Typography variant="h4" color={colors.grey[100]} fontWeight="bold">
               {cotizaciones.length}
             </Typography>
-            <Typography variant="h6" color={colors.greenAccent[500]} fontWeight="600">
+            <Typography
+              variant="h6"
+              color={colors.purple[500]}
+              fontWeight="600"
+            >
               Cotizaciones pendientes
             </Typography>
           </Box>
         </Box>
 
-        <Box gridColumn="span 8" gridRow="span 2" backgroundColor={colors.primary[400]} mb="20px"> 
-          <Box mt="25px" p="0 30px" display="flex" justifyContent="space-between" alignItems="center">
+        <Box
+          gridColumn="span 8"
+          gridRow="span 2"
+          backgroundColor={colors.primary[400]}
+          mb="20px"
+        >
+          <Box
+            mt="25px"
+            p="0 30px"
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Box>
-              <Typography variant="h5" fontWeight="600" color={colors.grey[100]}>
+              <Typography
+                variant="h5"
+                fontWeight="600"
+                color={colors.grey[100]}
+              >
                 Insumos disponibles
               </Typography>
             </Box>
           </Box>
           <Box height="250px" m="-20px 0 0 0">
-            {loading ? <p>Cargando datos...</p> : <BarChart data={insumos} isDashboard={true} />}
+            {loading ? (
+              <p>Cargando datos...</p>
+            ) : (
+              <BarChart data={insumos} isDashboard={true} />
+            )}
           </Box>
         </Box>
 
-        <Box gridColumn="span 4" gridRow="span 2" backgroundColor={colors.primary[400]} overflow="auto" mb="20px"> 
-          <Box display="flex" justifyContent="space-between" alignItems="center" borderBottom={`4px solid ${colors.primary[500]}`} colors={colors.grey[100]} p="15px">
+        <Box
+          gridColumn="span 4"
+          gridRow="span 2"
+          backgroundColor={colors.primary[400]}
+          overflow="auto"
+          mb="20px"
+        >
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            borderBottom={`4px solid ${colors.primary[500]}`}
+            colors={colors.grey[100]}
+            p="15px"
+          >
             <Typography color={colors.grey[100]} variant="h5" fontWeight="600">
               PQRS Recientes
             </Typography>
           </Box>
           {pqrs.map((pqr, i) => (
-            <Box key={`${pqr.id}-${i}`} display="flex" justifyContent="space-between" alignItems="center" borderBottom={`4px solid ${colors.primary[500]}`} p="15px">
+            <Box
+              key={`${pqr.id}-${i}`}
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              borderBottom={`4px solid ${colors.primary[500]}`}
+              p="15px"
+            >
               <Box flexGrow={1} display="flex" justifyContent="center">
-                <Typography color={colors.greenAccent[500]} variant="h5" fontWeight="600">
+                <Typography
+                  color={colors.purple[200]}
+                  variant="h5"
+                  fontWeight="600"
+                >
                   {pqr.tipo}
                 </Typography>
               </Box>
@@ -148,7 +262,7 @@ const Dashboard = () => {
       </Box>
 
       <Box mt="20px" />
-    </Box>
+    </div>
   );
 };
 

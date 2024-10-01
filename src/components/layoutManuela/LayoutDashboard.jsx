@@ -25,7 +25,7 @@ export default function LayoutDashboard() {
           <CssBaseline />
           <div className="app">
             <Sidebar nombre={payload?.nombre} isSidebar={isSidebar} />
-            <main className="content">
+            <main className="content" style={{ flexGrow: 1 }}>
               <Topbar setIsSidebar={setIsSidebar} />
               <Outlet></Outlet>
             </main>

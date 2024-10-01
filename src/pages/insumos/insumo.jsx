@@ -9,7 +9,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { TrashColor, Edit } from "../../components/svg/Svg";
+import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header/Header";
 import { useTheme } from "@mui/material";
@@ -185,27 +186,14 @@ const Insumos = () => {
       renderCell: (params) => (
         <Box>
           <Button color="primary" onClick={() => handleEdit(params.row.id)}>
-            <img
-              alt="editar"
-              width="20px"
-              height="20px"
-              src="../../assets/editar.png"
-              style={{ cursor: "pointer" }}
-            />
+            <Edit size={20} color={colors.grey[100]}></Edit>
           </Button>
           <Button
-            variant="contained"
-            color="error"
+            color="primary"
             onClick={() => handleDelete(params.row.id)}
             sx={{ ml: 1 }}
           >
-            <img
-              alt="borrar"
-              width="20px"
-              height="20px"
-              src="../../assets/borrar.png"
-              style={{ cursor: "pointer" }}
-            />
+            <TrashColor size={20} color={colors.grey[100]}></TrashColor>
           </Button>
         </Box>
       ),
@@ -213,25 +201,28 @@ const Insumos = () => {
   ];
 
   return (
-    <Box m="20px">
-      <Header title="INSUMOS" subtitle="Lista de insumos" />
+    <>
+      <Header title="Insumos" subtitle="Lista de insumos" />
 
       <Box
-        m="40px 0 0 0"
-        height="75vh"
+        m="40px 20px"
+        p="0px 10px"
+        height="60vh"
         sx={{
           "& .MuiDataGrid-root": { border: "none" },
           "& .MuiDataGrid-cell": { borderBottom: "none" },
           "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700],
+            backgroundColor: colors.purple[500],
             borderBottom: "none",
+            color: `${colors.grey[100]} !important`,
           },
           "& .MuiDataGrid-virtualScroller": {
             backgroundColor: colors.primary[400],
           },
           "& .MuiDataGrid-footerContainer": {
             borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
+            backgroundColor: colors.primary[200],
+            color: "#000",
           },
           "& .MuiCheckbox-root": {
             color: `${colors.greenAccent[200]} !important`,
@@ -249,6 +240,7 @@ const Insumos = () => {
             columns={columns}
             components={{ Toolbar: GridToolbar }}
             getRowId={(row) => row.id}
+            localeText={esES.components.MuiDataGrid.defaultProps.localeText}
           />
         )}
       </Box>
@@ -341,7 +333,7 @@ const Insumos = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </>
   );
 };
 
