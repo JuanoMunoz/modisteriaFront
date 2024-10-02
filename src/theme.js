@@ -1,6 +1,6 @@
 import { createContext, useState, useMemo } from "react";
 import { createTheme } from "@mui/material/styles";
-
+import { purple } from "@mui/material/colors";
 export const tokens = (mode) => ({
   ...(mode === "dark"
     ? {
@@ -93,15 +93,15 @@ export const tokens = (mode) => ({
           900: "#e0e0e0",
         },
         primary: {
-          100: "#040509",
-          200: "#080b12",
-          300: "#0c101b",
-          400: "#f2f0f0",
-          500: "#141b2d",
-          600: "#1F2A40",
-          700: "#727681",
-          800: "#a1a4ab",
-          900: "#d0d1d5",
+          100: "#f9f9f9", // Blanco más puro con un leve toque de gris
+          200: "#f5f5f5", // Blanco claro con un poco más de calidez
+          300: "#eeeeee", // Gris muy claro, casi blanco
+          400: "#e0e0e0", // Gris claro con tonos blancos
+          500: "#dcdcdc", // Gris neutro suave
+          600: "#d3d3d3", // Gris claro suave con tonos más fríos
+          700: "#c0c0c0", // Gris más oscuro pero sigue siendo sutil
+          800: "#b0b0b0", // Un gris que comienza a mostrar más contraste
+          900: "#a1a1a1", // Gris oscuro pero con un tono elegante
         },
         greenAccent: {
           100: "#0f2922",

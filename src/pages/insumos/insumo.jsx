@@ -9,7 +9,10 @@ import {
   DialogActions,
   TextField,
   Typography,
+  MenuItem,
+  Switch,
 } from "@mui/material";
+import Loading from "../../components/loading/Loading";
 import { TrashColor, Edit } from "../../components/svg/Svg";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
@@ -17,60 +20,154 @@ import Header from "../../components/Header/Header";
 import { useTheme } from "@mui/material";
 import useFetch from "../../hooks/useFetch";
 import { useJwt } from "../../context/JWTContext";
+import { useForm } from "react-hook-form";
+import { alpha } from "@mui/material";
+function useInsumosData() {
+  const { loading, triggerFetch } = useFetch();
+  const { triggerFetch: updateFetch } = useFetch();
+  const { triggerFetch: createFetch } = useFetch();
+  const { triggerFetch: getFetch } = useFetch();
+  const { triggerFetch: deleteFetch } = useFetch();
+  const { token } = useJwt();
+  const fetchAllInsumos = async () => {
+    const respuesta = await getFetch(
+      "https://modisteria-back-production.up.railway.app/api/insumos/getAllInsumos",
+      "GET",
+      null,
+      { "x-token": token }
+    );
+    return respuesta;
+  };
+  const initialFetchAllInsumos = async () => {
+    const respuesta = await triggerFetch(
+      "https://modisteria-back-production.up.railway.app/api/insumos/getAllInsumos",
+      "GET",
+      null,
+      { "x-token": token }
+    );
+    return respuesta;
+  };
+  const updateInsumos = async (id, infoUpdate) => {
+    const respuesta = await updateFetch(
+      `https://modisteria-back-production.up.railway.app/api/insumos/updateInsumo/${id}`,
+      "PUT",
+      infoUpdate,
+      { "x-token": token }
+    );
+    return respuesta;
+  };
+  const createInsumo = async (infoUpdate) => {
+    const respuesta = await createFetch(
+      `https://modisteria-back-production.up.railway.app/api/insumos/createInsumo`,
+      "POST",
+      infoUpdate,
+      { "x-token": token }
+    );
+    return respuesta;
+  };
+  const deleteInsumo = async (id) => {
+    const respuesta = await deleteFetch(
+      `https://modisteria-back-production.up.railway.app/api/insumos/deleteInsumo/${id}`,
+      "DELETE",
+      null,
+      { "x-token": token }
+    );
+    return respuesta;
+  };
 
+  return {
+    initialFetchAllInsumos,
+    fetchAllInsumos,
+    deleteInsumo,
+    createInsumo,
+    updateInsumos,
+    loading,
+  };
+}
+function useCategoriaData() {
+  const { loading: loadingCategoria, triggerFetch } = useFetch();
+  const { token } = useJwt();
+  const fetchAllCategorias = async () => {
+    const respuesta = await triggerFetch(
+      "https://modisteria-back-production.up.railway.app/api/categorias/getAllCategorias?type=insumo",
+      "GET",
+      null,
+      { "x-token": token }
+    );
+    return respuesta;
+  };
+  return { fetchAllCategorias, loadingCategoria };
+}
 const Insumos = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const { loading, triggerFetch } = useFetch();
-  const { token } = useJwt();
-
-  const [data, setData] = useState([]);
+  const {
+    handleSubmit: handleSaveInsumo,
+    watch: watchSaveInsumo,
+    formState: { errors: errorsAddInsumo },
+    register: registerInsumo,
+  } = useForm();
   const [openModal, setOpenModal] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedInsumo, setSelectedInsumo] = useState(null);
   const [insumoToDelete, setInsumoToDelete] = useState(null);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
+  const [data, setData] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+  const {
+    initialFetchAllInsumos,
+    fetchAllInsumos,
+    deleteInsumo,
+    createInsumo,
+    updateInsumos,
+    loading,
+  } = useInsumosData();
+  const { fetchAllCategorias, loadingCategoria } = useCategoriaData();
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const respuesta = await triggerFetch(
-          "https://modisteria-back-production.up.railway.app/api/insumos/getAllInsumos",
-          "GET",
-          null,
-          { "x-token": token }
-        );
-        if (respuesta.status === 200 && respuesta.data) {
-          const insumosConId = respuesta.data.map((insumo) => ({
-            ...insumo,
-            id: insumo.id || data.length + 1,
-          }));
-          setData(insumosConId);
-        } else {
-          setErrorMessage("Error al obtener datos.");
-          setOpenErrorModal(true);
-        }
-      } catch (error) {
-        setErrorMessage("Error al realizar la solicitud.");
-        setOpenErrorModal(true);
+    const initialFetchInsumos = async () => {
+      const respuesta = await initialFetchAllInsumos();
+      const categoria = await fetchAllCategorias();
+
+      if (respuesta.status === 200 && respuesta.data) {
+        setData(respuesta.data);
+      }
+      if (categoria.status === 200 && categoria.data) {
+        setCategorias(categoria.data);
       }
     };
-    fetchData();
-  }, [triggerFetch, token, data.length]);
+    initialFetchInsumos();
+  }, []);
 
+  /// Métodos para CRUD
   const handleEdit = (id) => {
     const insumoToEdit = data.find((insumo) => insumo.id === id);
     setSelectedInsumo(insumoToEdit);
     setOpenModal(true);
   };
 
+  const handleStateInsumo = async (e, id) => {
+    const isActive = e.target.checked ? 1 : 2;
+    const response = await updateInsumos(id, { estadoId: isActive });
+    if (response.status === 200 || response.status === 201) {
+      const updatedData = await fetchAllInsumos();
+
+      if (updatedData.status === 200 && updatedData.data) {
+        setData(updatedData.data);
+      }
+    }
+  };
+  const getCategoriaNombre = (categoriaId) => {
+    const categoria = categorias.find((cat) => cat.id === categoriaId);
+    return categoria ? categoria.nombre : "Sin Categoría";
+  };
+
   const handleAdd = () => {
     setSelectedInsumo({
       nombre: "",
       cantidad: "",
-      categoriaId: "",
-      estadoId: "",
+      categoriaId: 0,
+      estadoId: 0,
     });
     setOpenModal(true);
   };
@@ -80,50 +177,18 @@ const Insumos = () => {
     setSelectedInsumo(null);
   };
 
-  const handleSave = async () => {
-    if (!selectedInsumo.nombre || !selectedInsumo.cantidad) {
-      setErrorMessage("Por favor, completa todos los campos requeridos.");
-      setOpenErrorModal(true);
-      return;
-    }
-
-    try {
-      const method = selectedInsumo.id ? "PUT" : "POST";
-      const url = selectedInsumo.id
-        ? `https://modisteria-back-production.up.railway.app/api/insumos/updateInsumo/${selectedInsumo.id}`
-        : "https://modisteria-back-production.up.railway.app/api/insumos/createInsumo";
-
-      const response = await triggerFetch(url, method, selectedInsumo, {
-        "x-token": token,
-      });
-
-      if (response.status === 200 || response.status === 201) {
-        const insumo =
-          method === "PUT"
-            ? response.data
-            : { ...selectedInsumo, id: data.length + 1 };
-
-        setData((prevData) => {
-          if (method === "PUT") {
-            return prevData.map((item) =>
-              item.id === insumo.id ? insumo : item
-            );
-          } else {
-            return [...prevData, insumo];
-          }
-        });
-        handleClose();
-      } else {
-        setErrorMessage(
-          "Error al guardar los datos. Revisa la consola para más detalles."
-        );
-        setOpenErrorModal(true);
+  const handleSave = async (data) => {
+    const response = selectedInsumo.id
+      ? await updateInsumos(selectedInsumo.id, data)
+      : await createInsumo({ ...data, estadoId: 1 });
+    if (response.status === 200 || response.status === 201) {
+      const updatedData = await fetchAllInsumos();
+      if (updatedData.status === 200 && updatedData.data) {
+        setData(updatedData.data);
       }
-    } catch (error) {
-      setErrorMessage(
-        "Ocurrió un error al realizar la solicitud. Inténtalo nuevamente."
-      );
-      setOpenErrorModal(true);
+      handleClose();
+    } else {
+      console.log(response);
     }
   };
 
@@ -134,38 +199,21 @@ const Insumos = () => {
   };
 
   const confirmDelete = async () => {
-    if (insumoToDelete.estadoId === "activo") {
+    if (insumoToDelete.estadoId === 1) {
       setErrorMessage("No se puede eliminar el insumo porque está activo.");
       setOpenErrorModal(true);
       setOpenDeleteDialog(false);
       return;
     }
 
-    try {
-      const response = await triggerFetch(
-        `https://modisteria-back-production.up.railway.app/api/insumos/deleteInsumo/${insumoToDelete.id}`,
-        "DELETE",
-        null,
-        { "x-token": token }
-      );
+    const response = await deleteInsumo(insumoToDelete.id);
 
-      if (response.status === 200 || response.status === 201) {
-        setData((prevData) =>
-          prevData.filter((insumo) => insumo.id !== insumoToDelete.id)
-        );
-        setOpenDeleteDialog(false);
-        setInsumoToDelete(null);
-      } else {
-        setErrorMessage(
-          "Error inesperado al eliminar el insumo. Revisa la consola para más información."
-        );
-        setOpenErrorModal(true);
-      }
-    } catch (error) {
-      setErrorMessage(
-        "Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente."
+    if (response.status === 200 || response.status === 201) {
+      setData((prevData) =>
+        prevData.filter((insumo) => insumo.id !== insumoToDelete.id)
       );
-      setOpenErrorModal(true);
+      setOpenDeleteDialog(false);
+      setInsumoToDelete(null);
     }
   };
 
@@ -173,28 +221,56 @@ const Insumos = () => {
     const { name, value } = e.target;
     setSelectedInsumo((prev) => ({ ...prev, [name]: value }));
   };
-
+  // Fin métodos CRUD
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
     { field: "nombre", headerName: "Nombre", flex: 1 },
     { field: "cantidad", headerName: "Cantidad", flex: 1 },
-    { field: "categoriaId", headerName: "Categoría ID", flex: 1 },
-    { field: "estadoId", headerName: "Estado ID", flex: 1 },
+    {
+      field: "categoriaId",
+      headerName: "Categoría",
+      flex: 1,
+      valueGetter: (params) => getCategoriaNombre(params.row.categoriaId),
+    },
+    {
+      field: "estadoId",
+      headerName: "Estado",
+      flex: 1,
+      renderCell: ({ row }) => (
+        <Switch
+          sx={{
+            "& .MuiSwitch-switchBase.Mui-checked": {
+              color: colors.purple[200],
+              "&:hover": {
+                backgroundColor: alpha(
+                  colors.purple[200],
+                  theme.palette.action.hoverOpacity
+                ),
+              },
+            },
+            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+              backgroundColor: colors.purple[200],
+            },
+          }}
+          color="warning"
+          onChange={(e) => {
+            handleStateInsumo(e, row.id);
+          }}
+          defaultChecked={row.estadoId == 1}
+        />
+      ),
+    },
     {
       field: "acciones",
       headerName: "Acciones",
       flex: 1,
-      renderCell: (params) => (
+      renderCell: ({ row }) => (
         <Box>
-          <Button color="primary" onClick={() => handleEdit(params.row.id)}>
-            <Edit size={20} color={colors.grey[100]}></Edit>
+          <Button onClick={() => handleEdit(row.id)}>
+            <Edit size={20} color={colors.grey[100]} />
           </Button>
-          <Button
-            color="primary"
-            onClick={() => handleDelete(params.row.id)}
-            sx={{ ml: 1 }}
-          >
-            <TrashColor size={20} color={colors.grey[100]}></TrashColor>
+          <Button onClick={() => handleDelete(row.id)} sx={{ ml: 1 }}>
+            <TrashColor size={20} color={colors.grey[100]} />
           </Button>
         </Box>
       ),
@@ -204,18 +280,33 @@ const Insumos = () => {
   return (
     <>
       <Header title="Insumos" subtitle="Lista de insumos" />
-
+      <Button
+        variant="contained"
+        onClick={handleAdd}
+        sx={{
+          mb: 2,
+          backgroundColor: colors.purple[400],
+          "&:hover": {
+            backgroundColor: colors.purple[300],
+          },
+          color: "white",
+        }}
+      >
+        Agregar Insumo
+      </Button>
+      {(loading || loadingCategoria) && <Loading></Loading>}
       <Box
-        m="40px 20px"
+        m="0px 20px"
         p="0px 10px"
-        height="60vh"
+        height="56vh"
+        width="98%"
         sx={{
           "& .MuiDataGrid-root": { border: "none" },
           "& .MuiDataGrid-cell": { borderBottom: "none" },
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: colors.purple[500],
             borderBottom: "none",
-            color: `${colors.grey[100]} !important`,
+            color: "white",
           },
           "& .MuiDataGrid-virtualScroller": {
             backgroundColor: colors.primary[400],
@@ -223,10 +314,9 @@ const Insumos = () => {
           "& .MuiDataGrid-footerContainer": {
             borderTop: "none",
             backgroundColor: colors.primary[200],
-            color: "#000",
           },
           "& .MuiCheckbox-root": {
-            color: `${colors.greenAccent[200]} !important`,
+            color: `${colors.purple[200]} !important`,
           },
           "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
             color: `${colors.grey[100]} !important`,
@@ -241,80 +331,154 @@ const Insumos = () => {
             columns={columns}
             components={{ Toolbar: GridToolbar }}
             getRowId={(row) => row.id}
+            initialState={{
+              sorting: {
+                sortModel: [{ field: "id", sort: "asc" }],
+              },
+            }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
           />
         )}
       </Box>
 
       <Dialog open={openModal} onClose={handleClose}>
-        <DialogTitle>
-          {selectedInsumo?.id ? "Editar Insumo" : "Agregar Insumo"}
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            margin="dense"
-            name="nombre"
-            label="Nombre"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={selectedInsumo?.nombre || ""}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            name="cantidad"
-            label="Cantidad"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={selectedInsumo?.cantidad || ""}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            name="categoriaId"
-            label="Categoría ID"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={selectedInsumo?.categoriaId || ""}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            name="estadoId"
-            label="Estado ID"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={selectedInsumo?.estadoId || ""}
-            onChange={handleInputChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancelar
-          </Button>
-          <Button onClick={handleSave} color="primary">
-            Guardar
-          </Button>
-        </DialogActions>
+        <form onSubmit={handleSaveInsumo(handleSave)}>
+          <DialogTitle color={colors.grey[100]}>
+            {selectedInsumo?.id ? "Editar Insumo" : "Agregar Insumo"}
+          </DialogTitle>
+          <DialogContent>
+            <TextField
+              margin="dense"
+              name="nombre"
+              label="Nombre"
+              type="text"
+              fullWidth
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&:hover fieldset": {
+                    borderColor: "purple",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "purple",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  "&.Mui-focused": {
+                    color: "purple",
+                  },
+                },
+              }}
+              variant="outlined"
+              {...registerInsumo("nombre", {
+                required: "El insumo necesita un nombre.",
+              })}
+              value={selectedInsumo?.nombre || ""}
+              onChange={handleInputChange}
+              FormHelperTextProps={{ sx: { color: "red" } }}
+              helperText={errorsAddInsumo?.nombre?.message}
+            />
+            <TextField
+              margin="dense"
+              name="cantidad"
+              label="Cantidad"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&:hover fieldset": {
+                    borderColor: "purple",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "purple",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  "&.Mui-focused": {
+                    color: "purple",
+                  },
+                },
+              }}
+              type="number"
+              fullWidth
+              variant="outlined"
+              {...registerInsumo("cantidad", {
+                required: "La cantidad es requerida",
+                pattern: {
+                  value: /^[0-9]+$/, // Expresión regular para números
+                  message: "Solo se permiten números",
+                },
+                validate: (value) => {
+                  if (value <= 0)
+                    return "Debes ingresar una cantidad mayor a cero!";
+                  return true;
+                },
+              })}
+              value={selectedInsumo?.cantidad || ""}
+              onChange={handleInputChange}
+              FormHelperTextProps={{ sx: { color: "red" } }}
+              helperText={errorsAddInsumo?.cantidad?.message}
+            />
+            <TextField
+              margin="dense"
+              name="categoriaId"
+              label="Categoría"
+              fullWidth
+              select
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&:hover fieldset": {
+                    borderColor: "purple",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "purple",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  "&.Mui-focused": {
+                    color: "purple",
+                  },
+                },
+              }}
+              variant="outlined"
+              {...registerInsumo("categoriaId", {
+                required: "Debes escoger una categoría!",
+              })}
+              value={parseInt(selectedInsumo?.categoriaId) || 1}
+              onChange={handleInputChange}
+              FormHelperTextProps={{ sx: { color: "red" } }}
+              helperText={errorsAddInsumo?.categoriaId?.message}
+            >
+              {categorias.map((cat) => (
+                <MenuItem key={cat.id} value={cat.id}>
+                  {cat.nombre}
+                </MenuItem>
+              ))}
+            </TextField>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="error">
+              Cancelar
+            </Button>
+            <Button type="submit" color="success">
+              Guardar
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
 
       <Dialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
       >
-        <DialogTitle>Confirmar Eliminación</DialogTitle>
+        <DialogTitle color={colors.grey[100]}>
+          Confirmar Eliminación
+        </DialogTitle>
         <DialogContent>
           <Typography>
-            ¿Estás seguro de que deseas eliminar el insumo{" "}
-            {insumoToDelete?.nombre}?
+            ¿Estás seguro de que deseas eliminar el insumo "
+            {insumoToDelete?.nombre}"?
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
+          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
             Cancelar
           </Button>
           <Button onClick={confirmDelete} color="error">
@@ -324,12 +488,12 @@ const Insumos = () => {
       </Dialog>
 
       <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
-        <DialogTitle>Error</DialogTitle>
+        <DialogTitle color={colors.grey[100]}>Error</DialogTitle>
         <DialogContent>
-          <Typography>{errorMessage}</Typography>
+          <Typography color={colors.grey[100]}>{errorMessage}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenErrorModal(false)} color="primary">
+          <Button onClick={() => setOpenErrorModal(false)} color="error">
             Cerrar
           </Button>
         </DialogActions>

@@ -206,9 +206,8 @@ const Contacts = () => {
       <Header title="USUARIOS" subtitle="Lista de usuarios" />
       <Button
         variant="contained"
-        color="primary"
         onClick={handleAdd}
-        sx={{ mb: 2 }}
+        sx={{ mb: 2, backgroundColor: colors.purple[400] }}
       >
         Agregar Usuario
       </Button>
