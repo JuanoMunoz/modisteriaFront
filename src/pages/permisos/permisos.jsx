@@ -1,235 +1,342 @@
+//mirando
 import React, { useState, useEffect } from "react";
-import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Typography,
+  MenuItem,
+  Switch,
+} from "@mui/material";
+import Loading from "../../components/loading/Loading";
+import { TrashColor, Edit } from "../../components/svg/Svg";
+import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header/Header";
 import { useTheme } from "@mui/material";
-import useFetch from "../../hooks/useFetch";
-import { useJwt } from "../../context/JWTContext";
-
+import { useForm } from "react-hook-form";
+import { alpha } from "@mui/material";
+import usePermisosData from "../../hooks/usePermisosData";
 const Permisos = () => {
-    const theme = useTheme();
-    const colors = tokens(theme.palette.mode);
-    const { loading, triggerFetch } = useFetch();
-    const { token } = useJwt();
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  const {
+    handleSubmit: handleSavePermiso,
+    watch: watchSavePermiso,
+    formState: { errors: errorsAddPermiso },
+    register: registerPermiso,
+  } = useForm();
+  const [openModal, setOpenModal] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedPermiso, setSelectedPermiso] = useState(null);
+  const [permisoToDelete, setPermisoToDelete] = useState(null);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [data, setData] = useState([]);
+  const {
+    initialFetchAllPermisos,
+    fetchAllPermisos,
+    // deletePermisos,
+    loading,
+    updatePermisos,
+  } = usePermisosData();
+  useEffect(() => {
+    const initialFetchPermisos = async () => {
+      const respuesta = await initialFetchAllPermisos();
 
-    const [data, setData] = useState([]);
-    const [openModal, setOpenModal] = useState(false);
-    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-    const [selectedPermiso, setSelectedPermiso] = useState(null);
-    const [permisoToDelete, setPermisoToDelete] = useState(null);
-    const [openErrorModal, setOpenErrorModal] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const respuesta = await triggerFetch("https://modisteria-back-production.up.railway.app/api/permisos/getAllPermisos", "GET", null, { "x-token": token });
-            if (respuesta.status === 200 && respuesta.data) {
-                setData(respuesta.data);
-                console.log("Datos cargados: ", respuesta.data);
-            } else {
-                setErrorMessage("Error al obtener datos. Revisa la consola para más detalles.");
-                setOpenErrorModal(true);
-            }
-        };
-        fetchData();
-    }, [triggerFetch, token]);
-
-    const handleEdit = (id) => {
-        const permisoToEdit = data.find((permiso) => permiso.id === id);
-        setSelectedPermiso(permisoToEdit);
-        setOpenModal(true);
+      if (respuesta.status === 200 && respuesta.data) {
+        setData(respuesta.data);
+      }
     };
+    initialFetchPermisos();
+  }, []);
 
-    const handleAdd = () => {
-        setSelectedPermiso({ nombre: "", descripcion: "", estadoId: "" });
-        setOpenModal(true);
-    };
+  /// Métodos para CRUD
+  const handleEdit = (id) => {
+    const permisoToEdit = data.find((permiso) => permiso.id === id);
+    setSelectedPermiso(permisoToEdit);
+    setOpenModal(true);
+  };
 
-    const handleClose = () => {
-        setOpenModal(false);
-        setSelectedPermiso(null);
-    };
+  const handleStatePermiso = async (e, id) => {
+    const isActive = e.target.checked ? 1 : 2;
+    const response = await updatePermisos(id, { estadoId: isActive });
+    if (response.status === 200 || response.status === 201) {
+      const updatedData = await fetchAllPermisos();
 
-    const handleSave = async () => {
-        try {
-            const method = selectedPermiso.id ? "PUT" : "POST";
-            const url = selectedPermiso.id 
-                ? `https://modisteria-back-production.up.railway.app/api/permisos/updatePermiso/${selectedPermiso.id}`
-                : "https://modisteria-back-production.up.railway.app/api/permisos/createPermiso";
+      if (updatedData.status === 200 && updatedData.data) {
+        setData(updatedData.data);
+      }
+    }
+  };
 
-            const response = await triggerFetch(url, method, selectedPermiso, { "x-token": token });
+  const handleClose = () => {
+    setOpenModal(false);
+    setSelectedPermiso(null);
+  };
 
-            if (response.status === 200 || response.status === 201) {
-                if (method === "PUT") {
-                    setData((prevData) =>
-                        prevData.map((permiso) =>
-                            permiso.id === selectedPermiso.id ? selectedPermiso : permiso
-                        )
-                    );
-                } else {
-                    setData((prevData) => [...prevData, { ...selectedPermiso, id: Date.now() }]);
-                }
-                handleClose();
-            } else {
-                setErrorMessage("Error al guardar los datos. Revisa la consola para más detalles.");
-                setOpenErrorModal(true);
-            }
-        } catch (error) {
-            console.error("Error al realizar la solicitud:", error);
-            setErrorMessage("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
-            setOpenErrorModal(true);
-        }
-    };
+  const handleSave = async (data) => {
+    const response = await updatePermisos(selectedPermiso.id, data);
+    if (response.status === 200 || response.status === 201) {
+      const updatedData = await fetchAllPermisos();
+      if (updatedData.status === 200 && updatedData.data) {
+        setData(updatedData.data);
+      }
+      handleClose();
+    } else {
+      console.log(response);
+    }
+  };
 
-    const handleDelete = (id) => {
-        const permiso = data.find((permiso) => permiso.id === id);
-        setPermisoToDelete(permiso);
-        setOpenDeleteDialog(true);
-    };
+  //   const handleDelete = (id) => {
+  //     const permiso = data.find((permiso) => permiso.id === id);
+  //     setPermisoToDelete(permiso);
+  //     setOpenDeleteDialog(true);
+  //   };
 
-    const confirmDelete = async () => {
-        if (permisoToDelete.estadoId === "activo") {
-            setErrorMessage("No se puede eliminar el permiso porque está activo.");
-            setOpenErrorModal(true);
-            setOpenDeleteDialog(false);
-            return;
-        }
+  //   const confirmDelete = async () => {
+  //     if (permisoToDelete.estadoId === 1) {
+  //       setErrorMessage("No se puede eliminar el permiso porque está activo.");
+  //       setOpenErrorModal(true);
+  //       setOpenDeleteDialog(false);
+  //       return;
+  //     }
 
-        try {
-            const response = await triggerFetch(
-                `https://modisteria-back-production.up.railway.app/api/permisos/deletePermiso/${permisoToDelete.id}`,
-                "DELETE",
-                null,
-                { "x-token": token }
-            );
+  //     const response = await deletePermisos(permisoToDelete.id);
 
-            if (response.status === 200 || response.status === 201) {
-                setData((prevData) => prevData.filter((permiso) => permiso.id !== permisoToDelete.id));
-                setOpenDeleteDialog(false);
-                setPermisoToDelete(null);
-            } else {
-                setErrorMessage("Error inesperado al eliminar el permiso. Revisa la consola para más información.");
-                setOpenErrorModal(true);
-            }
-        } catch (error) {
-            console.error("Error al realizar la solicitud:", error);
-            setErrorMessage("Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente.");
-            setOpenErrorModal(true);
-        }
-    };
+  //     if (response.status === 200 || response.status === 201) {
+  //       setData((prevData) =>
+  //         prevData.filter((permiso) => permiso.id !== permisoToDelete.id)
+  //       );
+  //       setOpenDeleteDialog(false);
+  //       setPermisoToDelete(null);
+  //     }
+  //   };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setSelectedPermiso((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const columns = [
-        { field: "id", headerName: "ID", flex: 0.5 },
-        { field: "nombre", headerName: "Nombre", flex: 1 },
-        { field: "descripcion", headerName: "Descripción", flex: 1 },
-        { field: "estadoId", headerName: "Estado ID", flex: 1 },
-        {
-            field: "acciones",
-            headerName: "Acciones",
-            flex: 1,
-            renderCell: (params) => (
-                <Box>
-                    <Button color="primary" onClick={() => handleEdit(params.row.id)}>
-                        <img alt="editar" width="20px" height="20px" src="../../assets/editar.png" style={{ cursor: "pointer" }} />
-                    </Button>
-                    <Button variant="contained" color="error" onClick={() => handleDelete(params.row.id)} sx={{ ml: 1 }}>
-                        <img alt="borrar" width="20px" height="20px" src="../../assets/borrar.png" style={{ cursor: "pointer" }} />
-                    </Button>
-                </Box>
-            ),
-        },
-    ];
-
-    return (
-        <Box m="20px">
-            <Header title="PERMISOS" subtitle="Lista de permisos" />
-            <Button variant="contained" color="primary" onClick={handleAdd} sx={{ mb: 2 }}>
-                Agregar Permiso
-            </Button>
-            <Box m="40px 0 0 0" height="75vh" sx={{
-                "& .MuiDataGrid-root": { border: "none" },
-                "& .MuiDataGrid-cell": { borderBottom: "none" },
-                "& .MuiDataGrid-columnHeaders": { backgroundColor: colors.blueAccent[700], borderBottom: "none" },
-                "& .MuiDataGrid-virtualScroller": { backgroundColor: colors.primary[400] },
-                "& .MuiDataGrid-footerContainer": { borderTop: "none", backgroundColor: colors.blueAccent[700] },
-                "& .MuiCheckbox-root": { color: `${colors.greenAccent[200]} !important` },
-                "& .MuiDataGrid-toolbarContainer .MuiButton-text": { color: `${colors.grey[100]} !important` },
-            }}>
-                {loading ? (
-                    <Typography>Cargando permisos...</Typography>
-                ) : (
-                    <DataGrid rows={data} columns={columns} components={{ Toolbar: GridToolbar }} />
-                )}
-            </Box>
-
-            <Dialog open={openModal} onClose={handleClose}>
-                <DialogTitle>{selectedPermiso?.id ? "Editar Permiso" : "Agregar Permiso"}</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        margin="dense"
-                        name="nombre"
-                        label="Nombre"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedPermiso?.nombre || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="descripcion"
-                        label="Descripción"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedPermiso?.descripcion || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="estadoId"
-                        label="Estado ID"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedPermiso?.estadoId || ""}
-                        onChange={handleInputChange}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Cancelar</Button>
-                    <Button onClick={handleSave}>Guardar</Button>
-                </DialogActions>
-            </Dialog>
-
-            <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
-                <DialogTitle>Confirmar Eliminación</DialogTitle>
-                <DialogContent>
-                    <Typography>¿Estás seguro de que deseas eliminar el permiso "{permisoToDelete?.nombre}"?</Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenDeleteDialog(false)}>Cancelar</Button>
-                    <Button onClick={confirmDelete} color="error">Eliminar</Button>
-                </DialogActions>
-            </Dialog>
-
-            <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
-                <DialogTitle>Error</DialogTitle>
-                <DialogContent>
-                    <Typography>{errorMessage}</Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenErrorModal(false)}>Cerrar</Button>
-                </DialogActions>
-            </Dialog>
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedPermiso((prev) => ({ ...prev, [name]: value }));
+  };
+  // Fin métodos CRUD
+  const columns = [
+    { field: "id", headerName: "ID", flex: 0.5 },
+    { field: "nombre", headerName: "Nombre", flex: 1 },
+    { field: "descripcion", headerName: "Descripción", flex: 1 },
+    {
+      field: "estadoId",
+      headerName: "Estado",
+      flex: 1,
+      renderCell: ({ row }) => (
+        <Switch
+          sx={{
+            "& .MuiSwitch-switchBase.Mui-checked": {
+              color: colors.purple[200],
+              "&:hover": {
+                backgroundColor: alpha(
+                  colors.purple[200],
+                  theme.palette.action.hoverOpacity
+                ),
+              },
+            },
+            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+              backgroundColor: colors.purple[200],
+            },
+          }}
+          color="warning"
+          onChange={(e) => {
+            handleStatePermiso(e, row.id);
+          }}
+          defaultChecked={row.estadoId == 1}
+        />
+      ),
+    },
+    {
+      field: "acciones",
+      headerName: "Acciones",
+      flex: 1,
+      renderCell: ({ row }) => (
+        <Box>
+          <Button onClick={() => handleEdit(row.id)}>
+            <Edit size={20} color={colors.grey[100]} />
+          </Button>
+          {/* <Button onClick={() => handleDelete(row.id)} sx={{ ml: 1 }}>
+            <TrashColor size={20} color={colors.grey[100]} />
+          </Button> */}
         </Box>
-    );
+      ),
+    },
+  ];
+
+  return (
+    <>
+      <Header title="Permisos" subtitle="Lista de permisos" />
+      {loading && <Loading></Loading>}
+      <Box
+        m="0px 20px"
+        p="0px 10px"
+        height="65%"
+        width="98%"
+        sx={{
+          "& .MuiDataGrid-root": { border: "none" },
+          "& .MuiDataGrid-cell": { borderBottom: "none" },
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: colors.purple[500],
+            borderBottom: "none",
+            color: "white",
+          },
+          "& .MuiDataGrid-virtualScroller": {
+            backgroundColor: colors.primary[400],
+          },
+          "& .MuiDataGrid-footerContainer": {
+            borderTop: "none",
+            backgroundColor: colors.primary[200],
+          },
+          "& .MuiCheckbox-root": {
+            color: `${colors.purple[200]} !important`,
+          },
+          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+            color: `${colors.grey[100]} !important`,
+          },
+        }}
+      >
+        {loading ? (
+          <Typography>Cargando permisos...</Typography>
+        ) : (
+          <DataGrid
+            rows={data}
+            columns={columns}
+            components={{ Toolbar: GridToolbar }}
+            getRowId={(row) => row.id}
+            initialState={{
+              sorting: {
+                sortModel: [{ field: "id", sort: "asc" }],
+              },
+            }}
+            localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+          />
+        )}
+      </Box>
+
+      <Dialog open={openModal} onClose={handleClose}>
+        <form onSubmit={handleSavePermiso(handleSave)}>
+          <DialogTitle color={colors.grey[100]}>Editar Permiso</DialogTitle>
+          <DialogContent>
+            <TextField
+              margin="dense"
+              name="nombre"
+              label="Nombre"
+              type="text"
+              fullWidth
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&:hover fieldset": {
+                    borderColor: "purple",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "purple",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  "&.Mui-focused": {
+                    color: "purple",
+                  },
+                },
+              }}
+              variant="outlined"
+              {...registerPermiso("nombre", {
+                required: "El permiso necesita un nombre.",
+              })}
+              value={selectedPermiso?.nombre}
+              onChange={handleInputChange}
+              FormHelperTextProps={{ sx: { color: "red" } }}
+              helperText={errorsAddPermiso?.nombre?.message}
+            />
+            <TextField
+              margin="dense"
+              name="descripcion"
+              label="Descripción"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&:hover fieldset": {
+                    borderColor: "purple",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "purple",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  "&.Mui-focused": {
+                    color: "purple",
+                  },
+                },
+              }}
+              type="text"
+              fullWidth
+              variant="outlined"
+              {...registerPermiso("descripcion", {
+                required: "La descripción es requerida",
+                minLength: {
+                  value: 4,
+                  message: "La descripción debe tener mínimo 4 caracteres!",
+                },
+              })}
+              value={selectedPermiso?.descripcion}
+              onChange={handleInputChange}
+              FormHelperTextProps={{ sx: { color: "red" } }}
+              helperText={errorsAddPermiso?.descripcion?.message}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="error">
+              Cancelar
+            </Button>
+            <Button type="submit" color="success">
+              Guardar
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      {/* <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+      >
+        <DialogTitle color={colors.grey[100]}>
+          Confirmar Eliminación
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            ¿Estás seguro de que deseas eliminar el permiso "
+            {permisoToDelete?.nombre}"?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
+            Cancelar
+          </Button>
+          <Button onClick={confirmDelete} color="error">
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog> */}
+
+      <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+        <DialogTitle color={colors.grey[100]}>Error</DialogTitle>
+        <DialogContent>
+          <Typography color={colors.grey[100]}>{errorMessage}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenErrorModal(false)} color="error">
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
 };
 
 export default Permisos;
