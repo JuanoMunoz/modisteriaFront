@@ -1,249 +1,352 @@
-import React, { useState, useEffect } from "react"; 
-import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Typography,
+  Switch,
+} from "@mui/material";
+import Loading from "../../components/loading/Loading";
+import { TrashColor, Edit } from "../../components/svg/Svg";
+import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header/Header";
 import { useTheme } from "@mui/material";
-import useFetch from "../../hooks/useFetch";
-import { useJwt } from "../../context/JWTContext";
+import { useForm } from "react-hook-form";
+import { alpha } from "@mui/material";
+import useCategoriaData from "../../hooks/useCategoriaData";
 
 const CategoriaPrenda = () => {
-    const theme = useTheme();
-    const colors = tokens(theme.palette.mode);
-    const { loading, triggerFetch } = useFetch();
-    const { token } = useJwt();
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  const {
+    handleSubmit: handleSaveCategoria,
+    formState: { errors: errorsAddCategoria },
+    register: registerCategoria,
+  } = useForm();
+  const [openModal, setOpenModal] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedCategoria, setSelectedCategoria] = useState(null);
+  const [categoriaToDelete, setCategoriaToDelete] = useState(null);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [data, setData] = useState([]);
+  const { fetchAllCategorias, loading, updateCategoria, createCategoria, deleteCategoria } = useCategoriaData();
 
-    const [data, setData] = useState([]);
-    const [openModal, setOpenModal] = useState(false);
-    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-    const [selectedCategoria, setSelectedCategoria] = useState(null);
-    const [categoriaToDelete, setCategoriaToDelete] = useState(null);
-    const [errorMessage, setErrorMessage] = useState(""); 
-    const [openErrorModal, setOpenErrorModal] = useState(false); 
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const respuesta = await triggerFetch("https://modisteria-back-production.up.railway.app/api/categorias/getAllCategorias", "GET");
-            if (respuesta.status === 200 && respuesta.data) {
-                const categoriasConId = respuesta.data
-                    .filter(categoria => categoria.tipo === 'prenda')
-                    .map(categoria => ({
-                        ...categoria,
-                        id: categoria.id || data.length + 1 
-                    }));
-                setData(categoriasConId);
-            } else {
-                handleError("Error al obtener datos.");
-            }
-        };
-        fetchData();
-    }, [triggerFetch]);
-
-    const handleError = (message) => {
-        setErrorMessage(message);
+  useEffect(() => {
+    const initialFetchCategorias = async () => {
+      const respuesta = await fetchAllCategorias();
+      if (respuesta.status === 200 && respuesta.data) {
+        setData(respuesta.data.filter(c => c.tipo === 'prenda'));
+      } else {
+        setErrorMessage("Error al cargar las categorías.");
         setOpenErrorModal(true);
+      }
     };
+    initialFetchCategorias();
+  }, [fetchAllCategorias]);
 
-    const handleEdit = (id) => {
-        const categoriaToEdit = data.find((categoria) => categoria.id === id);
-        setSelectedCategoria(categoriaToEdit);
-        setOpenModal(true);
-    };
+  const handleEdit = (id) => {
+    const categoriaToEdit = data.find((categoria) => categoria.id === id);
+    setSelectedCategoria(categoriaToEdit);
+    setOpenModal(true);
+  };
 
-    const handleAdd = () => {
-        setSelectedCategoria({ nombre: "", descripcion: "", tipo: "prenda", estadoId: "" });
-        setOpenModal(true);
-    };
+  const handleAdd = () => {
+    setSelectedCategoria({
+      nombre: "",
+      descripcion: "",
+      estadoId: 0,
+    });
+    setOpenModal(true);
+  };
 
-    const handleClose = () => {
-        setOpenModal(false);
-        setSelectedCategoria(null);
-    };
+  const handleClose = () => {
+    setOpenModal(false);
+    setSelectedCategoria(null);
+  };
 
-    const handleSave = async () => {
-        try {
-            const method = selectedCategoria.id ? "PUT" : "POST";
-            const url = selectedCategoria.id 
-                ? `https://modisteria-back-production.up.railway.app/api/categorias/updateCategoria/${selectedCategoria.id}`
-                : "https://modisteria-back-production.up.railway.app/api/categorias/createCategoria";
+  const handleSave = async (formData) => {
+    try {
+      if (selectedCategoria?.id) {
+        const respuesta = await updateCategoria(selectedCategoria.id, {
+          nombre: formData.nombre,
+          descripcion: formData.descripcion,
+          estadoId: selectedCategoria.estadoId,
+        });
 
-            const response = await triggerFetch(url, method, selectedCategoria, { "x-token": token });
+        if (respuesta.status === 200 || respuesta.status === 201) {
+          const updatedData = data.map(categoria =>
+            categoria.id === selectedCategoria.id ? { ...categoria, ...formData } : categoria
+          );
+          setData(updatedData);
+        } else {
+          throw new Error("Error al editar la categoría.");
+        }
+      } else {
+        const respuesta = await createCategoria({
+          nombre: formData.nombre,
+          descripcion: formData.descripcion,
+          estadoId: 1,  
+          tipo: "prenda",  
+        });
 
-            if (response.status === 200 || response.status === 201) {
-                if (response.data.msg) {
-                    console.log(response.data.msg);
-                    if (method === "PUT") {
-                        setData((prevData) =>
-                            prevData.map((categoria) =>
-                                categoria.id === selectedCategoria.id ? selectedCategoria : categoria
-                            )
-                        );
-                    } else {
-                        const newCategoria = { ...selectedCategoria, id: data.length + 1 }; 
-                        setData((prevData) => [...prevData, newCategoria]);
-                    }
-                }
-                handleClose();
-            } else {
-                handleError("Error al guardar los datos. Revisa la consola para más detalles.");
+        if (respuesta.status === 201) {
+          const newCategory = { ...respuesta.data, estadoId: 1, tipo: "prenda" };
+          if (!newCategory.id) {
+            newCategory.id = new Date().getTime(); 
+          }
+          setData([...data, newCategory]);
+        } else {
+          throw new Error("Error al crear la categoría.");
+        }
+      }
+    } catch (error) {
+      console.error("Error details:", error);
+      setErrorMessage(error.message || "Error al editar la categoría.");
+      setOpenErrorModal(true);
+    } finally {
+      handleClose();
+    }
+  };
+
+  const handleDelete = (id) => {
+    const categoria = data.find((categoria) => categoria.id === id);
+    setCategoriaToDelete(categoria);
+    setOpenDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (categoriaToDelete.estadoId !== 2) {
+      setErrorMessage("No se puede eliminar la categoría si está activa.");
+      setOpenErrorModal(true);
+      setOpenDeleteDialog(false);
+      return;
+    }
+
+    try {
+      const respuesta = await deleteCategoria(categoriaToDelete.id);
+      if (respuesta.status === 201) {
+        setData(data.filter((categoria) => categoria.id !== categoriaToDelete.id));
+      } else {
+        throw new Error("Error al eliminar la categoría.");
+      }
+    } catch (error) {
+      console.error("Error details:", error);
+      setErrorMessage(error.message || "Error al eliminar la categoría.");
+      setOpenErrorModal(true);
+    } finally {
+      setOpenDeleteDialog(false);
+    }
+  };
+
+  const columns = [
+    { field: "id", headerName: "ID", flex: 0.5 },
+    { field: "nombre", headerName: "Nombre", flex: 1 },
+    { field: "descripcion", headerName: "Descripción", flex: 2 },
+    {
+      field: "estadoId",
+      headerName: "Estado",
+      flex: 1,
+      renderCell: ({ row }) => (
+        <Switch
+          sx={{
+            "& .MuiSwitch-switchBase.Mui-checked": {
+              color: colors.purple[200],
+              "&:hover": {
+                backgroundColor: alpha(colors.purple[200], theme.palette.action.hoverOpacity),
+              },
+            },
+            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+              backgroundColor: colors.purple[200],
+            },
+          }}
+          color="warning"
+          checked={row.estadoId === 1}
+          onChange={async (e) => {
+            const newState = e.target.checked ? 1 : 2;
+            try {
+              const respuesta = await updateCategoria(row.id, {
+                ...row,
+                estadoId: newState,
+              });
+
+              if (respuesta.status === 200 || respuesta.status === 201) {
+                const updatedData = data.map(categoria =>
+                  categoria.id === row.id ? { ...categoria, estadoId: newState } : categoria
+                );
+                setData(updatedData);
+              } else {
+                throw new Error("Error al actualizar el estado.");
+              }
+            } catch (error) {
+              console.error("Error details:", error);
+              setErrorMessage(error.message || "Error al actualizar el estado.");
+              setOpenErrorModal(true);
             }
-        } catch (error) {
-            handleError("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
-        }
-    };
-
-    const handleDelete = (id) => {
-        const categoria = data.find((categoria) => categoria.id === id);
-        setCategoriaToDelete(categoria);
-        setOpenDeleteDialog(true);
-    };
-
-    const confirmDelete = async () => {
-        if (categoriaToDelete.estadoId === "activo") {
-            handleError("No se puede eliminar la categoría porque está activa.");
-            setOpenDeleteDialog(false);
-            return;
-        }
-
-        try {
-            const response = await triggerFetch(
-                `https://modisteria-back-production.up.railway.app/api/categorias/deleteCategoria/${categoriaToDelete.id}`,
-                "DELETE",
-                null,
-                { "x-token": token }
-            );
-
-            if (response.status === 200 || response.status === 201) {
-                console.log("Respuesta de eliminación: ", response.data);
-                setData((prevData) => prevData.filter((categoria) => categoria.id !== categoriaToDelete.id));
-                setOpenDeleteDialog(false);
-                setCategoriaToDelete(null);
-            } else {
-                handleError("Error inesperado al eliminar la categoría. Revisa la consola para más información.");
-            }
-        } catch (error) {
-            handleError("Ocurrió un error al realizar la solicitud de eliminación. Inténtalo nuevamente.");
-        }
-    };
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setSelectedCategoria((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const columns = [
-        { field: "id", headerName: "ID", flex: 0.5 },
-        { field: "nombre", headerName: "Nombre", flex: 1 },
-        { field: "descripcion", headerName: "Descripción", flex: 1 },
-        { field: "estadoId", headerName: "Estado ID", flex: 1 },
-        {
-            field: "acciones",
-            headerName: "Acciones",
-            flex: 1,
-            renderCell: (params) => (
-                <Box>
-                    <Button color="primary" onClick={() => handleEdit(params.row.id)}>
-                        <img alt="editar" width="20px" height="20px" src="../../assets/editar.png" style={{ cursor: "pointer" }} />
-                    </Button>
-                    <Button variant="contained" color="error" onClick={() => handleDelete(params.row.id)} sx={{ ml: 1 }}>
-                        <img alt="borrar" width="20px" height="20px" src="../../assets/borrar.png" style={{ cursor: "pointer" }} />
-                    </Button>
-                </Box>
-            ),
-        },
-    ];
-
-    return (
-        <Box m="20px">
-            <Header title="CATEGORÍAS" subtitle="Lista de categorías" />
-            <Button variant="contained" color="primary" onClick={handleAdd} sx={{ mb: 2 }}>
-                Agregar Categoría
-            </Button>
-            <Box m="40px 0 0 0" height="75vh" sx={{
-                "& .MuiDataGrid-root": { border: "none" },
-                "& .MuiDataGrid-cell": { borderBottom: "none" },
-                "& .MuiDataGrid-columnHeaders": { backgroundColor: colors.blueAccent[700], borderBottom: "none" },
-                "& .MuiDataGrid-virtualScroller": { backgroundColor: colors.primary[400] },
-                "& .MuiDataGrid-footerContainer": { borderTop: "none", backgroundColor: colors.blueAccent[700] },
-                "& .MuiCheckbox-root": { color: `${colors.greenAccent[200]} !important` },
-                "& .MuiDataGrid-toolbarContainer .MuiButton-text": { color: `${colors.grey[100]} !important` },
-            }}>
-                {loading ? (
-                    <Typography>Cargando categorías...</Typography>
-                ) : (
-                    <DataGrid 
-                        rows={data} 
-                        columns={columns} 
-                        components={{ Toolbar: GridToolbar }} 
-                    />
-                )}
-            </Box>
-
-            {/* Modal para Agregar/Editar Categoría */}
-            <Dialog open={openModal} onClose={handleClose}>
-                <DialogTitle>{selectedCategoria?.id ? "Editar Categoría" : "Agregar Categoría"}</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        margin="dense"
-                        name="nombre"
-                        label="Nombre"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCategoria?.nombre || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="descripcion"
-                        label="Descripción"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCategoria?.descripcion || ""}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="estadoId"
-                        label="Estado ID"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCategoria?.estadoId || ""}
-                        onChange={handleInputChange}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Cancelar</Button>
-                    <Button onClick={handleSave}>Guardar</Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* Diálogo de Confirmación de Eliminación */}
-            <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
-                <DialogTitle>Confirmar Eliminación</DialogTitle>
-                <DialogContent>
-                    <Typography>¿Estás seguro de que deseas eliminar la categoría "{categoriaToDelete?.nombre}"?</Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenDeleteDialog(false)}>Cancelar</Button>
-                    <Button onClick={confirmDelete} color="error">Eliminar</Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* Modal para mostrar errores */}
-            <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
-                <DialogTitle>Error</DialogTitle>
-                <DialogContent>
-                    <Typography>{errorMessage}</Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenErrorModal(false)}>Cerrar</Button>
-                </DialogActions>
-            </Dialog>
+          }}
+        />
+      ),
+    },
+    {
+      field: "acciones",
+      headerName: "Acciones",
+      flex: 1,
+      renderCell: ({ row }) => (
+        <Box>
+          <Button onClick={() => handleEdit(row.id)}>
+            <Edit size={20} color={colors.grey[100]} />
+          </Button>
+          <Button onClick={() => handleDelete(row.id)} sx={{ ml: 1 }}>
+            <TrashColor size={20} color={colors.grey[100]} />
+          </Button>
         </Box>
-    );
+      ),
+    },
+  ];
+
+  return (
+    <>
+      <Header title="Categorías de Prenda" subtitle="Lista de categorías de prendas" />
+      <Button
+        variant="contained"
+        onClick={handleAdd}
+        sx={{
+          mb: 2,
+          backgroundColor: colors.purple[400],
+          "&:hover": {
+            backgroundColor: colors.purple[300],
+          },
+          color: "white",
+        }}
+      >
+        Agregar Categoría
+      </Button>
+      {loading && <Loading />}
+      <Box
+        m="0px 20px"
+        p="0px 10px"
+        height="56vh"
+        width="98%"
+        sx={{
+          "& .MuiDataGrid-root": { border: "none" },
+          "& .MuiDataGrid-cell": { borderBottom: "none" },
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: colors.purple[500],
+            borderBottom: "none",
+            color: "white",
+          },
+          "& .MuiDataGrid-virtualScroller": {
+            backgroundColor: colors.primary[400],
+          },
+          "& .MuiDataGrid-footerContainer": {
+            borderTop: "none",
+            backgroundColor: colors.primary[200],
+          },
+          "& .MuiCheckbox-root": {
+            color: `${colors.purple[200]} !important`,
+          },
+          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+            color: `${colors.grey[100]} !important`,
+          },
+        }}
+      >
+        {loading ? (
+          <Typography>Cargando categorías...</Typography>
+        ) : (
+          <DataGrid
+            rows={data}
+            columns={columns}
+            components={{ Toolbar: GridToolbar }}
+            getRowId={(row) => row.id}
+            initialState={{
+              sorting: {
+                sortModel: [{ field: "id", sort: "asc" }],
+              },
+            }}
+            localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+          />
+        )}
+      </Box>
+
+      <Dialog open={openModal} onClose={handleClose}>
+        <form onSubmit={handleSaveCategoria(handleSave)}>
+          <DialogTitle color={colors.grey[100]}>
+            {selectedCategoria?.id ? "Editar Categoría" : "Agregar Categoría"}
+          </DialogTitle>
+          <DialogContent>
+            <TextField
+              margin="dense"
+              name="nombre"
+              label="Nombre"
+              type="text"
+              fullWidth
+              variant="outlined"
+              {...registerCategoria("nombre", { required: "El nombre es requerido." })}
+              value={selectedCategoria?.nombre || ""}
+              onChange={(e) => setSelectedCategoria({ ...selectedCategoria, nombre: e.target.value })}
+              FormHelperTextProps={{ sx: { color: "red" } }}
+              helperText={errorsAddCategoria?.nombre?.message}
+            />
+            <TextField
+              margin="dense"
+              name="descripcion"
+              label="Descripción"
+              type="text"
+              fullWidth
+              variant="outlined"
+              {...registerCategoria("descripcion")}
+              value={selectedCategoria?.descripcion || ""}
+              onChange={(e) => setSelectedCategoria({ ...selectedCategoria, descripcion: e.target.value })}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="error">
+              Cancelar
+            </Button>
+            <Button type="submit" color="success">
+              Guardar
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
+        <DialogTitle color={colors.grey[100]}>
+          Confirmar Eliminación
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            ¿Estás seguro de que deseas eliminar la categoría "{categoriaToDelete?.nombre}"?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
+            Cancelar
+          </Button>
+          <Button onClick={confirmDelete} color="error">
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+        <DialogTitle color={colors.grey[100]}>Error</DialogTitle>
+        <DialogContent>
+          <Typography color={colors.grey[100]}>{errorMessage}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenErrorModal(false)} color="error">
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
 };
 
 export default CategoriaPrenda;

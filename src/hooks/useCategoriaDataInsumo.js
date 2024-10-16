@@ -1,7 +1,7 @@
 import useFetch from "./useFetch";
 import { useJwt } from "../context/JWTContext";
 
-export default function useCategoriaData() {
+export default function useCategoriaDataInsumo() {
   const { loading, triggerFetch } = useFetch();
   const { triggerFetch: updateFetch } = useFetch();
   const { triggerFetch: createFetch } = useFetch();
@@ -11,7 +11,7 @@ export default function useCategoriaData() {
 
   const fetchAllCategorias = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/categorias/getAllCategorias?type=prenda",
+      "https://modisteria-back-production.up.railway.app/api/categorias/getAllCategorias?type=insumo",
       "GET",
       null,
       { "x-token": token }
@@ -21,7 +21,7 @@ export default function useCategoriaData() {
 
   const initialFetchAllCategorias = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/categorias/getAllCategorias?type=prenda",
+      "https://modisteria-back-production.up.railway.app/api/categorias/getAllCategorias?type=insumo",
       "GET",
       null,
       { "x-token": token }
