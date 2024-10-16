@@ -21,7 +21,7 @@ import { useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { alpha } from "@mui/material";
 import useInsumosData from "../../hooks/useInsumosData";
-import useCategoriaData from "../../hooks/useCategoriaData";
+import useCategoriaDataInsumo from "../../hooks/useCategoriaDataInsumo";
 const Insumos = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -47,7 +47,8 @@ const Insumos = () => {
     updateInsumos,
     loading,
   } = useInsumosData();
-  const { fetchAllCategorias, loadingCategoria } = useCategoriaData();
+  const { fetchAllCategorias, loading: loadingCategoria } =
+    useCategoriaDataInsumo();
   useEffect(() => {
     const initialFetchInsumos = async () => {
       const respuesta = await initialFetchAllInsumos();

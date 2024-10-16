@@ -244,16 +244,21 @@ const Roles = () => {
       field: "acciones",
       headerName: "Acciones",
       flex: 1,
-      renderCell: ({ row }) => (
-        <Box>
-          <Button onClick={() => handleEdit(row.id)}>
-            <Edit size={20} color={colors.grey[100]} />
-          </Button>
-          <Button onClick={() => handleDelete(row.id)} sx={{ ml: 1 }}>
-            <TrashColor size={20} color={colors.grey[100]} />
-          </Button>
-        </Box>
-      ),
+      renderCell: ({ row }) =>
+        row.nombre !== "ADMINISTRADOR" ? (
+          <Box sx={{ textAlign: "center", mx: "auto" }}>
+            <Button onClick={() => handleEdit(row.id)}>
+              <Edit size={20} color={colors.grey[100]} />
+            </Button>
+            <Button onClick={() => handleDelete(row.id)} sx={{ ml: 1 }}>
+              <TrashColor size={20} color={colors.grey[100]} />
+            </Button>
+          </Box>
+        ) : (
+          <Box sx={{ textAlign: "center", mx: "auto" }}>
+            <h4>Sin acciones</h4>
+          </Box>
+        ),
     },
   ];
 

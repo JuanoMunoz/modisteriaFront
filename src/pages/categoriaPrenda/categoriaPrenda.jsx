@@ -35,20 +35,27 @@ const CategoriaPrenda = () => {
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [data, setData] = useState([]);
-  const { fetchAllCategorias, loading, updateCategoria, createCategoria, deleteCategoria } = useCategoriaData();
+  const {
+    fetchAllCategorias,
+    loading,
+    updateCategoria,
+    createCategoria,
+    deleteCategoria,
+    initialFetchAllCategorias,
+  } = useCategoriaData();
 
   useEffect(() => {
     const initialFetchCategorias = async () => {
-      const respuesta = await fetchAllCategorias();
+      const respuesta = await initialFetchAllCategorias();
       if (respuesta.status === 200 && respuesta.data) {
-        setData(respuesta.data.filter(c => c.tipo === 'prenda'));
+        setData(respuesta.data.filter((c) => c.tipo === "prenda"));
       } else {
         setErrorMessage("Error al cargar las categorías.");
         setOpenErrorModal(true);
       }
     };
     initialFetchCategorias();
-  }, [fetchAllCategorias]);
+  }, []);
 
   const handleEdit = (id) => {
     const categoriaToEdit = data.find((categoria) => categoria.id === id);
@@ -80,8 +87,10 @@ const CategoriaPrenda = () => {
         });
 
         if (respuesta.status === 200 || respuesta.status === 201) {
-          const updatedData = data.map(categoria =>
-            categoria.id === selectedCategoria.id ? { ...categoria, ...formData } : categoria
+          const updatedData = data.map((categoria) =>
+            categoria.id === selectedCategoria.id
+              ? { ...categoria, ...formData }
+              : categoria
           );
           setData(updatedData);
         } else {
@@ -91,14 +100,18 @@ const CategoriaPrenda = () => {
         const respuesta = await createCategoria({
           nombre: formData.nombre,
           descripcion: formData.descripcion,
-          estadoId: 1,  
-          tipo: "prenda",  
+          estadoId: 1,
+          tipo: "prenda",
         });
 
         if (respuesta.status === 201) {
-          const newCategory = { ...respuesta.data, estadoId: 1, tipo: "prenda" };
+          const newCategory = {
+            ...respuesta.data,
+            estadoId: 1,
+            tipo: "prenda",
+          };
           if (!newCategory.id) {
-            newCategory.id = new Date().getTime(); 
+            newCategory.id = new Date().getTime();
           }
           setData([...data, newCategory]);
         } else {
@@ -131,7 +144,9 @@ const CategoriaPrenda = () => {
     try {
       const respuesta = await deleteCategoria(categoriaToDelete.id);
       if (respuesta.status === 201) {
-        setData(data.filter((categoria) => categoria.id !== categoriaToDelete.id));
+        setData(
+          data.filter((categoria) => categoria.id !== categoriaToDelete.id)
+        );
       } else {
         throw new Error("Error al eliminar la categoría.");
       }
@@ -158,7 +173,10 @@ const CategoriaPrenda = () => {
             "& .MuiSwitch-switchBase.Mui-checked": {
               color: colors.purple[200],
               "&:hover": {
-                backgroundColor: alpha(colors.purple[200], theme.palette.action.hoverOpacity),
+                backgroundColor: alpha(
+                  colors.purple[200],
+                  theme.palette.action.hoverOpacity
+                ),
               },
             },
             "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
@@ -176,8 +194,10 @@ const CategoriaPrenda = () => {
               });
 
               if (respuesta.status === 200 || respuesta.status === 201) {
-                const updatedData = data.map(categoria =>
-                  categoria.id === row.id ? { ...categoria, estadoId: newState } : categoria
+                const updatedData = data.map((categoria) =>
+                  categoria.id === row.id
+                    ? { ...categoria, estadoId: newState }
+                    : categoria
                 );
                 setData(updatedData);
               } else {
@@ -185,7 +205,9 @@ const CategoriaPrenda = () => {
               }
             } catch (error) {
               console.error("Error details:", error);
-              setErrorMessage(error.message || "Error al actualizar el estado.");
+              setErrorMessage(
+                error.message || "Error al actualizar el estado."
+              );
               setOpenErrorModal(true);
             }
           }}
@@ -211,7 +233,10 @@ const CategoriaPrenda = () => {
 
   return (
     <>
-      <Header title="Categorías de Prenda" subtitle="Lista de categorías de prendas" />
+      <Header
+        title="Categorías de Prenda"
+        subtitle="Lista de categorías de prendas"
+      />
       <Button
         variant="contained"
         onClick={handleAdd}
@@ -281,27 +306,69 @@ const CategoriaPrenda = () => {
           <DialogContent>
             <TextField
               margin="dense"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&:hover fieldset": {
+                    borderColor: "purple",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "purple",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  "&.Mui-focused": {
+                    color: "purple",
+                  },
+                },
+              }}
               name="nombre"
               label="Nombre"
               type="text"
               fullWidth
               variant="outlined"
-              {...registerCategoria("nombre", { required: "El nombre es requerido." })}
+              {...registerCategoria("nombre", {
+                required: "El nombre es requerido.",
+              })}
               value={selectedCategoria?.nombre || ""}
-              onChange={(e) => setSelectedCategoria({ ...selectedCategoria, nombre: e.target.value })}
+              onChange={(e) =>
+                setSelectedCategoria({
+                  ...selectedCategoria,
+                  nombre: e.target.value,
+                })
+              }
               FormHelperTextProps={{ sx: { color: "red" } }}
               helperText={errorsAddCategoria?.nombre?.message}
             />
             <TextField
               margin="dense"
               name="descripcion"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&:hover fieldset": {
+                    borderColor: "purple",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "purple",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  "&.Mui-focused": {
+                    color: "purple",
+                  },
+                },
+              }}
               label="Descripción"
               type="text"
               fullWidth
               variant="outlined"
               {...registerCategoria("descripcion")}
               value={selectedCategoria?.descripcion || ""}
-              onChange={(e) => setSelectedCategoria({ ...selectedCategoria, descripcion: e.target.value })}
+              onChange={(e) =>
+                setSelectedCategoria({
+                  ...selectedCategoria,
+                  descripcion: e.target.value,
+                })
+              }
             />
           </DialogContent>
           <DialogActions>
@@ -315,13 +382,17 @@ const CategoriaPrenda = () => {
         </form>
       </Dialog>
 
-      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+      >
         <DialogTitle color={colors.grey[100]}>
           Confirmar Eliminación
         </DialogTitle>
         <DialogContent>
           <Typography>
-            ¿Estás seguro de que deseas eliminar la categoría "{categoriaToDelete?.nombre}"?
+            ¿Estás seguro de que deseas eliminar la categoría "
+            {categoriaToDelete?.nombre}"?
           </Typography>
         </DialogContent>
         <DialogActions>
