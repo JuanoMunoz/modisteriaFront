@@ -9,7 +9,7 @@ export default function useUsuariosData() {
   const { token } = useJwt();
   const fetchAllUsuarios = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/insumos/getAllInsumos",
+      "https://modisteria-back-production.up.railway.app/api/usuarios/getAllUsers",
       "GET",
       null,
       { "x-token": token }
@@ -18,7 +18,7 @@ export default function useUsuariosData() {
   };
   const initialFetchAllUsuarios = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/insumos/getAllInsumos",
+      "https://modisteria-back-production.up.railway.app/api/usuarios/getAllUsers",
       "GET",
       null,
       { "x-token": token }
@@ -54,11 +54,11 @@ export default function useUsuariosData() {
   };
 
   return {
-    initialFetchAllInsumos,
-    fetchAllInsumos,
-    deleteInsumo,
-    createInsumo,
-    updateInsumos,
+    initialFetchAllUsuarios,
+    fetchAllUsuarios,
+    // deleteInsumo,
+    // createInsumo,
+    // updateInsumos,
     loading,
   };
 }

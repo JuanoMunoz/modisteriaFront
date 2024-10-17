@@ -20,8 +20,9 @@ import Header from "../../components/Header/Header";
 import { useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { alpha } from "@mui/material";
-import useInsumosData from "../../hooks/useInsumosData";
-import useCategoriaDataInsumo from "../../hooks/useCategoriaDataInsumo";
+import useUsuariosData from "../../hooks/useUsuarioData";
+import useRolesData from "../../hooks/useRolData";
+import userolesData from "../../hooks/useRolData";
 const Usuarios = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -38,30 +39,23 @@ const Usuarios = () => {
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [data, setData] = useState([]);
-  const [categorias, setCategorias] = useState([]);
-  const {
-    initialFetchAllInsumos,
-    fetchAllInsumos,
-    deleteInsumo,
-    createInsumo,
-    updateInsumos,
-    loading,
-  } = useInsumosData();
-  const { fetchAllCategorias, loading: loadingCategoria } =
-    useCategoriaDataInsumo();
+  const [roles, setRoles] = useState([]);
+  const { fetchAllUsuarios, initialFetchAllUsuarios, loading } =
+    useUsuariosData();
+  const { initialFetchAllroles, loading: loadingRoles } = userolesData();
   useEffect(() => {
-    const initialFetchInsumos = async () => {
-      const respuesta = await initialFetchAllInsumos();
-      const categoria = await fetchAllCategorias();
+    const initialFetchUsuarios = async () => {
+      const respuesta = await initialFetchAllUsuarios();
+      const rolesRespuesta = await initialFetchAllroles();
 
       if (respuesta.status === 200 && respuesta.data) {
         setData(respuesta.data);
       }
-      if (categoria.status === 200 && categoria.data) {
-        setCategorias(categoria.data);
+      if (rolesRespuesta.status === 200 && rolesRespuesta.data) {
+        setRoles(rolesRespuesta.data);
       }
     };
-    initialFetchInsumos();
+    initialFetchUsuarios();
   }, []);
 
   /// Métodos para CRUD
@@ -82,9 +76,9 @@ const Usuarios = () => {
       }
     }
   };
-  const getCategoriaNombre = (categoriaId) => {
-    const categoria = categorias.find((cat) => cat.id === categoriaId);
-    return categoria ? categoria.nombre : "Sin Categoría";
+  const getRoleId = (roleId) => {
+    const role = roles.find((rol) => rol.id === roleId);
+    return role ? role.nombre : "Sin Rol asignado";
   };
 
   const handleAdd = () => {
@@ -151,12 +145,18 @@ const Usuarios = () => {
     { field: "nombre", headerName: "Nombre", flex: 1 },
     { field: "email", headerName: "Correo", flex: 1 },
     { field: "telefono", headerName: "Teléfono", flex: 1 },
-    { field: "direccion", headerName: "Dirección", flex: 1 },
+    {
+      field: "direccion",
+      headerName: "Dirección",
+      flex: 1,
+      valueGetter: (params) =>
+        params.row.direccion ? params.row.direccion : "Sin dirección agregada",
+    },
     {
       field: "roleId",
       headerName: "Rol",
       flex: 1,
-      valueGetter: (params) => getCategoriaNombre(params.row.categoriaId),
+      valueGetter: (params) => getRoleId(params.row.roleId),
     },
     {
       field: "estadoId",
@@ -220,7 +220,7 @@ const Usuarios = () => {
       >
         Agregar Usuario
       </Button>
-      {(loading || loadingCategoria) && <Loading></Loading>}
+      {(loading || loadingRoles) && <Loading></Loading>}
       <Box
         m="0px 20px"
         p="0px 10px"
@@ -372,9 +372,9 @@ const Usuarios = () => {
               FormHelperTextProps={{ sx: { color: "red" } }}
               helperText={errorsAddInsumo?.categoriaId?.message}
             >
-              {categorias.map((cat) => (
-                <MenuItem key={cat.id} value={cat.id}>
-                  {cat.nombre}
+              {roles.map((rol) => (
+                <MenuItem key={rol.id} value={rol.id}>
+                  {rol.nombre}
                 </MenuItem>
               ))}
             </TextField>

@@ -62,18 +62,6 @@ const Permisos = () => {
     setOpenModal(true);
   };
 
-  const handleStatePermiso = async (e, id) => {
-    const isActive = e.target.checked ? 1 : 2;
-    const response = await updatePermisos(id, { estadoId: isActive });
-    if (response.status === 200 || response.status === 201) {
-      const updatedData = await fetchAllPermisos();
-
-      if (updatedData.status === 200 && updatedData.data) {
-        setData(updatedData.data);
-      }
-    }
-  };
-
   const handleClose = () => {
     setOpenModal(false);
     setSelectedPermiso(null);
@@ -126,34 +114,6 @@ const Permisos = () => {
     { field: "id", headerName: "ID", flex: 0.5 },
     { field: "nombre", headerName: "Nombre", flex: 1 },
     { field: "descripcion", headerName: "Descripción", flex: 1 },
-    {
-      field: "estadoId",
-      headerName: "Estado",
-      flex: 1,
-      renderCell: ({ row }) => (
-        <Switch
-          sx={{
-            "& .MuiSwitch-switchBase.Mui-checked": {
-              color: colors.purple[200],
-              "&:hover": {
-                backgroundColor: alpha(
-                  colors.purple[200],
-                  theme.palette.action.hoverOpacity
-                ),
-              },
-            },
-            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-              backgroundColor: colors.purple[200],
-            },
-          }}
-          color="warning"
-          onChange={(e) => {
-            handleStatePermiso(e, row.id);
-          }}
-          defaultChecked={row.estadoId == 1}
-        />
-      ),
-    },
     {
       field: "acciones",
       headerName: "Acciones",

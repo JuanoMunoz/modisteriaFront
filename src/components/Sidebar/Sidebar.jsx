@@ -6,6 +6,17 @@ import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
+import {
+  ShoppingCartOutlined,
+  ViewListOutlined,
+  AdminPanelSettingsOutlined,
+  LockOutlined,
+  Inventory2Outlined,
+  StyleOutlined,
+  CalendarTodayOutlined,
+  InventoryOutlined,
+  HelpOutlineOutlined,
+} from "@mui/icons-material";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
@@ -136,70 +147,63 @@ const Sidebar = ({ nombre }) => {
             <Item
               title="Ventas"
               to="/dashboard/ventas"
-              icon={<ContactsOutlinedIcon />}
+              icon={<ShoppingCartOutlined />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Catálogo"
               to="/dashboard/catalogo"
-              icon={<ContactsOutlinedIcon />}
+              icon={<ViewListOutlined />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Roles"
               to="/dashboard/roles"
-              icon={<ContactsOutlinedIcon />}
+              icon={<AdminPanelSettingsOutlined />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Permisos"
               to="/dashboard/permisos"
-              icon={<ContactsOutlinedIcon />}
+              icon={<LockOutlined />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Categoria Insumos"
               to="/dashboard/categoriaInsumos"
-              icon={<ContactsOutlinedIcon />}
+              icon={<Inventory2Outlined />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Categoria Prendas"
               to="/dashboard/categoriaPrenda"
-              icon={<ContactsOutlinedIcon />}
+              icon={<StyleOutlined />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Citas"
               to="/dashboard/cita"
-              icon={<ContactsOutlinedIcon />}
+              icon={<CalendarTodayOutlined />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Insumos"
               to="/dashboard/insumo"
-              icon={<ContactsOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Cotizaciones"
-              to="/dashboard/cotizacion"
-              icon={<ContactsOutlinedIcon />}
+              icon={<InventoryOutlined />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="PQRs"
               to="/dashboard/pqrs"
-              icon={<ContactsOutlinedIcon />}
+              icon={<HelpOutlineOutlined />}
               selected={selected}
               setSelected={setSelected}
             />
