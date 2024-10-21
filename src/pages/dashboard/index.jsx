@@ -80,9 +80,9 @@ const Dashboard = () => {
   }, [triggerFetch, token]);
 
   return (
-    <div style={{ margin: " 0 20px", boxSizing: "border-box", height: "70vh" }}>
+    <div style={{ margin: " 0 20px", boxSizing: "border-box", height: "55vh" }}>
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title="DASHBOARD" subtitle="Bienvenida a tu dashboard" />
+        <Header title="Dashboard" subtitle="Bienvenid@ a tu dashboard" />
       </Box>
 
       <Box
@@ -187,10 +187,10 @@ const Dashboard = () => {
           gridColumn="span 8"
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
-          mb="20px"
+          mb="0px"
         >
           <Box
-            mt="25px"
+            mt="0px"
             p="0 30px"
             display="flex"
             justifyContent="space-between"

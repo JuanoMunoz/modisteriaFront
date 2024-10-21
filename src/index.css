@@ -20,7 +20,6 @@ body,
 #root,
 .app,
 .content {
-  height: 100vh;
   width: 100%;
   font-family: "Comfortaa", sans-serif;
   scrollbar-color: rgb(187, 14, 202) #222;
