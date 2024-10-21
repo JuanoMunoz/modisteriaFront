@@ -318,7 +318,7 @@ export default function Venta() {
               <div key={value.idPedido} className="ficha-producto">
                 <div>
                   {value?.catalogo.producto}{" "}
-                  <span className="talla-producto">{value.talla}</span>
+                  <span className="talla-producto">{value.Talla.nombre}</span>
                 </div>
                 <span>x{value.cantidad}</span>
               </div>

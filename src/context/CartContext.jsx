@@ -31,7 +31,7 @@ export default function CartProvider({ children }) {
     setSubtotal(getSubtotal());
   }, [cartData]);
   const getSubtotal = () => {
-    return cartData.reduce((a, b) => a + b.precioFinal, 0);
+    return cartData.reduce((a, b) => a + b.valorUnitario * b.cantidad, 0);
   };
   const emptyData = () => setCartData([]);
 

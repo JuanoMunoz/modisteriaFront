@@ -10,8 +10,7 @@ export default function ProductoCarrito({ data, changeSubtotal }) {
   const { token } = useJwt();
   const { removeItem } = useCart();
   const [cantidad, setCantidad] = useState(data.cantidad);
-  const [precioInicial, setPrecioInicial] = useState(data.catalogo.precio);
-  const [precioFinal, setPrecioFinal] = useState(data.precioFinal);
+  const [precioInicial, setPrecioInicial] = useState(data.valorUnitario);
   const { debouncedValue } = useDebounce(cantidad, 2000);
   const isFirstRender = useIsFirstRender();
   useEffect(() => {
@@ -21,7 +20,6 @@ export default function ProductoCarrito({ data, changeSubtotal }) {
         `https://modisteria-back-production.up.railway.app/api/pedidos/updatePedido/${data.idPedido}`,
         {
           cantidad: debouncedValue,
-          precioFinal: precioFinal,
         },
         { headers: { "x-token": token } }
       )
@@ -55,10 +53,10 @@ export default function ProductoCarrito({ data, changeSubtotal }) {
       position: "top-left",
     });
   };
-  useEffect(() => {
-    if (isFirstRender) return;
-    setPrecioFinal(cantidad * precioInicial);
-  }, [precioInicial, cantidad]);
+  // useEffect(() => {
+  //   if (isFirstRender) return;
+  //   setPrecioFinal(cantidad * precioInicial);
+  // }, [precioInicial, cantidad]);
   return (
     <div className="itemCarrito">
       <div className="imgCarrito">
@@ -67,10 +65,10 @@ export default function ProductoCarrito({ data, changeSubtotal }) {
       <div className="">
         <span>{data?.catalogo?.producto}</span>
         <span className="idPrenda" style={{ textTransform: "uppercase" }}>
-          {data.talla}
+          {data.Talla.nombre}
         </span>
       </div>
-      <span>${precioFinal}</span>
+      <span>${precioInicial * cantidad}</span>
       <div className="amount">
         <span onClick={handleMinusOne} className="quantity-button">
           -

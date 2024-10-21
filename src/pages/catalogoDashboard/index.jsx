@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react"; 
+//mirando
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -8,209 +9,193 @@ import {
   DialogActions,
   TextField,
   Typography,
+  MenuItem,
+  Switch,
 } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import Loading from "../../components/loading/Loading";
+import { TrashColor, Edit } from "../../components/svg/Svg";
+import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header/Header";
 import { useTheme } from "@mui/material";
-import useFetch from "../../hooks/useFetch";
-import { useJwt } from "../../context/JWTContext";
-
+import { useForm } from "react-hook-form";
+import { alpha } from "@mui/material";
+import useCategoriaData from "../../hooks/useCategoriaData";
+import useCatalogoData from "../../hooks/useCatalogoData";
 const CatalogoDashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const { loading, triggerFetch } = useFetch();
-  const { token } = useJwt();
-
-  const [data, setData] = useState([]);
+  const {
+    handleSubmit: handleSaveCatalogo,
+    watch,
+    formState: { errors: errorsAddCatalogo },
+    register: registerCatalogo,
+    reset,
+  } = useForm();
   const [openModal, setOpenModal] = useState(false);
+  const {
+    initialFetchAllCatalogos,
+    loading,
+    fetchAllCatalogos,
+    deleteCatalogo,
+    updateCatalogos,
+    createCatalogo,
+  } = useCatalogoData();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [selectedContact, setSelectedContact] = useState(null);
-  const [contactToDelete, setContactToDelete] = useState(null);
-  const [imageFile, setImageFile] = useState(null);
+  const [selectedInsumo, setSelectedInsumo] = useState(null);
+  const [insumoToDelete, setInsumoToDelete] = useState(null);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [data, setData] = useState([]);
+  const [categorias, setCategorias] = useState([]);
 
+  const { fetchAllCategorias, loading: loadingCategoria } = useCategoriaData();
   useEffect(() => {
-    const fetchData = async () => {
-      const respuesta = await triggerFetch(
-        "https://modisteria-back-production.up.railway.app/api/catalogos/getAllCatalogo",
-        "GET"
-      );
-      if (respuesta.status === 200 && respuesta.data.rows) {
+    const initialFetchCatalogo = async () => {
+      const respuesta = await initialFetchAllCatalogos();
+      const categoria = await fetchAllCategorias();
+
+      if (respuesta.status === 200 && respuesta.data) {
         setData(respuesta.data.rows);
-        console.log("Datos cargados: ", respuesta.data.rows);
-      } else {
-        handleError("Error al obtener datos: " + respuesta);
+      }
+      if (categoria.status === 200 && categoria.data) {
+        setCategorias(categoria.data);
       }
     };
-    fetchData();
-  }, [triggerFetch]);
+    initialFetchCatalogo();
+  }, []);
 
-  const handleError = (message) => {
-    setErrorMessage(message);
-    setOpenErrorModal(true);
-  };
-
+  /// Métodos para CRUD
   const handleEdit = (id) => {
-    const contactToEdit = data.find((contact) => contact.id === id);
-    setSelectedContact(contactToEdit);
+    const insumoToEdit = data.find((insumo) => insumo.id === id);
+    setSelectedInsumo(insumoToEdit);
     setOpenModal(true);
   };
 
+  const handleStateInsumo = async (e, id) => {
+    const isActive = e.target.checked ? 1 : 2;
+    const response = await updateInsumos(id, { estadoId: isActive });
+    if (response.status === 200 || response.status === 201) {
+      const updatedData = await fetchAllInsumos();
+
+      if (updatedData.status === 200 && updatedData.data) {
+        setData(updatedData.data.rows);
+      }
+    }
+  };
+  const getCategoriaNombre = (categoriaId) => {
+    const categoria = categorias.find((cat) => cat.id === categoriaId);
+    return categoria ? categoria.nombre : "Sin Categoría";
+  };
+
   const handleAdd = () => {
-    setSelectedContact({
-      producto: "",
-      precio: "",
-      descripcion: "",
-      imagen: "",
-      talla: "",
-      categoriaId: "",
-      estadoId: "",
+    setSelectedInsumo({
+      nombre: "",
+      cantidad: "",
+      categoriaId: 0,
+      estadoId: 0,
     });
-    setImageFile(null);
     setOpenModal(true);
   };
 
   const handleClose = () => {
     setOpenModal(false);
-    setSelectedContact(null);
-    setImageFile(null);
+    setSelectedInsumo(null);
   };
 
-  const handleSave = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("producto", selectedContact.producto);
-      formData.append("precio", selectedContact.precio);
-      formData.append("descripcion", selectedContact.descripcion);
-      formData.append("talla", selectedContact.talla);
-      formData.append("categoriaId", selectedContact.categoriaId);
-      formData.append("estadoId", selectedContact.estadoId);
-      formData.append("cantidad_utilizada", 0);
-      if (imageFile) {
-        formData.append("file", imageFile);
+  const handleSave = async (data) => {
+    const response = selectedInsumo.id
+      ? await updateCatalogos(selectedInsumo.id, data)
+      : await createCatalogo({ ...data, estadoId: 1 });
+    if (response.status === 200 || response.status === 201) {
+      const updatedData = await fetchAllCatalogos();
+      if (updatedData.status === 200 && updatedData.data) {
+        setData(updatedData.data);
       }
-
-      const method = selectedContact.id ? "PUT" : "POST";
-      const url = selectedContact.id
-        ? `https://modisteria-back-production.up.railway.app/api/catalogos/updateCatalogo/${selectedContact.id}`
-        : "https://modisteria-back-production.up.railway.app/api/catalogos/createCatalogo";
-
-      const response = await triggerFetch(
-        url,
-        method,
-        formData,
-        { "x-token": token, "Content-Type": "multipart/form-data" },
-        true
-      );
-
-      if (response.status === 200 || response.status === 201) {
-        const newProduct = response.data;
-
-        if (method === "POST") {
-          const productWithId = { ...selectedContact, id: newProduct.id || Date.now() };
-          setData((prevData) => [...prevData, productWithId]);
-        } else {
-          setData((prevData) =>
-            prevData.map((contact) =>
-              contact.id === selectedContact.id ? { ...contact, ...selectedContact } : contact
-            )
-          );
-        }
-
-        setOpenModal(false);
-        setSelectedContact(null);
-        setImageFile(null);
-      } else {
-        handleError("Error al guardar los datos: " + response.data);
-      }
-    } catch (error) {
-      handleError("Error al realizar la solicitud: " + error.message);
+      handleClose();
+    } else {
+      console.log(response);
     }
   };
 
   const handleDelete = (id) => {
-    const contact = data.find((contact) => contact.id === id);
-    setContactToDelete(contact);
+    const insumo = data.find((insumo) => insumo.id === id);
+    setInsumoToDelete(insumo);
     setOpenDeleteDialog(true);
   };
 
   const confirmDelete = async () => {
-    try {
-      const response = await triggerFetch(
-        `https://modisteria-back-production.up.railway.app/api/catalogos/deleteCatalogo/${contactToDelete.id}`,
-        "DELETE",
-        null,
-        { "x-token": token }
-      );
+    if (insumoToDelete.estadoId === 1) {
+      setErrorMessage("No se puede eliminar el insumo porque está activo.");
+      setOpenErrorModal(true);
+      setOpenDeleteDialog(false);
+      return;
+    }
 
-      if (response.status === 200 || response.status === 201) {
-        setData((prevData) =>
-          prevData.filter((contact) => contact.id !== contactToDelete.id)
-        );
-        setOpenDeleteDialog(false);
-        setContactToDelete(null);
-      } else {
-        handleError("Error inesperado al eliminar datos: " + response.data);
-      }
-    } catch (error) {
-      handleError("Error al realizar la solicitud: " + error.message);
+    const response = await deleteCatalogo(insumoToDelete.id);
+
+    if (response.status === 200 || response.status === 201) {
+      setData((prevData) =>
+        prevData.filter((insumo) => insumo.id !== insumoToDelete.id)
+      );
+      setOpenDeleteDialog(false);
+      setInsumoToDelete(null);
     }
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setSelectedContact((prev) => ({ ...prev, [name]: value }));
+    setSelectedInsumo((prev) => ({ ...prev, [name]: value }));
   };
-
-  const handleFileChange = (e) => {
-    setImageFile(e.target.files[0]);
-  };
-
+  // Fin métodos CRUD
   const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "producto", headerName: "Producto", flex: 1 },
+    { field: "producto", headerName: "Nombre", flex: 1 },
+    { field: "precio", headerName: "Precio", flex: 1 },
     {
-      field: "precio",
-      headerName: "Precio",
-      type: "number",
-      headerAlign: "left",
-      align: "left",
+      field: "categoriaId",
+      headerName: "Categoría",
+      flex: 1,
+      valueGetter: (params) => getCategoriaNombre(params.row.categoriaId),
     },
-    { field: "descripcion", headerName: "Descripción", flex: 1 },
-    { field: "imagen", headerName: "Imagen", flex: 1 },
-    { field: "talla", headerName: "Talla", flex: 1 },
-    { field: "categoriaId", headerName: "Categoría ID", flex: 1 },
-    { field: "estadoId", headerName: "Estado ID", flex: 1 },
+    {
+      field: "estadoId",
+      headerName: "Estado",
+      flex: 1,
+      renderCell: ({ row }) => (
+        <Switch
+          sx={{
+            "& .MuiSwitch-switchBase.Mui-checked": {
+              color: colors.purple[200],
+              "&:hover": {
+                backgroundColor: alpha(
+                  colors.purple[200],
+                  theme.palette.action.hoverOpacity
+                ),
+              },
+            },
+            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+              backgroundColor: colors.purple[200],
+            },
+          }}
+          color="warning"
+          onChange={(e) => {
+            handleStateInsumo(e, row.id);
+          }}
+          defaultChecked={row.estadoId == 1}
+        />
+      ),
+    },
     {
       field: "acciones",
       headerName: "Acciones",
       flex: 1,
-      renderCell: (params) => (
+      renderCell: ({ row }) => (
         <Box>
-          <Button color="primary" onClick={() => handleEdit(params.row.id)}>
-            <img
-              alt="editar"
-              width="20px"
-              height="20px"
-              src="../../assets/editar.png"
-              style={{ cursor: "pointer" }}
-            />
+          <Button onClick={() => handleEdit(row.id)}>
+            <Edit size={20} color={colors.grey[100]} />
           </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => handleDelete(params.row.id)}
-            sx={{ ml: 1 }}
-          >
-            <img
-              alt="borrar"
-              width="20px"
-              height="20px"
-              src="../../assets/borrar.png"
-              style={{ cursor: "pointer" }}
-            />
+          <Button onClick={() => handleDelete(row.id)} sx={{ ml: 1 }}>
+            <TrashColor size={20} color={colors.grey[100]} />
           </Button>
         </Box>
       ),
@@ -218,36 +203,45 @@ const CatalogoDashboard = () => {
   ];
 
   return (
-    <Box m="20px">
-      <Header title="PRODUCTOS" subtitle="Lista de productos del catálogo" />
+    <>
+      <Header title="Catálogo" subtitle="Lista del catálogo" />
       <Button
         variant="contained"
-        color="primary"
         onClick={handleAdd}
-        sx={{ mb: 2 }}
+        sx={{
+          mb: 2,
+          backgroundColor: colors.purple[400],
+          "&:hover": {
+            backgroundColor: colors.purple[300],
+          },
+          color: "white",
+        }}
       >
-        Agregar Producto
+        Agregar al Catálogo
       </Button>
+      {(loading || loadingCategoria) && <Loading></Loading>}
       <Box
-        m="40px 0 0 0"
-        height="75vh"
+        m="0px 20px"
+        p="0px 10px"
+        height="56%"
+        width="98%"
         sx={{
           "& .MuiDataGrid-root": { border: "none" },
           "& .MuiDataGrid-cell": { borderBottom: "none" },
-          "& .name-column--cell": { color: colors.greenAccent[300] },
           "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700],
+            backgroundColor: colors.purple[500],
             borderBottom: "none",
+            color: "white",
           },
           "& .MuiDataGrid-virtualScroller": {
             backgroundColor: colors.primary[400],
           },
           "& .MuiDataGrid-footerContainer": {
             borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
+            backgroundColor: colors.primary[200],
           },
           "& .MuiCheckbox-root": {
-            color: `${colors.greenAccent[200]} !important`,
+            color: `${colors.purple[200]} !important`,
           },
           "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
             color: `${colors.grey[100]} !important`,
@@ -255,120 +249,181 @@ const CatalogoDashboard = () => {
         }}
       >
         {loading ? (
-          <Typography>Cargando productos...</Typography>
+          <Typography>Cargando catálogo...</Typography>
         ) : (
           <DataGrid
             rows={data}
             columns={columns}
-            getRowId={(row) => row.id}
             components={{ Toolbar: GridToolbar }}
+            getRowId={(row) => row.id}
+            initialState={{
+              sorting: {
+                sortModel: [{ field: "id", sort: "asc" }],
+              },
+            }}
+            localeText={esES.components.MuiDataGrid.defaultProps.localeText}
           />
         )}
       </Box>
 
       <Dialog open={openModal} onClose={handleClose}>
-        <DialogTitle>
-          {selectedContact?.id ? "Editar Producto" : "Agregar Producto"}
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            margin="dense"
-            name="producto"
-            label="Producto"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={selectedContact?.producto || ""}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            name="precio"
-            label="Precio"
-            type="number"
-            fullWidth
-            variant="outlined"
-            value={selectedContact?.precio || ""}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            name="descripcion"
-            label="Descripción"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={selectedContact?.descripcion || ""}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            name="talla"
-            label="Talla"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={selectedContact?.talla || ""}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            name="categoriaId"
-            label="Categoría ID"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={selectedContact?.categoriaId || ""}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            name="estadoId"
-            label="Estado ID"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={selectedContact?.estadoId || ""}
-            onChange={handleInputChange}
-          />
-          <input type="file" accept="image/*" onChange={handleFileChange} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancelar</Button>
-          <Button onClick={handleSave}>Guardar</Button>
-        </DialogActions>
+        <form onSubmit={handleSaveCatalogo(handleSave)}>
+          <DialogTitle color={colors.grey[100]}>
+            {selectedInsumo?.id ? "Editar Catálogo" : "Agregar Catálogo"}
+          </DialogTitle>
+          <DialogContent>
+            <TextField
+              margin="dense"
+              name="nombre"
+              label="Nombre"
+              type="text"
+              fullWidth
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&:hover fieldset": {
+                    borderColor: "purple",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "purple",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  "&.Mui-focused": {
+                    color: "purple",
+                  },
+                },
+              }}
+              variant="outlined"
+              {...registerCatalogo("nombre", {
+                required: "El insumo necesita un nombre.",
+              })}
+              value={selectedInsumo?.nombre || ""}
+              onChange={handleInputChange}
+              FormHelperTextProps={{ sx: { color: "red" } }}
+              helperText={errorsAddCatalogo?.nombre?.message}
+            />
+            <TextField
+              margin="dense"
+              name="cantidad"
+              label="Cantidad"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&:hover fieldset": {
+                    borderColor: "purple",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "purple",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  "&.Mui-focused": {
+                    color: "purple",
+                  },
+                },
+              }}
+              type="number"
+              fullWidth
+              variant="outlined"
+              {...registerCatalogo("cantidad", {
+                required: "La cantidad es requerida",
+                pattern: {
+                  value: /^[0-9]+$/, // Expresión regular para números
+                  message: "Solo se permiten números",
+                },
+                validate: (value) => {
+                  if (value <= 0)
+                    return "Debes ingresar una cantidad mayor a cero!";
+                  return true;
+                },
+              })}
+              value={selectedInsumo?.cantidad || ""}
+              onChange={handleInputChange}
+              FormHelperTextProps={{ sx: { color: "red" } }}
+              helperText={errorsAddCatalogo?.cantidad?.message}
+            />
+            <TextField
+              margin="dense"
+              name="categoriaId"
+              label="Categoría"
+              fullWidth
+              select
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&:hover fieldset": {
+                    borderColor: "purple",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "purple",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  "&.Mui-focused": {
+                    color: "purple",
+                  },
+                },
+              }}
+              variant="outlined"
+              {...registerCatalogo("categoriaId", {
+                required: "Debes escoger una categoría!",
+              })}
+              value={parseInt(selectedInsumo?.categoriaId) || 2}
+              onChange={handleInputChange}
+              FormHelperTextProps={{ sx: { color: "red" } }}
+              helperText={errorsAddCatalogo?.categoriaId?.message}
+            >
+              {categorias.map((cat) => (
+                <MenuItem key={cat.id} value={cat.id}>
+                  {cat.nombre}
+                </MenuItem>
+              ))}
+            </TextField>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="error">
+              Cancelar
+            </Button>
+            <Button type="submit" color="success">
+              Guardar
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
 
       <Dialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
       >
-        <DialogTitle>Confirmar Eliminación</DialogTitle>
+        <DialogTitle color={colors.grey[100]}>
+          Confirmar Eliminación
+        </DialogTitle>
         <DialogContent>
           <Typography>
-            ¿Estás seguro de que deseas eliminar el producto "
-            {contactToDelete?.producto}"?
+            ¿Estás seguro de que deseas eliminar el insumo "
+            {insumoToDelete?.nombre}"?
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)}>Cancelar</Button>
+          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
+            Cancelar
+          </Button>
           <Button onClick={confirmDelete} color="error">
             Eliminar
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Error Modal */}
       <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
-        <DialogTitle>Error</DialogTitle>
+        <DialogTitle color={colors.grey[100]}>Error</DialogTitle>
         <DialogContent>
-          <Typography>{errorMessage}</Typography>
+          <Typography color={colors.grey[100]}>{errorMessage}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenErrorModal(false)}>Cerrar</Button>
+          <Button onClick={() => setOpenErrorModal(false)} color="error">
+            Cerrar
+          </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </>
   );
 };
 

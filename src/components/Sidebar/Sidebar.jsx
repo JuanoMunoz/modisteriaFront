@@ -16,6 +16,7 @@ import {
   CalendarTodayOutlined,
   InventoryOutlined,
   HelpOutlineOutlined,
+  StraightenOutlined,
 } from "@mui/icons-material";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
@@ -107,14 +108,14 @@ const Sidebar = ({ nombre }) => {
               </Box>
               <Box textAlign="center">
                 <Typography
-                  variant="h2"
+                  variant="h3"
                   color={colors.grey[100]}
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
                   {nombre}
                 </Typography>
-                <Typography variant="h5" color={colors.purple[300]}>
+                <Typography variant="h4" color={colors.purple[300]}>
                   Admin
                 </Typography>
               </Box>
@@ -197,6 +198,13 @@ const Sidebar = ({ nombre }) => {
               title="Insumos"
               to="/dashboard/insumo"
               icon={<InventoryOutlined />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Tallas"
+              to="/dashboard/tallas"
+              icon={<StraightenOutlined />}
               selected={selected}
               setSelected={setSelected}
             />

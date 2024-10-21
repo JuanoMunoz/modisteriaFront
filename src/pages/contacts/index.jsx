@@ -32,11 +32,14 @@ const Usuarios = () => {
     handleSubmit: handleSaveUsuario,
     formState: { errors: errorsAddUsuario },
     register: registerUsuario,
+    setFocus,
+    reset,
   } = useForm();
   const [openModal, setOpenModal] = useState(false);
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [mailToEdit, setMailToEdit] = useState(null);
   const [selectedUsuario, setselectedUsuario] = useState(null);
   const [userToDelete, setUserToDelete] = useState(null);
   const [openErrorModal, setOpenErrorModal] = useState(false);
@@ -70,8 +73,11 @@ const Usuarios = () => {
   /// Métodos para CRUD
   const handleEdit = (id) => {
     const userToEdit = data.find((user) => user.id === id);
+    setMailToEdit(userToEdit.email);
     setselectedUsuario(userToEdit);
+    reset(userToEdit);
     setOpenModal(true);
+    setFocus("nombre");
   };
 
   const handleStateUsuarios = async (e, id) => {
@@ -91,15 +97,17 @@ const Usuarios = () => {
   };
 
   const handleAdd = () => {
-    setselectedUsuario({
+    const newUser = {
       nombre: "",
       email: "",
       telefono: "",
-      direccion: "",
       password: "",
-      rolId: 1,
+      direccion: "",
+      roleId: 1,
       estadoId: 0,
-    });
+    };
+    setselectedUsuario(newUser);
+    reset(newUser);
     setOpenModal(true);
   };
 
@@ -116,7 +124,7 @@ const Usuarios = () => {
       ...(password !== "" && { password }),
     };
     const response = selectedUsuario.id
-      ? await updateUsuario(selectedUsuario.id, finalData)
+      ? await updateUsuario(selectedUsuario?.id, finalData)
       : await createUsuario({ ...finalData, estadoId: 1 });
     if (response.status === 200 || response.status === 201) {
       const updatedData = await fetchAllUsuarios();
@@ -247,7 +255,7 @@ const Usuarios = () => {
       <Box
         m="0px 20px"
         p="0px 10px"
-        height="50%"
+        height="55%"
         width="98%"
         sx={{
           "& .MuiDataGrid-root": { border: "none" },
@@ -282,7 +290,7 @@ const Usuarios = () => {
             getRowId={(row) => row.id}
             initialState={{
               sorting: {
-                sortModel: [{ field: "id", sort: "asc" }],
+                sortModel: [{ field: "nombre", sort: "asc" }],
               },
             }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
@@ -368,6 +376,26 @@ const Usuarios = () => {
                 pattern: {
                   value: constants.EMAIL_REGEX, // Expresión regular para números
                   message: "Ingresa un correo electrónico válido",
+                },
+                validate: {
+                  isAlreadyRegistered: (value) => {
+                    if (selectedUsuario?.id) {
+                      const initialMail = value;
+                      const filteredData = data.filter(
+                        (usuario) => usuario.email !== mailToEdit
+                      );
+                      return (
+                        !filteredData.some(
+                          (usuario) => usuario.email == value
+                        ) || "El correo ya se encuentra registrado"
+                      );
+                    } else {
+                      return (
+                        !data.some((usuario) => usuario.email === value) ||
+                        "El correo ya se encuentra registrado"
+                      );
+                    }
+                  },
                 },
               })}
               value={selectedUsuario?.email || ""}

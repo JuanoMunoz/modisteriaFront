@@ -85,7 +85,7 @@ export default function Layout() {
             <li className="navItem">
               <Link to={"/cita"}>Citas</Link>
             </li>
-            {payload?.role.id === 2 ? (
+            {payload?.roleId === 2 ? (
               <li className="navItem">
                 <Link title="Perfil" to={"/dashboard"}>
                   Dashboard
@@ -101,7 +101,7 @@ export default function Layout() {
                 {" "}
                 <li className="navItem">
                   <Link title="Perfil" to={"/perfil"}>
-                    {payload.nombre}
+                    {payload?.nombre}
                   </Link>
                 </li>
                 <li className="navItem">

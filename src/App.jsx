@@ -23,6 +23,7 @@ import CatalogoDashboard from "./pages/catalogoDashboard/index";
 import PQRs from "./pages/PQRs/PQRs";
 import CategoriaInsumos from "./pages/categoriaInsumo/categoriaInsumo";
 import CategoriaPrenda from "./pages/categoriaPrenda/categoriaPrenda";
+import Tallas from "./pages/tallas/Talla";
 function App() {
   return (
     <>
@@ -56,6 +57,7 @@ function App() {
           <Route path="/dashboard/bar" element={<Bar />} />
           <Route path="/dashboard/line" element={<Line />} />
           <Route path="/dashboard/pqrs" element={<PQRs />} />
+          <Route path="/dashboard/tallas" element={<Tallas />} />
           {/* <Route path="/calendar" element={<Calendar />} /> */}
         </Route>
         <Route path="*" element={<Error404 />}></Route>

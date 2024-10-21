@@ -12,7 +12,7 @@ export default function LayoutDashboard() {
   const navigete = useNavigate();
 
   useEffect(() => {
-    (!token || payload?.role.id !== 2) && navigete("/");
+    (!token || payload?.roleId !== 2) && navigete("/");
   }, []);
 
   const [theme, colorMode] = useMode();

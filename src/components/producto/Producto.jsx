@@ -93,7 +93,7 @@ export default function Product({ data, isLoading }) {
     const carritoData = {
       idPedido: uuidv4(),
       catalogoId: data.id,
-      talla: size,
+      tallaId: size,
       precioFinal: finalPrice,
       cantidad: cantidad,
       catalogo: {
@@ -150,7 +150,7 @@ export default function Product({ data, isLoading }) {
   }, [cantidad, initialPrice]);
   useEffect(() => {
     setTitle(data.producto);
-    setSizes(data.talla);
+    setSizes(data.Tallas);
     setDescription(data.descripcion);
     setInitialPrice(data.precio);
   }, []);
@@ -183,13 +183,13 @@ export default function Product({ data, isLoading }) {
                 <button
                   style={{ textTransform: "uppercase" }}
                   onClick={() => {
-                    handleSetSize(valueSize);
+                    handleSetSize(valueSize.id);
                   }}
                   className={`item-list-button ${
-                    valueSize === size ? "active" : ""
+                    valueSize.id === size ? "active" : ""
                   }`}
                 >
-                  {valueSize}
+                  {valueSize.nombre}
                 </button>
               </li>
             ))}
@@ -249,13 +249,13 @@ export default function Product({ data, isLoading }) {
                     <button
                       style={{ textTransform: "uppercase" }}
                       onClick={() => {
-                        handleSetSize(valueSize);
+                        handleSetSize(valueSize.id);
                       }}
                       className={`item-list-button ${
-                        valueSize === size ? "active" : ""
+                        valueSize.id === size ? "active" : ""
                       }`}
                     >
-                      {valueSize}
+                      {valueSize.nombre}
                     </button>
                   </li>
                 ))}
