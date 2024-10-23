@@ -29,6 +29,7 @@ const Permisos = () => {
     watch: watchSavePermiso,
     formState: { errors: errorsAddPermiso },
     register: registerPermiso,
+    reset,
   } = useForm();
   const [openModal, setOpenModal] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -59,6 +60,7 @@ const Permisos = () => {
   const handleEdit = (id) => {
     const permisoToEdit = data.find((permiso) => permiso.id === id);
     setSelectedPermiso(permisoToEdit);
+    reset(permisoToEdit);
     setOpenModal(true);
   };
 
@@ -185,36 +187,6 @@ const Permisos = () => {
         <form onSubmit={handleSavePermiso(handleSave)}>
           <DialogTitle color={colors.grey[100]}>Editar Permiso</DialogTitle>
           <DialogContent>
-            <TextField
-              margin="dense"
-              name="nombre"
-              label="Nombre"
-              type="text"
-              fullWidth
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&:hover fieldset": {
-                    borderColor: "purple",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "purple",
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  "&.Mui-focused": {
-                    color: "purple",
-                  },
-                },
-              }}
-              variant="outlined"
-              {...registerPermiso("nombre", {
-                required: "El permiso necesita un nombre.",
-              })}
-              value={selectedPermiso?.nombre}
-              onChange={handleInputChange}
-              FormHelperTextProps={{ sx: { color: "red" } }}
-              helperText={errorsAddPermiso?.nombre?.message}
-            />
             <TextField
               margin="dense"
               name="descripcion"

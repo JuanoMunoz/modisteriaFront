@@ -78,13 +78,25 @@ const Roles = () => {
   /// Métodos para CRUD
   const handleEdit = (id) => {
     const rolToEdit = data.find((rol) => rol.id === id);
-    setselectedRol(rolToEdit);
+    const rolParsed = {
+      id: rolToEdit?.id,
+      nombre: rolToEdit?.nombre,
+      permisosId: rolToEdit?.Permisos?.map((permiso) => permiso.id),
+    };
+    setselectedRol(rolParsed);
+    reset(rolParsed);
     setOpenModal(true);
     setFocus("nombre");
   };
   const handlePermission = (id) => {
     const rolToEdit = data.find((rol) => rol.id === id);
-    setselectedRol(rolToEdit);
+    const rolParsed = {
+      id: rolToEdit?.id,
+      nombre: rolToEdit?.nombre,
+      permisosId: rolToEdit?.Permisos?.map((permiso) => permiso.id),
+    };
+    setselectedRol(rolParsed);
+    reset(rolParsed);
     setOpenPermisosModal(true);
   };
 
@@ -108,10 +120,12 @@ const Roles = () => {
   };
 
   const handleAdd = () => {
-    setselectedRol({
+    const rolBase = {
       nombre: "",
       permisosId: [],
-    });
+    };
+    setselectedRol(rolBase);
+    reset(rolBase);
     setOpenModal(true);
     setFocus("nombre");
   };
@@ -216,36 +230,39 @@ const Roles = () => {
       field: "estadoId",
       headerName: "Estado",
       flex: 1,
-      renderCell: ({ row }) => (
-        <Switch
-          sx={{
-            "& .MuiSwitch-switchBase.Mui-checked": {
-              color: colors.purple[200],
-              "&:hover": {
-                backgroundColor: alpha(
-                  colors.purple[200],
-                  theme.palette.action.hoverOpacity
-                ),
+      renderCell: ({ row }) =>
+        row.id !== 2 ? (
+          <Switch
+            sx={{
+              "& .MuiSwitch-switchBase.Mui-checked": {
+                color: colors.purple[200],
+                "&:hover": {
+                  backgroundColor: alpha(
+                    colors.purple[200],
+                    theme.palette.action.hoverOpacity
+                  ),
+                },
               },
-            },
-            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-              backgroundColor: colors.purple[200],
-            },
-          }}
-          color="warning"
-          onChange={(e) => {
-            handleStateRol(e, row.id);
-          }}
-          defaultChecked={row.estadoId == 1}
-        />
-      ),
+              "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                backgroundColor: colors.purple[200],
+              },
+            }}
+            color="warning"
+            onChange={(e) => {
+              handleStateRol(e, row.id);
+            }}
+            defaultChecked={row.estadoId == 1}
+          />
+        ) : (
+          "Activo"
+        ),
     },
     {
       field: "acciones",
       headerName: "Acciones",
       flex: 1,
       renderCell: ({ row }) =>
-        row.nombre !== "ADMINISTRADOR" ? (
+        row.id !== 2 ? (
           <Box sx={{ textAlign: "center", mx: "auto" }}>
             <Button onClick={() => handleEdit(row.id)}>
               <Edit size={20} color={colors.grey[100]} />
@@ -434,13 +451,13 @@ const Roles = () => {
         </DialogTitle>
         <DialogContent>
           <List sx={{ marginRight: "200px" }}>
-            {selectedRol?.permisosId.map((permisoId, idx) => (
+            {selectedRol?.permisosId?.map((permisoActivo, idx) => (
               <ListItem key={idx}>
                 <ListItemText
                   primary={
-                    permisos.find((permiso) => permiso.id === permisoId)?.nombre
+                    permisos.find((permiso) => permiso.id === permisoActivo)
+                      ?.nombre
                   }
-                  secondary={`Id: ${permisoId}`}
                 ></ListItemText>
               </ListItem>
             ))}
