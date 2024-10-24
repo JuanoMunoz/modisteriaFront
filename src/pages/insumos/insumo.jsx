@@ -30,15 +30,18 @@ const Insumos = () => {
     watch: watchSaveInsumo,
     formState: { errors: errorsAddInsumo },
     register: registerInsumo,
+    reset,
   } = useForm();
   const [openModal, setOpenModal] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedInsumo, setSelectedInsumo] = useState(null);
   const [insumoToDelete, setInsumoToDelete] = useState(null);
+  const [insumoToEditName, setInsumoToEditName] = useState(null);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [data, setData] = useState([]);
   const [categorias, setCategorias] = useState([]);
+  const [availableCategorias, setAvailableCategorias] = useState([]);
   const {
     initialFetchAllInsumos,
     fetchAllInsumos,
@@ -59,6 +62,9 @@ const Insumos = () => {
       }
       if (categoria.status === 200 && categoria.data) {
         setCategorias(categoria.data);
+        setAvailableCategorias(
+          categoria.data.filter((cat) => cat.estadoId === 1)
+        );
       }
     };
     initialFetchInsumos();
@@ -68,6 +74,8 @@ const Insumos = () => {
   const handleEdit = (id) => {
     const insumoToEdit = data.find((insumo) => insumo.id === id);
     setSelectedInsumo(insumoToEdit);
+    setInsumoToEditName(insumoToEdit.nombre);
+    reset(insumoToEdit);
     setOpenModal(true);
   };
 
@@ -88,12 +96,14 @@ const Insumos = () => {
   };
 
   const handleAdd = () => {
-    setSelectedInsumo({
+    const addNewInsumoBody = {
       nombre: "",
       cantidad: "",
-      categoriaId: 0,
+      categoriaId: categorias[0]?.id,
       estadoId: 0,
-    });
+    };
+    setSelectedInsumo(addNewInsumoBody);
+    reset(addNewInsumoBody);
     setOpenModal(true);
   };
 
@@ -139,6 +149,11 @@ const Insumos = () => {
       );
       setOpenDeleteDialog(false);
       setInsumoToDelete(null);
+    } else {
+      setErrorMessage(response.data.error);
+      setOpenErrorModal(true);
+      setOpenDeleteDialog(false);
+      return;
     }
   };
 
@@ -150,7 +165,11 @@ const Insumos = () => {
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
     { field: "nombre", headerName: "Nombre", flex: 1 },
-    { field: "cantidad", headerName: "Cantidad", flex: 1 },
+    {
+      field: "cantidad",
+      headerName: "Cantidad",
+      flex: 1,
+    },
     {
       field: "categoriaId",
       headerName: "Categoría",
@@ -181,7 +200,7 @@ const Insumos = () => {
           onChange={(e) => {
             handleStateInsumo(e, row.id);
           }}
-          defaultChecked={row.estadoId == 1}
+          checked={row.estadoId == 1}
         />
       ),
     },
@@ -296,6 +315,35 @@ const Insumos = () => {
               variant="outlined"
               {...registerInsumo("nombre", {
                 required: "El insumo necesita un nombre.",
+                minLength: {
+                  message: "¡El insumo debe tener por lo menos 4 caracteres!",
+                  value: 4,
+                },
+                maxLength: {
+                  message: "¡El insumo debe tener máximo 15 caracteres!",
+                  value: 15,
+                },
+                validate: {
+                  isAlreadyInserted: (value) => {
+                    if (selectedInsumo?.id) {
+                      return (
+                        !data.some(
+                          (insumo) =>
+                            insumo.nombre.toUpperCase() ==
+                              value.toUpperCase() &&
+                            insumo.nombre.toUpperCase() !==
+                              insumoToEditName.toUpperCase()
+                        ) || "El insumo ya se encuentra registrado"
+                      );
+                    }
+                    return (
+                      !data.some(
+                        (insumo) =>
+                          insumo.nombre.toUpperCase() == value.toUpperCase()
+                      ) || "El insumo ya se encuentra registrado"
+                    );
+                  },
+                },
               })}
               value={selectedInsumo?.nombre || ""}
               onChange={handleInputChange}
@@ -330,11 +378,11 @@ const Insumos = () => {
                   value: /^[0-9]+$/, // Expresión regular para números
                   message: "Solo se permiten números",
                 },
-                validate: (value) => {
-                  if (value <= 0)
-                    return "Debes ingresar una cantidad mayor a cero!";
-                  return true;
+                min: {
+                  message: "¡Debes ingresar una cantidad mayor a cero!",
+                  value: 1,
                 },
+                max: { message: "¡Límite máximo de 100!", value: 100 },
               })}
               value={selectedInsumo?.cantidad || ""}
               onChange={handleInputChange}
@@ -366,12 +414,15 @@ const Insumos = () => {
               {...registerInsumo("categoriaId", {
                 required: "Debes escoger una categoría!",
               })}
-              value={parseInt(selectedInsumo?.categoriaId) || 1}
+              value={
+                parseInt(selectedInsumo?.categoriaId) ||
+                availableCategorias[0]?.id
+              }
               onChange={handleInputChange}
               FormHelperTextProps={{ sx: { color: "red" } }}
               helperText={errorsAddInsumo?.categoriaId?.message}
             >
-              {categorias.map((cat) => (
+              {availableCategorias.map((cat) => (
                 <MenuItem key={cat.id} value={cat.id}>
                   {cat.nombre}
                 </MenuItem>

@@ -27,10 +27,12 @@ const CategoriaPrenda = () => {
     handleSubmit: handleSaveCategoria,
     formState: { errors: errorsAddCategoria },
     register: registerCategoria,
+    reset,
   } = useForm();
   const [openModal, setOpenModal] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedCategoria, setSelectedCategoria] = useState(null);
+  const [categoriaToEditName, setCategoriaToEditName] = useState(null);
   const [categoriaToDelete, setCategoriaToDelete] = useState(null);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -48,7 +50,7 @@ const CategoriaPrenda = () => {
     const initialFetchCategorias = async () => {
       const respuesta = await initialFetchAllCategorias();
       if (respuesta.status === 200 && respuesta.data) {
-        setData(respuesta.data.filter((c) => c.tipo === "prenda"));
+        setData(respuesta.data);
       } else {
         setErrorMessage("Error al cargar las categorías.");
         setOpenErrorModal(true);
@@ -60,15 +62,18 @@ const CategoriaPrenda = () => {
   const handleEdit = (id) => {
     const categoriaToEdit = data.find((categoria) => categoria.id === id);
     setSelectedCategoria(categoriaToEdit);
+    setCategoriaToEditName(categoriaToEdit.nombre);
+    reset(categoriaToEdit);
     setOpenModal(true);
   };
 
   const handleAdd = () => {
-    setSelectedCategoria({
+    const initialCategoryBody = {
       nombre: "",
       descripcion: "",
-      estadoId: 0,
-    });
+    };
+    setSelectedCategoria(initialCategoryBody);
+    reset(initialCategoryBody);
     setOpenModal(true);
   };
 
@@ -105,15 +110,11 @@ const CategoriaPrenda = () => {
         });
 
         if (respuesta.status === 201) {
-          const newCategory = {
-            ...respuesta.data,
-            estadoId: 1,
-            tipo: "prenda",
-          };
-          if (!newCategory.id) {
-            newCategory.id = new Date().getTime();
+          const updatedData = await fetchAllCategorias();
+
+          if (updatedData.status === 200 && updatedData.data) {
+            setData(updatedData.data);
           }
-          setData([...data, newCategory]);
         } else {
           throw new Error("Error al crear la categoría.");
         }
@@ -140,29 +141,31 @@ const CategoriaPrenda = () => {
       setOpenDeleteDialog(false);
       return;
     }
-
-    try {
-      const respuesta = await deleteCategoria(categoriaToDelete.id);
-      if (respuesta.status === 201) {
-        setData(
-          data.filter((categoria) => categoria.id !== categoriaToDelete.id)
-        );
-      } else {
-        throw new Error("Error al eliminar la categoría.");
-      }
-    } catch (error) {
-      console.error("Error details:", error);
-      setErrorMessage(error.message || "Error al eliminar la categoría.");
-      setOpenErrorModal(true);
-    } finally {
+    const respuesta = await deleteCategoria(categoriaToDelete.id);
+    if (respuesta.status === 201) {
+      setData(
+        data.filter((categoria) => categoria.id !== categoriaToDelete.id)
+      );
       setOpenDeleteDialog(false);
+      setCategoriaToDelete(null);
+    } else {
+      setErrorMessage(respuesta.data.message);
+      setOpenErrorModal(true);
+      setOpenDeleteDialog(false);
+      return;
     }
   };
 
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
     { field: "nombre", headerName: "Nombre", flex: 1 },
-    { field: "descripcion", headerName: "Descripción", flex: 2 },
+    {
+      field: "descripcion",
+      headerName: "Descripción",
+      flex: 2,
+      valueGetter: (params) =>
+        params.row.descripcion ? params.row.descripcion : "Sin descripción",
+    },
     {
       field: "estadoId",
       headerName: "Estado",
@@ -189,7 +192,6 @@ const CategoriaPrenda = () => {
             const newState = e.target.checked ? 1 : 2;
             try {
               const respuesta = await updateCategoria(row.id, {
-                ...row,
                 estadoId: newState,
               });
 
@@ -328,6 +330,34 @@ const CategoriaPrenda = () => {
               variant="outlined"
               {...registerCategoria("nombre", {
                 required: "El nombre es requerido.",
+                minLength: {
+                  message:
+                    "¡La categoría debe tener por lo menos 4 caracteres!",
+                  value: 4,
+                },
+                maxLength: {
+                  message: "¡La categoría debe tener máximo 15 caracteres!",
+                  value: 15,
+                },
+                validate: {
+                  isAlreadyInserted: (value) => {
+                    if (selectedCategoria?.id) {
+                      return (
+                        !data.some(
+                          (cat) =>
+                            cat.nombre.toUpperCase() == value.toUpperCase() &&
+                            cat.nombre.toUpperCase() !==
+                              categoriaToEditName.toUpperCase()
+                        ) || "La categoría ya se encuentra registrada"
+                      );
+                    }
+                    return (
+                      !data.some(
+                        (cat) => cat.nombre.toUpperCase() == value.toUpperCase()
+                      ) || "La categoría ya se encuentra registrada"
+                    );
+                  },
+                },
               })}
               value={selectedCategoria?.nombre || ""}
               onChange={(e) =>

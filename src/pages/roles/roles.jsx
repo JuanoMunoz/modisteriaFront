@@ -31,6 +31,7 @@ import { useForm } from "react-hook-form";
 import { alpha } from "@mui/material";
 import useRolData from "../../hooks/useRolData";
 import usePermisosData from "../../hooks/usePermisosData";
+import { toast, ToastContainer } from "react-toastify";
 const Roles = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -56,6 +57,7 @@ const Roles = () => {
   const [openPermisosModal, setOpenPermisosModal] = useState(false);
   const [selectedRol, setselectedRol] = useState(null);
   const [rolToDelete, setrolToDelete] = useState(null);
+  const [rolToEditName, setRolToEditName] = useState(null);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [data, setData] = useState([]);
@@ -84,6 +86,7 @@ const Roles = () => {
       permisosId: rolToEdit?.Permisos?.map((permiso) => permiso.id),
     };
     setselectedRol(rolParsed);
+    setRolToEditName(rolParsed.nombre);
     reset(rolParsed);
     setOpenModal(true);
     setFocus("nombre");
@@ -102,6 +105,11 @@ const Roles = () => {
 
   const handleStateRol = async (e, id) => {
     const isActive = e.target.checked ? 1 : 2;
+    const rol = data.find((rol) => rol.id === id);
+    if (rol.usuarios.length > 0) {
+      e.preventDefault();
+      return toast.error("¡El rol ya está siendo usado!", { autoClose: 1500 });
+    }
     const response = await updaterol(id, { estadoId: isActive });
     if (response.status === 200 || response.status === 201) {
       const updatedData = await fetchAllroles();
@@ -251,7 +259,7 @@ const Roles = () => {
             onChange={(e) => {
               handleStateRol(e, row.id);
             }}
-            defaultChecked={row.estadoId == 1}
+            checked={row.estadoId == 1}
           />
         ) : (
           "Activo"
@@ -373,6 +381,25 @@ const Roles = () => {
               variant="outlined"
               {...registerRol("nombre", {
                 required: "El rol necesita un nombre.",
+                validate: {
+                  isAlreadyInserted: (value) => {
+                    if (selectedRol?.id) {
+                      return (
+                        !data.some(
+                          (rol) =>
+                            rol.nombre.toUpperCase() == value.toUpperCase() &&
+                            rol.nombre.toUpperCase() !==
+                              rolToEditName.toUpperCase()
+                        ) || "El rol ya se encuentra registrado"
+                      );
+                    }
+                    return (
+                      !data.some(
+                        (rol) => rol.nombre.toUpperCase() == value.toUpperCase()
+                      ) || "El rol ya se encuentra registrado"
+                    );
+                  },
+                },
               })}
               value={selectedRol?.nombre || ""}
               onChange={handleInputChange}
@@ -502,6 +529,7 @@ const Roles = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <ToastContainer></ToastContainer>
     </>
   );
 };
