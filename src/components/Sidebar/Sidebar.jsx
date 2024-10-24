@@ -136,26 +136,12 @@ const Sidebar = ({ nombre }) => {
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
-              Tablas
+              Configuración
             </Typography>
             <Item
               title="Usuarios"
               to="/dashboard/contacts"
               icon={<ContactsOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Ventas"
-              to="/dashboard/ventas"
-              icon={<ShoppingCartOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Catálogo"
-              to="/dashboard/catalogo"
-              icon={<ViewListOutlined />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -173,6 +159,20 @@ const Sidebar = ({ nombre }) => {
               selected={selected}
               setSelected={setSelected}
             />
+            <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              Compra
+            </Typography>
+            <Item
+              title="Insumos"
+              to="/dashboard/insumo"
+              icon={<InventoryOutlined />}
+              selected={selected}
+              setSelected={setSelected}
+            />
             <Item
               title="Categoria Insumos"
               to="/dashboard/categoriaInsumos"
@@ -187,6 +187,20 @@ const Sidebar = ({ nombre }) => {
               selected={selected}
               setSelected={setSelected}
             />
+            <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              Venta
+            </Typography>
+            <Item
+              title="Ventas"
+              to="/dashboard/ventas"
+              icon={<ShoppingCartOutlined />}
+              selected={selected}
+              setSelected={setSelected}
+            />
             <Item
               title="Citas"
               to="/dashboard/cita"
@@ -195,12 +209,19 @@ const Sidebar = ({ nombre }) => {
               setSelected={setSelected}
             />
             <Item
-              title="Insumos"
-              to="/dashboard/insumo"
-              icon={<InventoryOutlined />}
+              title="Catálogo"
+              to="/dashboard/catalogo"
+              icon={<ViewListOutlined />}
               selected={selected}
               setSelected={setSelected}
             />
+                        <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              Tablas
+            </Typography>
             <Item
               title="Tallas"
               to="/dashboard/tallas"
