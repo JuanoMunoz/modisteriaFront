@@ -1,249 +1,454 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, MenuItem } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Typography,
+  Switch,
+} from "@mui/material";
+import Loading from "../../components/loading/Loading";
+import { TrashColor, Edit } from "../../components/svg/Svg";
+import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header/Header";
 import { useTheme } from "@mui/material";
-import useFetch from "../../hooks/useFetch";
-import { useJwt } from "../../context/JWTContext";
+import { useForm } from "react-hook-form";
+import { alpha } from "@mui/material";
+import useCitasData from "../../hooks/useCitasData";
 
-const CitaDashboard = () => {
-    const theme = useTheme();
-    const colors = tokens(theme.palette.mode);
-    const { loading, triggerFetch } = useFetch();
-    const { token } = useJwt();
+const CitasDashboard = () => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  const {
+    handleSubmit: handleSaveCita,
+    formState: { errors: errorsAddCita },
+    register: registerCita,
+    reset,
+  } = useForm();
+  const [openModal, setOpenModal] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedCita, setSelectedCita] = useState(null);
+  const [citaToDelete, setCitaToDelete] = useState(null);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [data, setData] = useState([]);
+  const {
+    fetchAllCitas,
+    loading,
+    updateCita,
+    createCita,
+    deleteCita,
+    initialFetchAllCitas,
+  } = useCitasData();
 
-    const [data, setData] = useState([]);
-    const [openModal, setOpenModal] = useState(false);
-    const [openErrorDialog, setOpenErrorDialog] = useState(false);
-    const [selectedCita, setSelectedCita] = useState(null);
-    const [errorMessage, setErrorMessage] = useState("");
-
-    useEffect(() => {
-        const fetchData = async () => {
-            if (!token) {
-                console.error("No se ha proporcionado un token.");
-                return;
-            }
-
-            const respuesta = await triggerFetch(
-                "https://modisteria-back-production.up.railway.app/api/citas/getAllCitas",
-                "GET",
-                null,
-                { "x-token": token }
-            );
-
-            if (respuesta.status === 200 && respuesta.data) {
-                const citasConId = respuesta.data.map(cita => ({
-                    ...cita,
-                    id: cita.id || data.length + 1 
-                }));
-                setData(citasConId);
-            } else {
-                console.error("Error al obtener datos: ", respuesta);
-            }
-        };
-        fetchData();
-    }, [triggerFetch, token]);
-
-    const handleEdit = (id) => {
-        const citaToEdit = data.find((cita) => cita.id === id);
-        setSelectedCita(citaToEdit);
-        setOpenModal(true);
+  useEffect(() => {
+    const initialFetchCitas = async () => {
+      const respuesta = await initialFetchAllCitas();
+      if (respuesta.status === 200 && respuesta.data) {
+        setData(respuesta.data);
+      } else {
+        setErrorMessage("Error al cargar las citas.");
+        setOpenErrorModal(true);
+      }
     };
+    initialFetchCitas();
+  }, []);
 
-    const handleAdd = () => {
-        setSelectedCita({ referencia: "", objetivo: "", usuarioId: "", estadoId: "", precio: "", tiempo: "" });
-        setOpenModal(true);
+  const handleEdit = (id) => {
+    const citaToEdit = data.find((cita) => cita.id === id);
+    setSelectedCita(citaToEdit);
+    reset(citaToEdit);
+    setOpenModal(true);
+  };
+
+  const handleAdd = () => {
+    const initialCitaBody = {
+      fecha: "",
+      referencia: "",
+      objetivo: "",
+      precio: "",
+      usuarioId: "",
+      tiempo: "",
+      estadoId: 1,
     };
+    setSelectedCita(initialCitaBody);
+    reset(initialCitaBody);
+    setOpenModal(true);
+  };
 
-    const handleClose = () => {
-        setOpenModal(false);
-        setSelectedCita(null);
-    };
+  const handleClose = () => {
+    setOpenModal(false);
+    setSelectedCita(null);
+  };
 
-    const handleSave = async () => {
-        try {
-            const updatedCita = { ...selectedCita };
+  const handleSave = async (formData) => {
+    try {
+      if (selectedCita?.id) {
+        const respuesta = await updateCita(selectedCita.id, {
+          ...formData,
+        });
 
-            const response = await triggerFetch(
-                selectedCita.id
-                    ? `https://modisteria-back-production.up.railway.app/api/citas/updateCita/${selectedCita.id}`
-                    : "https://modisteria-back-production.up.railway.app/api/citas/createCita",
-                selectedCita.id ? "PUT" : "POST",
-                updatedCita,
-                { "x-token": token }
-            );
-
-            if (response.status === 200 || response.status === 201) {
-                setData((prevData) =>
-                    selectedCita.id
-                        ? prevData.map((cita) => (cita.id === selectedCita.id ? updatedCita : cita))
-                        : [...prevData, { ...updatedCita, id: response.data.id }]
-                );
-                handleClose();
-            } else {
-                setErrorMessage(response.data.msg || "Error al guardar los datos");
-                setOpenErrorDialog(true);
-            }
-        } catch (error) {
-            setErrorMessage("Ocurrió un error al realizar la solicitud. Inténtalo nuevamente.");
-            setOpenErrorDialog(true);
-        }
-    };
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        const updatedValue = name === "estadoId" ? Number(value) : value;
-        setSelectedCita((prev) => ({ ...prev, [name]: updatedValue }));
-    };
-
-    const getEstadoTexto = (estadoId) => {
-        switch (estadoId) {
-            case 9: return "Por Aprobar";
-            case 10: return "Aprobada";
-            case 11: return "Aceptada";
-            case 12: return "Cancelada";
-            case 13: return "Terminada";
-            default: return "Desconocido";
-        }
-    };
-
-    const columns = [
-        { field: "id", headerName: "ID", flex: 0.5 },
-        { field: "referencia", headerName: "Referencia", flex: 1 },
-        { field: "objetivo", headerName: "Objetivo", flex: 1 },
-        { field: "usuarioId", headerName: "Usuario ID", flex: 1 },
-        {
-            field: "estadoId",
-            headerName: "Estado",
-            flex: 1,
-            valueGetter: (params) => getEstadoTexto(params.row.estadoId)
-        },
-        { field: "precio", headerName: "Precio", flex: 1 },
-        { field: "tiempo", headerName: "Tiempo", flex: 1 },
-        {
-            field: "acciones",
-            headerName: "Acciones",
-            flex: 1,
-            renderCell: (params) => (
-                <Box>
-                    <Button color="primary" onClick={() => handleEdit(params.row.id)}>
-                        <img alt="editar" width="20px" height="20px" src="../../assets/editar.png" style={{ cursor: "pointer" }} />
-                    </Button>
-                    <Button variant="contained" color="error" onClick={() => handleDelete(params.row.id)} sx={{ ml: 1 }}>
-                        <img alt="borrar" width="20px" height="20px" src="../../assets/borrar.png" style={{ cursor: "pointer" }} />
-                    </Button>
-                </Box>
-            ),
-        },
-    ];
-
-    const handleDelete = async (id) => {
-        const response = await triggerFetch(
-            `https://modisteria-back-production.up.railway.app/api/citas/deleteCita/${id}`,
-            "DELETE",
-            null,
-            { "x-token": token }
-        );
-
-        if (response.status === 200 || response.status === 201) {
-            setData((prevData) => prevData.filter((cita) => cita.id !== id));
+        if (respuesta.status === 200 || respuesta.status === 201) {
+          const updatedData = data.map((cita) =>
+            cita.id === selectedCita.id
+              ? { ...cita, ...formData }
+              : cita
+          );
+          setData(updatedData);
         } else {
-            setErrorMessage("Error al eliminar la cita");
-            setOpenErrorDialog(true);
+          throw new Error("Error al editar la cita.");
         }
-    };
+      } else {
+        const respuesta = await createCita({
+          ...formData,
+          estadoId: 1,
+        });
 
-    return (
-        <Box m="20px">
-            <Header title="CITAS" subtitle="Lista de citas" />
-            <Button variant="contained" color="primary" onClick={handleAdd} sx={{ mb: 2 }}>
-                Agregar Cita
-            </Button>
-            <Box m="40px 0 0 0" height="75vh" sx={{
-                "& .MuiDataGrid-root": { border: "none" },
-                "& .MuiDataGrid-cell": { borderBottom: "none" },
-                "& .MuiDataGrid-columnHeaders": { backgroundColor: colors.blueAccent[700], borderBottom: "none" },
-                "& .MuiDataGrid-virtualScroller": { backgroundColor: colors.primary[400] },
-                "& .MuiDataGrid-footerContainer": { borderTop: "none", backgroundColor: colors.blueAccent[700] },
-                "& .MuiCheckbox-root": { color: `${colors.greenAccent[200]} !important` },
-                "& .MuiDataGrid-toolbarContainer .MuiButton-text": { color: `${colors.grey[100]} !important` },
-            }}>
-                {loading ? (
-                    <Typography>Cargando citas...</Typography>
-                ) : (
-                    <DataGrid 
-                        rows={data} 
-                        columns={columns} 
-                        components={{ Toolbar: GridToolbar }} 
-                    />
-                )}
-            </Box>
+        if (respuesta.status === 201) {
+          const updatedData = await fetchAllCitas();
 
-            {/* Modal para Agregar/Editar Cita */}
-            <Dialog open={openModal} onClose={handleClose} maxWidth="sm" fullWidth>
-                <DialogTitle>{selectedCita?.id ? "Editar Cita" : "Agregar Cita"}</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        margin="dense"
-                        name="estadoId"
-                        label="Estado"
-                        select
-                        fullWidth
-                        variant="outlined"
-                        value={selectedCita?.estadoId || ""}
-                        onChange={handleInputChange}
-                    >
-                        <MenuItem value={9}>Por Aprobar</MenuItem>
-                        <MenuItem value={10}>Aprobada</MenuItem>
-                        <MenuItem value={11}>Aceptada</MenuItem>
-                        <MenuItem value={12}>Cancelada</MenuItem>
-                        <MenuItem value={13}>Terminada</MenuItem>
-                    </TextField>
-                    {selectedCita?.estadoId === 10 && ( 
-                        <>
-                            <TextField
-                                margin="dense"
-                                name="precio"
-                                label="Precio"
-                                type="number"
-                                fullWidth
-                                variant="outlined"
-                                value={selectedCita?.precio || ""}
-                                onChange={handleInputChange}
-                            />
-                            <TextField
-                                margin="dense"
-                                name="tiempo"
-                                label="Tiempo"
-                                type="text"
-                                fullWidth
-                                variant="outlined"
-                                value={selectedCita?.tiempo || ""}
-                                onChange={handleInputChange}
-                            />
-                        </>
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Cancelar</Button>
-                    <Button onClick={handleSave}>Guardar</Button>
-                </DialogActions>
-            </Dialog>
+          if (updatedData.status === 200 && updatedData.data) {
+            setData(updatedData.data);
+          }
+        } else {
+          throw new Error("Error al crear la cita.");
+        }
+      }
+    } catch (error) {
+      console.error("Error details:", error);
+      setErrorMessage(error.message || "Error al editar la cita.");
+      setOpenErrorModal(true);
+    } finally {
+      handleClose();
+    }
+  };
 
-            {/* Modal de Error */}
-            <Dialog open={openErrorDialog} onClose={() => setOpenErrorDialog(false)}>
-                <DialogTitle>Error</DialogTitle>
-                <DialogContent>
-                    <Typography>{errorMessage}</Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenErrorDialog(false)}>Cerrar</Button>
-                </DialogActions>
-            </Dialog>
+  const handleDelete = (id) => {
+    const cita = data.find((cita) => cita.id === id);
+    setCitaToDelete(cita);
+    setOpenDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (citaToDelete.estadoId !== 2) {
+      setErrorMessage("No se puede eliminar la cita si está activa.");
+      setOpenErrorModal(true);
+      setOpenDeleteDialog(false);
+      return;
+    }
+    const respuesta = await deleteCita(citaToDelete.id);
+    if (respuesta.status === 201) {
+      setData(data.filter((cita) => cita.id !== citaToDelete.id));
+      setOpenDeleteDialog(false);
+      setCitaToDelete(null);
+    } else {
+      setErrorMessage(respuesta.data.message);
+      setOpenErrorModal(true);
+      setOpenDeleteDialog(false);
+    }
+  };
+
+  const columns = [
+    { field: "id", headerName: "ID", flex: 0.5 },
+    {
+      field: "fecha",
+      headerName: "Fecha",
+      flex: 1,
+      renderCell: (params) => (
+        <div style={{ whiteSpace: 'normal', wordWrap: 'break-word', textAlign: 'left' }}>
+          {params.value}
+        </div>
+      ),
+    },
+    { field: "referencia", headerName: "Referencia", flex: 1, renderCell: (params) => (
+        <div style={{whiteSpace: 'normal', wordWrap: 'break-word', textAlign: 'left'}}>
+            {params.value || "Sin imagen"}
+        </div>
+    ) },
+    {
+      field: "objetivo",
+      headerName: "Objetivo",
+      flex: 1,
+      renderCell: (params) => (
+        <div style={{ whiteSpace: 'normal', wordWrap: 'break-word', textAlign: 'left' }}>
+          {params.value}
+        </div>
+      ),
+    },
+    { field: "precio", headerName: "Precio", flex: 0.7 },
+    { field: "usuarioId", headerName: "Usuario", flex: 0.7 },
+    { field: "tiempo", headerName: "Tiempo", flex: 0.7, renderCell: (params) => (
+        <div style={{whiteSpace: 'normal', wordWrap: 'break-word', textAlign: 'left'}}>
+            {params.value || "Por establecer"}
+        </div>
+    ),
+    },
+    {
+        field: "estadoId",
+        headerName: "Estado",
+        flex: 1,
+        renderCell: ({ row }) => {
+            const estadoText = {
+            9: "Por aprobar",
+            10: "Aprobada",
+            11: "Aceptada",
+            12: "Cancelada",
+            13: "Terminada"
+            }[row.estadoId] || "Desconocido"; 
+
+            return (
+            <Typography>
+                {estadoText}
+            </Typography>
+            );
+        },
+    },
+    {
+      field: "acciones",
+      headerName: "Acciones",
+      flex: 0.8,
+      renderCell: ({ row }) => (
+        <Box display="flex" alignItems="left">
+          <Button onClick={() => handleEdit(row.id)} sx={{ p: 0, mr: 1, ml:-3 }}>
+            <Edit size={20} color={colors.grey[100]} />
+          </Button>
+          <Button onClick={() => handleDelete(row.id)} sx={{ p: 0, ml: -5}}>
+            <TrashColor size={20} color={colors.grey[100]} />
+          </Button>
         </Box>
-    );
+      ),
+    },
+  ];
+
+  return (
+    <>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography variant="h4" sx={{ ml: 4 }}>Citas</Typography>
+        <Button
+          variant="contained"
+          onClick={handleAdd}
+          sx={{
+            backgroundColor: colors.purple[400],
+            "&:hover": {
+              backgroundColor: colors.purple[300],
+            },
+            color: "white",
+          }}
+        >
+          Agregar Cita
+        </Button>
+      </Box>
+      {loading && <Loading />}
+      <Box
+        m="0px 20px"
+        p="0px 10px"
+        height="56vh"
+        width="98%"
+        sx={{
+          "& .MuiDataGrid-root": { border: "none" },
+          "& .MuiDataGrid-cell": { borderBottom: "none" },
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: colors.purple[500],
+            borderBottom: "none",
+            color: "white",
+          },
+          "& .MuiDataGrid-virtualScroller": {
+            backgroundColor: colors.primary[400],
+          },
+          "& .MuiDataGrid-footerContainer": {
+            borderTop: "none",
+            backgroundColor: colors.primary[200],
+          },
+          "& .MuiCheckbox-root": {
+            color: `${colors.purple[200]} !important`,
+          },
+          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+            color: `${colors.grey[100]} !important`,
+          },
+        }}
+      >
+        {loading ? (
+          <Typography>Cargando citas...</Typography>
+        ) : (
+          <DataGrid
+            rows={data}
+            columns={columns}
+            components={{ Toolbar: GridToolbar }}
+            initialState={{
+              sorting: {
+                sortModel: [{ field: "id", sort: "asc" }],
+              },
+            }}
+            localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+          />
+        )}
+      </Box>
+
+      {/* Modal para agregar/editar cita */}
+      <Dialog open={openModal} onClose={handleClose}>
+        <form onSubmit={handleSaveCita(handleSave)}>
+          <DialogTitle color={colors.grey[100]}>
+            {selectedCita?.id ? "Editar Cita" : "Agregar Cita"}
+          </DialogTitle>
+          <DialogContent>
+            <TextField
+              margin="dense"
+              name="fecha"
+              label="Fecha"
+              type="date"
+              fullWidth
+              variant="outlined"
+              {...registerCita("fecha", {
+                required: "La fecha es requerida.",
+              })}
+              value={selectedCita?.fecha || ""}
+              onChange={(e) =>
+                setSelectedCita({
+                  ...selectedCita,
+                  fecha: e.target.value,
+                })
+              }
+              FormHelperTextProps={{ sx: { color: "red" } }}
+              helperText={errorsAddCita?.fecha?.message}
+            />
+            <TextField
+              margin="dense"
+              name="referencia"
+              label="Referencia"
+              type="text"
+              fullWidth
+              variant="outlined"
+              {...registerCita("referencia", {
+                required: "La referencia es requerida.",
+              })}
+              value={selectedCita?.referencia || ""}
+              onChange={(e) =>
+                setSelectedCita({
+                  ...selectedCita,
+                  referencia: e.target.value,
+                })
+              }
+              FormHelperTextProps={{ sx: { color: "red" } }}
+              helperText={errorsAddCita?.referencia?.message}
+            />
+            <TextField
+              margin="dense"
+              name="objetivo"
+              label="Objetivo"
+              type="text"
+              fullWidth
+              variant="outlined"
+              {...registerCita("objetivo")}
+              value={selectedCita?.objetivo || ""}
+              onChange={(e) =>
+                setSelectedCita({
+                  ...selectedCita,
+                  objetivo: e.target.value,
+                })
+              }
+            />
+            <TextField
+              margin="dense"
+              name="precio"
+              label="Precio"
+              type="number"
+              fullWidth
+              variant="outlined"
+              {...registerCita("precio")}
+              value={selectedCita?.precio || ""}
+              onChange={(e) =>
+                setSelectedCita({
+                  ...selectedCita,
+                  precio: e.target.value,
+                })
+              }
+            />
+            <TextField
+              margin="dense"
+              name="usuarioId"
+              label="Usuario ID"
+              type="text"
+              fullWidth
+              variant="outlined"
+              {...registerCita("usuarioId")}
+              value={selectedCita?.usuarioId || ""}
+              onChange={(e) =>
+                setSelectedCita({
+                  ...selectedCita,
+                  usuarioId: e.target.value,
+                })
+              }
+            />
+            <TextField
+              margin="dense"
+              name="tiempo"
+              label="Tiempo"
+              type="text"
+              fullWidth
+              variant="outlined"
+              {...registerCita("tiempo")}
+              value={selectedCita?.tiempo || ""}
+              onChange={(e) =>
+                setSelectedCita({
+                  ...selectedCita,
+                  tiempo: e.target.value,
+                })
+              }
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="error">
+              Cancelar
+            </Button>
+            <Button type="submit" color="success">
+              Guardar
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      {/* Modal para confirmar eliminación */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+      >
+        <DialogTitle color={colors.grey[100]}>
+          Confirmar Eliminación
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            ¿Estás seguro de que deseas eliminar la cita "
+            {citaToDelete?.referencia}"?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
+            Cancelar
+          </Button>
+          <Button onClick={confirmDelete} color="error">
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal para errores */}
+      <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+        <DialogTitle color={colors.grey[100]}>Error</DialogTitle>
+        <DialogContent>
+          <Typography color={colors.grey[100]}>{errorMessage}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenErrorModal(false)} color="error">
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
 };
 
-export default CitaDashboard;
+export default CitasDashboard;
