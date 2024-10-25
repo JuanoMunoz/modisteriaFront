@@ -9,6 +9,7 @@ import axios from "axios";
 import { useJwt } from "../../context/JWTContext";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import { formToCop } from "../../assets/constants.d";
 export default function Product({ data, isLoading }) {
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
@@ -28,10 +29,11 @@ export default function Product({ data, isLoading }) {
   const toggleModal = () => {
     setShowModal(!showModal);
   };
+
   const pedidoAlreadyExists = async (catalogoId, talla) => {
     try {
       const response = await axios.get(
-        `https://modisteria-back-production.up.railway.app/api/pedidos/getPedidoById/1?catalogoId=${catalogoId}&talla=${talla}`,
+        `https://modisteria-back-production.up.railway.app/api/pedidos/getPedidoById/${payload?.id}?catalogoId=${catalogoId}&tallaId=${talla}`,
         { headers: { "x-token": token } }
       );
       return response.data;
@@ -39,15 +41,16 @@ export default function Product({ data, isLoading }) {
       return err;
     }
   };
+  useEffect(() => {
+    console.log(size);
+  }, [size]);
+
   const handleMinusOne = () => {
     if (cantidad == 1) return;
     setCantidad(cantidad - 1);
   };
   const handlePlusOne = () => {
     setCantidad(cantidad + 1);
-  };
-  const handleSetSize = (value) => {
-    setSize(value);
   };
   const handleAddToCart = async () => {
     if (!size) {
@@ -90,6 +93,7 @@ export default function Product({ data, isLoading }) {
       });
       return;
     }
+    console.log("size", size);
     const carritoData = {
       idPedido: uuidv4(),
       catalogoId: data.id,
@@ -104,7 +108,7 @@ export default function Product({ data, isLoading }) {
       usuarioId: payload?.id,
     };
     const response = await pedidoAlreadyExists(data.id, size);
-
+    console.log(response);
     response.length === 1
       ? axios
           .put(
@@ -176,14 +180,15 @@ export default function Product({ data, isLoading }) {
           <span>{title}</span>
         </div>
         <div className="size">
-          <span>Size</span>
+          <span>Tallas</span>
           <ul ref={listRef} className="list-size">
             {sizes.map((valueSize, idx) => (
               <li key={idx} className="item-list">
                 <button
                   style={{ textTransform: "uppercase" }}
                   onClick={() => {
-                    handleSetSize(valueSize.id);
+                    console.log(valueSize.id);
+                    setSize(valueSize.id);
                   }}
                   className={`item-list-button ${
                     valueSize.id === size ? "active" : ""
@@ -197,7 +202,7 @@ export default function Product({ data, isLoading }) {
         </div>
         <div className="action">
           <div className="price">
-            <span>${finalPrice}</span>
+            <span>{formToCop(finalPrice)}</span>
           </div>
           <div className="quantity ">
             <span onClick={handleMinusOne} className="quantity-button">
@@ -234,7 +239,7 @@ export default function Product({ data, isLoading }) {
             <span className="tituloPrenda">{title}</span>
             <hr className="separacionDetalle" />
             <br />
-            <span className="precioDetalle">${finalPrice}</span>
+            <span className="precioDetalle">{formToCop(finalPrice)}</span>
             <br />
             <br />
             <div className="detalleDetalle">
@@ -242,14 +247,14 @@ export default function Product({ data, isLoading }) {
               <p>{description}</p>
             </div>
             <div className="size">
-              <span>Talla</span>
+              <span>Tallas</span>
               <ul ref={listRefModal} className="list-size">
                 {sizes.map((valueSize, idx) => (
                   <li key={idx} className={`item-list`}>
                     <button
                       style={{ textTransform: "uppercase" }}
                       onClick={() => {
-                        handleSetSize(valueSize.id);
+                        setSize(valueSize.id);
                       }}
                       className={`item-list-button ${
                         valueSize.id === size ? "active" : ""

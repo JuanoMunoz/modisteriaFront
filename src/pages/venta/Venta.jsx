@@ -14,7 +14,7 @@ import { QrCode } from "../../components/svg/Svg";
 import { toast, ToastContainer } from "react-toastify";
 import useActiveUserInfo from "../../hooks/useActiveUserInfo";
 import useIsFirstRender from "../../hooks/useIsMount";
-import { imageExtensions } from "../../assets/constants.d";
+import { formToCop, imageExtensions } from "../../assets/constants.d";
 import useFetch from "../../hooks/useFetch";
 export default function Venta() {
   const { token } = useJwt();
@@ -213,7 +213,7 @@ export default function Venta() {
             </div>
             <div className="price-choice">
               {userData?.direccion ? (
-                <span>${domicilio}</span>
+                <span>{formToCop(domicilio)}</span>
               ) : (
                 <span>Por definir</span>
               )}
@@ -328,11 +328,11 @@ export default function Venta() {
             <div className="info-price-ficha-tecnica">
               {" "}
               <span>Subtotal:</span>
-              <span>${subtotal} COP</span>
+              <span>{formToCop(subtotal)} COP</span>
             </div>
             <div className="info-price-ficha-tecnica">
               <span>Total:</span>
-              <span>${total ? total : subtotal} COP</span>
+              <span>{total ? formToCop(total) : formToCop(subtotal)} COP</span>
             </div>
           </div>
         </article>
@@ -360,10 +360,6 @@ export default function Venta() {
                   <option value="Circunvalar">Circunvalar</option>
                   <option value="Transversal">Transversal</option>
                   <option value="Vía">Vía</option>
-                  <option value="">9</option>
-                  <option value="">10</option>
-                  <option value="">11</option>
-                  <option value="">12</option>
                 </select>
               </div>
               <Input

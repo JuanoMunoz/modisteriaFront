@@ -11,6 +11,7 @@ import { Cart } from "../svg/Svg";
 import { useCart } from "../../context/CartContext";
 import ProductoCarrito from "../productoCarrito/ProductoCarrito";
 import { useEffect } from "react";
+import { formToCop } from "../../assets/constants.d";
 export default function Layout() {
   const [cartVisible, setCartVisible] = useState(false);
   const { token, cleanToken } = useJwt();
@@ -71,13 +72,13 @@ export default function Layout() {
           <a href="#">
             <img src={logo} className="img"></img>
           </a>
-          <h3>MODISTERIA D.L</h3>
+          <h3>MODISTERÍA D.L</h3>
         </div>
 
         <nav className="navegador">
           <ul>
             <li className="navItem">
-              <Link to={"/"}>Modisteria</Link>
+              <Link to={"/"}>Modistería</Link>
             </li>
             <li className="navItem">
               <Link to={"/catalogo"}>Catálogo</Link>
@@ -157,7 +158,7 @@ export default function Layout() {
 
           <div className="acciones">
             <span className="subtotal">
-              <strong>Subtotal: ${subtotal}</strong>
+              <strong>Subtotal: {formToCop(subtotal)}</strong>
             </span>
 
             <button
@@ -183,8 +184,8 @@ export default function Layout() {
             </figure>
           </div>
           <div className="box">
-            <span className="nosotros">SOBRE </span>
-            <span className="nosotros purple">NOSOTROS</span>
+            <span className="nosotros">Sobre </span>
+            <span className="nosotros purple">Nosotros</span>
             <p>Jovenes emprendedores con objetivos claros y concretos.</p>
             <p>
               ¿Quieres saber mas sobre nosotros y como aportamos al sitio web?{" "}
@@ -195,15 +196,15 @@ export default function Layout() {
           </div>
 
           <div className="box">
-            <span className="contacto">CONTACTANOS</span>
+            <span className="contacto">Contáctanos</span>
             <p>Dirección: Calle 123, N° 1234, Ciudad.</p>
-            <p>Email: info@modisteria.com</p>
-            <p>Telefono: 3123456789</p>
+            <p>Email: modistadonaluz@gmail.com</p>
+            <p>Teléfono: 3123456789</p>
           </div>
         </div>
         <div className="grupo-2">
           <small>
-            &copy; 2024 <b>Modisteria D.L</b> - Todos los Derechos Reservados.
+            &copy; 2024 <b>Modistería D.L</b> - Todos los Derechos Reservados.
           </small>
         </div>
       </footer>

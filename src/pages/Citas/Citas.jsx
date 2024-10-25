@@ -216,7 +216,7 @@ export default function Citas() {
             <div className="text-empty-chat">
               <span>
                 {token
-                  ? "ENVÍA UN MENSAJE PARA COMENZAR!"
+                  ? "¡Envía un mensaje para comenzar!"
                   : "Inicia Sesión para enviar un mensaje"}
               </span>
               <div className="bouncing-arrow">
@@ -337,8 +337,8 @@ export default function Citas() {
         <Calendar color={"#fff"} size={"120"}></Calendar>
         <h3>¿Agregar cita?</h3>
         <div>
-          <h3>{fechaCita ? fechaCita : "No has añadido una fecha!"}</h3>
-          <h3>{objetivo ? objetivo : "No has añadido un objetivo!"}</h3>
+          <h3>{fechaCita ? fechaCita : "¡No has añadido una fecha!"}</h3>
+          <h3>{objetivo ? objetivo : "¡No has añadido un objetivo!"}</h3>
         </div>
         <div className="logout">
           <button onClick={toggleAddCita} className="btn-cancelar">

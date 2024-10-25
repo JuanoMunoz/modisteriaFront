@@ -8,17 +8,15 @@ import {
   DialogActions,
   TextField,
   Typography,
-  Switch,
 } from "@mui/material";
 import Loading from "../../components/loading/Loading";
 import { TrashColor, Edit } from "../../components/svg/Svg";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import Header from "../../components/Header/Header";
 import { useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { alpha } from "@mui/material";
 import useCitasData from "../../hooks/useCitasData";
+import { formatDateSpanish, formaTime } from "../../assets/constants.d";
 
 const CitasDashboard = () => {
   const theme = useTheme();
@@ -94,9 +92,7 @@ const CitasDashboard = () => {
 
         if (respuesta.status === 200 || respuesta.status === 201) {
           const updatedData = data.map((cita) =>
-            cita.id === selectedCita.id
-              ? { ...cita, ...formData }
-              : cita
+            cita.id === selectedCita.id ? { ...cita, ...formData } : cita
           );
           setData(updatedData);
         } else {
@@ -159,53 +155,83 @@ const CitasDashboard = () => {
       headerName: "Fecha",
       flex: 1,
       renderCell: (params) => (
-        <div style={{ whiteSpace: 'normal', wordWrap: 'break-word', textAlign: 'left' }}>
-          {params.value}
+        <div
+          style={{
+            whiteSpace: "normal",
+            wordWrap: "break-word",
+            textAlign: "left",
+          }}
+        >
+          {`${formatDateSpanish(params.value)} - ${formaTime(params.value)}`}
         </div>
       ),
     },
-    { field: "referencia", headerName: "Referencia", flex: 1, renderCell: (params) => (
-        <div style={{whiteSpace: 'normal', wordWrap: 'break-word', textAlign: 'left'}}>
-            {params.value || "Sin imagen"}
+    {
+      field: "referencia",
+      headerName: "Referencia",
+      flex: 1,
+      renderCell: (params) => (
+        <div
+          style={{
+            whiteSpace: "normal",
+            wordWrap: "break-word",
+            textAlign: "left",
+          }}
+        >
+          {params.value || "Sin imagen"}
         </div>
-    ) },
+      ),
+    },
     {
       field: "objetivo",
       headerName: "Objetivo",
       flex: 1,
       renderCell: (params) => (
-        <div style={{ whiteSpace: 'normal', wordWrap: 'break-word', textAlign: 'left' }}>
+        <div
+          style={{
+            whiteSpace: "normal",
+            wordWrap: "break-word",
+            textAlign: "left",
+          }}
+        >
           {params.value}
         </div>
       ),
     },
     { field: "precio", headerName: "Precio", flex: 0.7 },
     { field: "usuarioId", headerName: "Usuario", flex: 0.7 },
-    { field: "tiempo", headerName: "Tiempo", flex: 0.7, renderCell: (params) => (
-        <div style={{whiteSpace: 'normal', wordWrap: 'break-word', textAlign: 'left'}}>
-            {params.value || "Por establecer"}
+    {
+      field: "tiempo",
+      headerName: "Tiempo",
+      flex: 0.7,
+      renderCell: (params) => (
+        <div
+          style={{
+            whiteSpace: "normal",
+            wordWrap: "break-word",
+            textAlign: "left",
+          }}
+        >
+          {params.value || "Por establecer"}
         </div>
-    ),
+      ),
     },
     {
-        field: "estadoId",
-        headerName: "Estado",
-        flex: 1,
-        renderCell: ({ row }) => {
-            const estadoText = {
+      field: "estadoId",
+      headerName: "Estado",
+      flex: 1,
+      renderCell: ({ row }) => {
+        const estadoText =
+          {
             9: "Por aprobar",
             10: "Aprobada",
             11: "Aceptada",
             12: "Cancelada",
-            13: "Terminada"
-            }[row.estadoId] || "Desconocido"; 
+            13: "Terminada",
+          }[row.estadoId] || "Desconocido";
 
-            return (
-            <Typography>
-                {estadoText}
-            </Typography>
-            );
-        },
+        return <Typography>{estadoText}</Typography>;
+      },
     },
     {
       field: "acciones",
@@ -213,10 +239,13 @@ const CitasDashboard = () => {
       flex: 0.8,
       renderCell: ({ row }) => (
         <Box display="flex" alignItems="left">
-          <Button onClick={() => handleEdit(row.id)} sx={{ p: 0, mr: 1, ml:-3 }}>
+          <Button
+            onClick={() => handleEdit(row.id)}
+            sx={{ p: 0, mr: 1, ml: -3 }}
+          >
             <Edit size={20} color={colors.grey[100]} />
           </Button>
-          <Button onClick={() => handleDelete(row.id)} sx={{ p: 0, ml: -5}}>
+          <Button onClick={() => handleDelete(row.id)} sx={{ p: 0, ml: -5 }}>
             <TrashColor size={20} color={colors.grey[100]} />
           </Button>
         </Box>
@@ -226,8 +255,15 @@ const CitasDashboard = () => {
 
   return (
     <>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h4" sx={{ ml: 4 }}>Citas</Typography>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
+        <Typography variant="h4" sx={{ ml: 4 }}>
+          Citas
+        </Typography>
         <Button
           variant="contained"
           onClick={handleAdd}

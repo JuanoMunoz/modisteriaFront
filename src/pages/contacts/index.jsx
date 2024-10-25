@@ -12,12 +12,11 @@ import {
   MenuItem,
   Switch,
 } from "@mui/material";
-import constants from "../../assets/constants.d";
+import constants, { formToCop } from "../../assets/constants.d";
 import Loading from "../../components/loading/Loading";
 import { TrashColor, Edit } from "../../components/svg/Svg";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import Header from "../../components/Header/Header";
 import { useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { alpha } from "@mui/material";
@@ -69,7 +68,6 @@ const Usuarios = () => {
     };
     initialFetchUsuarios();
   }, []);
-
   /// Métodos para CRUD
   const handleEdit = (id) => {
     const userToEdit = data.find((user) => user.id === id);
@@ -236,21 +234,30 @@ const Usuarios = () => {
 
   return (
     <>
-      <Header title="Usuarios" subtitle="Lista de usuarios" />
-      <Button
-        variant="contained"
-        onClick={handleAdd}
-        sx={{
-          mb: 2,
-          backgroundColor: colors.purple[400],
-          "&:hover": {
-            backgroundColor: colors.purple[300],
-          },
-          color: "white",
-        }}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
       >
-        Agregar Usuario
-      </Button>
+        <Typography variant="h4" sx={{ ml: 4 }}>
+          Usuarios
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={handleAdd}
+          sx={{
+            backgroundColor: colors.purple[400],
+            "&:hover": {
+              backgroundColor: colors.purple[300],
+            },
+            color: "white",
+            mr: "10px",
+          }}
+        >
+          Agregar Usuario
+        </Button>
+      </Box>
       {(loading || loadingRoles) && <Loading></Loading>}
       <Box
         m="0px 20px"
@@ -550,7 +557,7 @@ const Usuarios = () => {
               {...registerUsuario("roleId", {
                 required: "Debes escoger un rol!",
               })}
-              value={parseInt(selectedUsuario?.roleId) || 1}
+              value={parseInt(selectedUsuario?.roleId) || roles[0]?.id}
               onChange={handleInputChange}
               FormHelperTextProps={{ sx: { color: "red" } }}
               helperText={errorsAddUsuario?.categoriaId?.message}

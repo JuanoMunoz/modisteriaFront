@@ -28,6 +28,9 @@ body,
 .app {
   display: flex;
 }
+.content {
+  flex-grow: 1;
+}
 
 ::-webkit-scrollbar {
   width: 10px;

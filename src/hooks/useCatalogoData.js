@@ -1,5 +1,6 @@
 import useFetch from "./useFetch";
 import { useJwt } from "../context/JWTContext";
+
 export default function useCatalogoData() {
   const { loading, triggerFetch } = useFetch();
   const { triggerFetch: updateFetch } = useFetch();
@@ -43,6 +44,15 @@ export default function useCatalogoData() {
     );
     return respuesta;
   };
+  const createCatalogoInsumos = async (infoUpdate) => {
+    const respuesta = await createFetch(
+      `https://modisteria-back-production.up.railway.app/api/catalogoinsumos/createCatIns`,
+      "POST",
+      infoUpdate,
+      { "x-token": token }
+    );
+    return respuesta;
+  };
   const deleteCatalogo = async (id) => {
     const respuesta = await deleteFetch(
       `https://modisteria-back-production.up.railway.app/api/catalogos/deleteCatalogo/${id}`,
@@ -59,6 +69,7 @@ export default function useCatalogoData() {
     deleteCatalogo,
     createCatalogo,
     updateCatalogos,
+    createCatalogoInsumos,
     loading,
   };
 }

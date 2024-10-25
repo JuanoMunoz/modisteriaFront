@@ -8,6 +8,7 @@ import { ArrowRight, ArrowLeft } from "../../components/svg/Svg";
 import useDebounce from "../../hooks/useDebounce";
 import { ToastContainer } from "react-toastify";
 import useFetch from "../../hooks/useFetch";
+import { formToCop } from "../../assets/constants.d";
 export default function Catalogo() {
   const [page, setPage] = useState(1);
   const [catalogoData, setCatalogoData] = useState(null);
@@ -54,7 +55,7 @@ export default function Catalogo() {
       <section className="contenedorCatalogo">
         <div className="filtros">
           <h4>Filtrar por precio</h4>
-          <h3>${filterPrice} COP</h3>
+          <h3>{formToCop(filterPrice)} COP</h3>
           <input
             type="range"
             value={filterPrice}
@@ -65,7 +66,7 @@ export default function Catalogo() {
             className="range-category"
           />
 
-          <h4>Filtrar por Categoria</h4>
+          <h4>Filtrar por Categoría</h4>
           <div className="categorias">
             {catalogoData &&
               catalogoData.map((value) => (
@@ -91,32 +92,34 @@ export default function Catalogo() {
             ))}
         </div>
       </section>
-      {/* PAGINADOR */}
-      <div className="cPaginador">
-        <ul className="paginador">
-          <li onClick={handlePreviousPage}>
-            <a>
-              <ArrowLeft size={28}></ArrowLeft>
-            </a>
-          </li>
-          {numberOfPages.map((value) => (
-            <li
-              className={value === page ? `active` : ""}
-              key={value}
-              onClick={() => {
-                setPage(value);
-              }}
-            >
-              <a>{value}</a>
+      {fetchCatalagoData?.length >= 1 && (
+        <div className="cPaginador">
+          <ul className="paginador">
+            <li onClick={handlePreviousPage}>
+              <a>
+                <ArrowLeft size={25}></ArrowLeft>
+              </a>
             </li>
-          ))}
-          <li onClick={handleNextPage}>
-            <a>
-              <ArrowRight size={30}></ArrowRight>
-            </a>
-          </li>
-        </ul>
-      </div>
+            {numberOfPages.map((value) => (
+              <li
+                className={value === page ? `active` : ""}
+                key={value}
+                onClick={() => {
+                  setPage(value);
+                }}
+              >
+                <a>{value}</a>
+              </li>
+            ))}
+            <li onClick={handleNextPage}>
+              <a>
+                <ArrowRight size={25}></ArrowRight>
+              </a>
+            </li>
+          </ul>
+        </div>
+      )}
+
       <ToastContainer></ToastContainer>
     </>
   );

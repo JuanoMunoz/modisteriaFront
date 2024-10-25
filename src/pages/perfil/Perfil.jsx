@@ -339,13 +339,6 @@ export default function Perfil() {
                 </tr>
                 <tr>
                   <th>
-                    <Rol></Rol>&nbsp;&nbsp;Rol
-                  </th>
-                  <td>:</td>
-                  <td>{payload?.role.nombre}</td>
-                </tr>
-                <tr>
-                  <th>
                     <Password size={"20px"}></Password>&nbsp;&nbsp;Password
                   </th>
                   <td>:</td>
@@ -496,7 +489,7 @@ export default function Perfil() {
                   className="cartas-sin-citas
                 "
                 >
-                  <h1>Sin Citas con este Estado </h1>
+                  <h1>Sin Citas</h1>
                   <h4>
                     No cuentas con ninguna cita asociada este tipo.{" "}
                     <span
