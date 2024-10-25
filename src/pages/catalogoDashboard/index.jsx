@@ -52,7 +52,7 @@ const CatalogoDashboard = () => {
     deleteCatalogo,
     updateCatalogos,
     createCatalogo,
-    createCatalogoInsumos,
+    createCatalogoInsumos
   } = useCatalogoData();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openPreview, setOpenPreview] = useState(false);
@@ -80,6 +80,7 @@ const CatalogoDashboard = () => {
       const tallas = await initialFetchAllTallas();
       const insumos = await initialFetchAllInsumos();
       if (respuesta.status === 200 && respuesta.data) {
+        console.log(respuesta.data.rows)
         setData(respuesta.data.rows);
       }
       if (categoria.status === 200 && categoria.data) {
@@ -114,6 +115,7 @@ const CatalogoDashboard = () => {
   };
   const handlePreview = (row) => {
     setSelectedCatalogo(row);
+    
     setOpenPreview(true);
   };
   const handleStateInsumo = async (e, id) => {
@@ -501,7 +503,7 @@ const CatalogoDashboard = () => {
                 },
                 max: {
                   value: 250000,
-                  message: "El precio mínimo de un producto es de $250.000 COP",
+                  message: "El precio máximo de un producto es de $250.000 COP",
                 },
               })}
               value={selectedCatalogo?.precio || ""}
@@ -854,15 +856,26 @@ const CatalogoDashboard = () => {
                     },
                   }}
                 >
-                  <Typography
+                  {selectedCatalogo?.insumos?.length >=1 ? <div>
+                    {selectedCatalogo?.insumos?.map(insumo=>(<Typography
+                    key={insumo.id}
                     variant="h6"
                     sx={{
                       textAlign: "center",
                       padding: "16px",
                     }}
                   >
-                    {selectedCatalogo?.producto || "Nombre del producto"}
-                  </Typography>
+                    {`${insumo.nombre}: ${insumo.cantidad}`}
+                  </Typography>))}
+                  </div> :                   <Typography
+                    variant="h6"
+                    sx={{
+                      textAlign: "center",
+                      padding: "16px",                        
+                    }}
+                  >
+                    ¡Sin insumos asociados!
+                  </Typography> }
                 </Box>
               </Box>
             </Grid>
@@ -910,20 +923,6 @@ const CatalogoDashboard = () => {
                   </Grid>
                 ))}
               </Grid>
-              <Button
-                onClick={() => setOpenPreview(false)}
-                variant="contained"
-                sx={{
-                  backgroundColor: colors.purple[300],
-                  "&:hover": {
-                    backgroundColor: colors.purple[200],
-                  },
-                  color: "white",
-                  marginTop: 3,
-                }}
-              >
-                Ver insumos
-              </Button>
             </Grid>
           </Grid>
         </DialogContent>

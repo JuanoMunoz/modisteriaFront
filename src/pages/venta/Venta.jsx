@@ -162,7 +162,7 @@ export default function Venta() {
     formaPago === "transferencia" && formDataAdd.append("file", imagen);
 
     const response = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/cotizaciones/createCotizacion",
+      "https://modisteria-back-production.up.railway.app/api/ventas/createVenta",
       "POST",
       formDataAdd,
       {
@@ -172,7 +172,7 @@ export default function Venta() {
     );
     if (response.status === 201)
       toast.success(`${response.data.msg}\nEspera tu correo de confirmación`, {
-        autoClose: 2000,
+        autoClose: 3000,
       });
     else if (response.status === 400) {
       toast.error(`${response.data.error}`, {

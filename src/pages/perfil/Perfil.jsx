@@ -53,7 +53,6 @@ export default function Perfil() {
   const onChangeTypeAppointment = (e) => {
     setTypeAppointment(e.target.value);
   };
-  console.log(lastSale[0]?.cotizacion.cotizacion_pedidos);
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchYourAppointments(
@@ -499,7 +498,7 @@ export default function Perfil() {
             <div className="misDomicilios" style={{ color: "#000" }}>
               <span></span>
             </div>
-            {lastSale &&
+            {/* {lastSale &&
               lastSale.map((cita) => (
                 <div key={cita.id} class="misVentas">
                   <div class="fechaFactura">
@@ -508,11 +507,11 @@ export default function Perfil() {
                   <div class="nombreFactura">
                     <h4>
                       Nombre del Cliente:{" "}
-                      <span>{cita?.cotizacion.nombrePersona}</span>
+                      <span>{cita.nombrePersona}</span>
                     </h4>
                   </div>
                   <div class="productosFactura">
-                    {cita?.cotizacion.cotizacion_pedidos.map((pedido, idx) => (
+                    {cita?..map((pedido, idx) => (
                       <div class="producto">
                         <h4>Producto {idx + 1}</h4>
                         <p>Cantidad: {pedido.pedido.cantidad}</p>
@@ -528,7 +527,7 @@ export default function Perfil() {
                     <p>Total: ${cita.cotizacion.valorFinal}</p>
                   </div>
                 </div>
-              ))}
+              ))} */}
           </div>
         </div>
       </section>
