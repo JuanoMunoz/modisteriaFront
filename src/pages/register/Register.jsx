@@ -127,7 +127,7 @@ export default function Register() {
       <br />
       <span className="black">Regis</span>
       <span className="black">trate</span>
-      <hr className="separacion" />
+      <hr className="separacionRegistro" />
       <br />
 
       <div className="contenedor">

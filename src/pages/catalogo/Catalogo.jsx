@@ -9,6 +9,7 @@ import useDebounce from "../../hooks/useDebounce";
 import { ToastContainer } from "react-toastify";
 import useFetch from "../../hooks/useFetch";
 import { formToCop } from "../../assets/constants.d";
+import { Alert } from "../../components/svg/Svg";
 export default function Catalogo() {
   const [page, setPage] = useState(1);
   const [catalogoData, setCatalogoData] = useState(null);
@@ -85,12 +86,12 @@ export default function Catalogo() {
           </div>
         </div>
 
-        <div className="catalogo">
+      {fetchCatalagoData?.length >= 1 ? (<div className="catalogo">
           {!isLoading &&
             fetchCatalagoData?.map((data) => (
               <Product key={data.id} isLoading={isLoading} data={data} />
             ))}
-        </div>
+        </div>):<div className="sinProductos"><span>Sin productos disponibles</span> <Alert size={"20"}></Alert></div>}
       </section>
       {fetchCatalagoData?.length >= 1 && (
         <div className="cPaginador">

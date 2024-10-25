@@ -553,3 +553,12 @@ input[type="range"]:focus::-ms-fill-upper {
   opacity: 1;
   scale: 1;
 }
+
+.sinProductos{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 490px;
+  font-size: 20px;
+  gap: 7px;
+}

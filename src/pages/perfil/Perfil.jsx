@@ -222,15 +222,7 @@ export default function Perfil() {
                 <img src={fotoPerfil} alt="" className="fotoPerfil" />
                 <br />
                 <span>{payload?.nombre}</span>
-                <br />
               </div>
-              <span>
-                <span className="subtitulo">
-                  <Key></Key>&nbsp;&nbsp;ID:
-                </span>{" "}
-                #{payload?.id}
-              </span>
-              <br />
               <span>
                 <span className="subtitulo">
                   <Rol></Rol>&nbsp;&nbsp;Rol:
@@ -474,7 +466,7 @@ export default function Perfil() {
               </form>
             </Modal>
             <div className="misCitas">
-              <span className="subtituloCitas">Mis Citas</span>
+              <span className="subtituloCitas"></span>
               {myAppointments?.length >= 1 ? (
                 myAppointments.map((value) => (
                   <CitaComponente
@@ -489,7 +481,7 @@ export default function Perfil() {
                   className="cartas-sin-citas
                 "
                 >
-                  <h1>Sin Citas</h1>
+                  <h1>Mis Citas</h1>
                   <h4>
                     No cuentas con ninguna cita asociada este tipo.{" "}
                     <span
