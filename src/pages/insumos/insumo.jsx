@@ -9,30 +9,47 @@ import {
   DialogActions,
   TextField,
   Typography,
+  InputLabel,
+  Select,
+  FormControl,
   MenuItem,
   Switch,
+  styled,
 } from "@mui/material";
+import "./insumoDashboard.css";
 import Loading from "../../components/loading/Loading";
-import { TrashColor, Edit } from "../../components/svg/Svg";
+import { TrashColor, Edit, AddRounded, Add } from "../../components/svg/Svg";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import Header from "../../components/Header/Header";
 import { useTheme } from "@mui/material";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { alpha } from "@mui/material";
 import useInsumosData from "../../hooks/useInsumosData";
 import useCategoriaDataInsumo from "../../hooks/useCategoriaDataInsumo";
+import { toast, ToastContainer } from "react-toastify";
 const Insumos = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const {
     handleSubmit: handleSaveInsumo,
-    watch: watchSaveInsumo,
     formState: { errors: errorsAddInsumo },
     register: registerInsumo,
     reset,
   } = useForm();
+
+  const {
+    handleSubmit: handleSaveControlInsumos,
+    register: registerControlInsumo,
+    setValue,
+    watch,
+    getValues,
+    formState: { errors: errorsAddControlInsumo },
+  } = useForm();
   const [openModal, setOpenModal] = useState(false);
+  const [insumoToAdd, setInsumoToAdd] = useState();
+  const [cantidadesInsumos, setCantidadesInsumos] = useState({});
+  const [controlInsumos, setControlInsumos] = useState([]);
+  const [openModalReponerInsumos, setOpenModalReponerInsumos] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedInsumo, setSelectedInsumo] = useState(null);
   const [insumoToDelete, setInsumoToDelete] = useState(null);
@@ -48,6 +65,7 @@ const Insumos = () => {
     deleteInsumo,
     createInsumo,
     updateInsumos,
+    updateCantidadInsumos,
     loading,
   } = useInsumosData();
   const { fetchAllCategorias, loading: loadingCategoria } =
@@ -78,6 +96,32 @@ const Insumos = () => {
     reset(insumoToEdit);
     setOpenModal(true);
   };
+  const handleInsumoToAdd = (e) => {
+    setInsumoToAdd(e.target.value);
+  };
+  const handleChangeCantidadInsumo = (e, idx) => {
+    const { value } = e.target;
+    const regex = /-?(\d{1,3}(,\d{3})*|\d+)(\.\d+)?/;
+    if (!regex.test(value) && value !== "") {
+      return;
+    }
+    setCantidadesInsumos((prev) => ({ ...prev, [idx]: value }));
+  };
+
+  const addInsumo = () => {
+    if (!insumoToAdd)
+      return toast.error("¡Debes seleccionar un insumo!", {
+        toastId: "addInsumoError",
+        autoClose: 1500,
+      });
+    if (controlInsumos.some((insumo) => insumo.id === insumoToAdd))
+      return toast.error("¡Ya has añadido el insumo!", {
+        toastId: "addInsumoErrorAlreadyAdded",
+        autoClose: 1500,
+      });
+    const insumo = data.find((insumo) => insumo.id === insumoToAdd);
+    setControlInsumos((prev) => prev.concat(insumo));
+  };
 
   const handleStateInsumo = async (e, id) => {
     const isActive = e.target.checked ? 1 : 2;
@@ -99,6 +143,7 @@ const Insumos = () => {
     const addNewInsumoBody = {
       nombre: "",
       cantidad: "",
+      tipo: "controlado",
       categoriaId: categorias[0]?.id,
       estadoId: 0,
     };
@@ -106,12 +151,41 @@ const Insumos = () => {
     reset(addNewInsumoBody);
     setOpenModal(true);
   };
+  const handleReponerInsumos = () => {
+    setOpenModalReponerInsumos(true);
+  };
 
   const handleClose = () => {
     setOpenModal(false);
     setSelectedInsumo(null);
   };
 
+  useEffect(() => {
+    console.log(errorsAddControlInsumo.cantidadInsumo);
+  }, [errorsAddControlInsumo.cantidadInsumo]);
+
+  const saveControlInsumos = async (data) => {
+    const insumos = [];
+
+    data.cantidadInsumo.forEach((cantidad, idx) => {
+      insumos.push({
+        id: controlInsumos[idx].id,
+        cantidad:
+          data.accionInsumo[idx] === "sumar"
+            ? parseInt(cantidad)
+            : parseInt(cantidad) * -1,
+      });
+    });
+    const respueta = await updateCantidadInsumos({ insumos });
+    if (respueta.status === 201) {
+      const updatedData = await fetchAllInsumos();
+
+      if (updatedData.status === 200 && updatedData.data) {
+        setData(updatedData.data);
+      }
+    }
+    console.log(respueta);
+  };
   const handleSave = async (data) => {
     const response = selectedInsumo.id
       ? await updateInsumos(selectedInsumo.id, data)
@@ -171,6 +245,11 @@ const Insumos = () => {
       flex: 1,
     },
     {
+      field: "tipo",
+      headerName: "Tipo insumo",
+      flex: 1,
+    },
+    {
       field: "categoriaId",
       headerName: "Categoría",
       flex: 1,
@@ -223,21 +302,48 @@ const Insumos = () => {
 
   return (
     <>
-      <Header title="Insumos" subtitle="Lista de insumos" />
-      <Button
-        variant="contained"
-        onClick={handleAdd}
-        sx={{
-          mb: 2,
-          backgroundColor: colors.purple[400],
-          "&:hover": {
-            backgroundColor: colors.purple[300],
-          },
-          color: "white",
-        }}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
       >
-        Agregar Insumo
-      </Button>
+        <Typography variant="h4" sx={{ ml: 4 }}>
+          Insumos
+        </Typography>
+        <Box display={"flex"} gap={"5px"}>
+          {data.length >= 1 && (
+            <Button
+              variant="contained"
+              onClick={handleReponerInsumos}
+              sx={{
+                backgroundColor: colors.purple[400],
+                "&:hover": {
+                  backgroundColor: colors.purple[300],
+                },
+                color: "white",
+                mr: "10px",
+              }}
+            >
+              Reponer insumos
+            </Button>
+          )}
+          <Button
+            variant="contained"
+            onClick={handleAdd}
+            sx={{
+              backgroundColor: colors.purple[400],
+              "&:hover": {
+                backgroundColor: colors.purple[300],
+              },
+              color: "white",
+              mr: "10px",
+            }}
+          >
+            Nuevo insumo
+          </Button>
+        </Box>
+      </Box>
       {(loading || loadingCategoria) && <Loading></Loading>}
       <Box
         m="0px 20px"
@@ -391,6 +497,39 @@ const Insumos = () => {
             />
             <TextField
               margin="dense"
+              name="tipo"
+              label="Tipo insumo"
+              fullWidth
+              select
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&:hover fieldset": {
+                    borderColor: "purple",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "purple",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  "&.Mui-focused": {
+                    color: "purple",
+                  },
+                },
+              }}
+              variant="outlined"
+              {...registerInsumo("tipo", {
+                required: "¡Debes escoger el tipo del insumo!",
+              })}
+              value={selectedInsumo?.tipo || "controlado"}
+              onChange={handleInputChange}
+              FormHelperTextProps={{ sx: { color: "red" } }}
+              helperText={errorsAddInsumo?.categoriaId?.message}
+            >
+              <MenuItem value={"controlado"}>Controlado</MenuItem>
+              <MenuItem value={"no controlado"}>No controlado</MenuItem>
+            </TextField>
+            <TextField
+              margin="dense"
               name="categoriaId"
               label="Categoría"
               fullWidth
@@ -474,6 +613,122 @@ const Insumos = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Dialog
+        open={openModalReponerInsumos}
+        onClose={() => setOpenModalReponerInsumos(false)}
+      >
+        <form onSubmit={handleSaveControlInsumos(saveControlInsumos)}>
+          <DialogTitle color={colors.grey[100]}>Reponer insumos</DialogTitle>
+          <DialogContent>
+            <h3>Seleccionar insumo</h3>
+            <div className="add-insumo-header">
+              {" "}
+              <FormControl variant="standard" sx={{ m: 1, minWidth: 250 }}>
+                <InputLabel id="labelId">Insumo</InputLabel>
+                <Select
+                  labelId="labelId"
+                  value={insumoToAdd}
+                  onChange={handleInsumoToAdd}
+                  label="Insumo"
+                >
+                  {data.map((insumo) => (
+                    <MenuItem key={insumo.id} value={insumo.id}>
+                      {insumo.nombre}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Button onClick={addInsumo} title="Añadir insumo">
+                {" "}
+                <AddRounded size={24} color={"#fff"}></AddRounded>
+              </Button>
+            </div>
+            <div onSubmit={handleSaveControlInsumos(saveControlInsumos)}>
+              <div
+                style={{ display: controlInsumos.length ? "flex" : "none" }}
+                className="titles-insumos"
+              >
+                <div className="column">
+                  <h4>Insumo</h4>
+                </div>
+                <div className="column">
+                  <h4>Acción</h4>
+                </div>
+                <div className="column">
+                  <h4>Cantidad</h4>
+                </div>
+              </div>
+              {controlInsumos &&
+                controlInsumos.map((insumo, idx) => (
+                  <div key={insumo.id} className="body-insumos">
+                    <h4>{insumo.nombre}</h4>
+                    <FormControl sx={{ m: 1 }} variant="standard">
+                      <Select
+                        defaultValue={"sumar"}
+                        {...registerControlInsumo(`accionInsumo[${idx}]`)}
+                        labelId="demo-customized-select-label"
+                        id="demo-customized-select"
+                      >
+                        <MenuItem value={"sumar"}>Sumar</MenuItem>
+                        <MenuItem value={"restar"}>Restar</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <div className="acciones">
+                      <span className="quantity-button">-</span>
+                      <TextField
+                        {...registerControlInsumo(`cantidadInsumo[${idx}]`, {
+                          required: `La cantidad de "${insumo.nombre}" es requerida`,
+                        })}
+                        value={cantidadesInsumos[idx]}
+                        margin="dense"
+                        onChange={(e) => handleChangeCantidadInsumo(e, idx)}
+                        name={`cantidadInsumo[${idx}]`}
+                        placeholder="0"
+                        InputProps={{
+                          disableUnderline: true,
+                          style: {
+                            textAlign: "center",
+                          },
+                        }}
+                        type="text"
+                        variant="standard"
+                        sx={{
+                          width: "30px",
+                          "& .MuiOutlinedInput-root": {
+                            "&:hover fieldset": {
+                              borderColor: "purple",
+                            },
+                            "&.Mui-focused fieldset": {
+                              borderColor: "purple",
+                            },
+                          },
+                          "& .MuiInputLabel-root": {
+                            "&.Mui-focused": {
+                              color: "purple",
+                            },
+                          },
+                        }}
+                      />
+                      <span className="quantity-button">+</span>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setOpenModalReponerInsumos(false)}
+              color="error"
+            >
+              Cerrar
+            </Button>
+            <Button type="submit" color="success">
+              Guardar
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+      <ToastContainer></ToastContainer>
     </>
   );
 };

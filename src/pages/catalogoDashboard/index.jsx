@@ -1,6 +1,9 @@
 //mirando
 import "./catalogoDashboard.css";
 import React, { useState, useEffect } from "react";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import {
   Box,
   Button,
@@ -31,9 +34,18 @@ import useCategoriaData from "../../hooks/useCategoriaData";
 import useCatalogoData from "../../hooks/useCatalogoData";
 import useTallaData from "../../hooks/useTallaData";
 import useInsumosData from "../../hooks/useInsumosData";
-import { formToCop, imageExtensions } from "../../assets/constants.d";
+import { formToCop } from "../../assets/constants.d";
 import { toast, ToastContainer } from "react-toastify";
 const CatalogoDashboard = () => {
+  const sliderSettings = {
+    infinite: true,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    speed: 1000,
+    autoplaySpeed: 1500,
+    cssEase: "linear",
+  };
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const {
@@ -42,6 +54,7 @@ const CatalogoDashboard = () => {
     formState: { errors: errorsAddCatalogo },
     register: registerCatalogo,
     reset,
+    getValues,
     setValue,
   } = useForm();
   const [openModal, setOpenModal] = useState(false);
@@ -52,7 +65,7 @@ const CatalogoDashboard = () => {
     deleteCatalogo,
     updateCatalogos,
     createCatalogo,
-    createCatalogoInsumos
+    createCatalogoInsumos,
   } = useCatalogoData();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openPreview, setOpenPreview] = useState(false);
@@ -63,16 +76,15 @@ const CatalogoDashboard = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [data, setData] = useState([]);
   const [categorias, setCategorias] = useState([]);
+  const [imagenes, setImagenes] = useState([]);
   const [insumos, setInsumos] = useState([]);
   const [tallas, setTallas] = useState([]);
+  console.log(selectedCatalogo);
 
   const { initialFetchAllCategorias, loading: loadingCategoria } =
     useCategoriaData();
   const { initialFetchAllTallas, loading: loadingTallas } = useTallaData();
   const { initialFetchAllInsumos, loading: loadingInsumos } = useInsumosData();
-  const isAnImage = (extension) => {
-    return imageExtensions.includes(extension);
-  };
   useEffect(() => {
     const initialFetchCatalogo = async () => {
       const respuesta = await initialFetchAllCatalogos();
@@ -80,7 +92,8 @@ const CatalogoDashboard = () => {
       const tallas = await initialFetchAllTallas();
       const insumos = await initialFetchAllInsumos();
       if (respuesta.status === 200 && respuesta.data) {
-        console.log(respuesta.data.rows)
+        console.log(respuesta.data.rows);
+
         setData(respuesta.data.rows);
       }
       if (categoria.status === 200 && categoria.data) {
@@ -95,10 +108,36 @@ const CatalogoDashboard = () => {
     };
     initialFetchCatalogo();
   }, []);
+  const handleAddImage = (e) => {
+    const file = e.target.files[0];
+
+    if (!file.type.includes("image")) {
+      toast.error("¡Solo se permiten imágenes!", {
+        toastId: "errorAddingNotAnImage",
+        autoClose: 1500,
+      });
+      return;
+    }
+
+    if (imagenes.length === 5) {
+      toast.error("¡Máximo 5 imagenes!", {
+        toastId: "erroTooManyImages",
+        autoClose: 1500,
+      });
+      return;
+    }
+    setImagenes((prev) => [...prev, file]);
+  };
+  useEffect(() => {
+    console.log(imagenes);
+  }, [imagenes]);
 
   /// Métodos para CRUD
   const handleEdit = (row) => {
     setSelectedCatalogo(row);
+    setNumberOfInsumos(row.insumos);
+    reset(row);
+    setImagenes(row?.Imagens);
     setOpenModal(true);
   };
   const handleAddInsumo = () => {
@@ -115,7 +154,7 @@ const CatalogoDashboard = () => {
   };
   const handlePreview = (row) => {
     setSelectedCatalogo(row);
-    
+
     setOpenPreview(true);
   };
   const handleStateInsumo = async (e, id) => {
@@ -137,28 +176,37 @@ const CatalogoDashboard = () => {
   const handleAdd = () => {
     const initialBodyCatalogo = {
       producto: "",
-      precio: 0,
-      categoriaId: 0,
+      precio: "",
+      categoriaId: categorias?.[0].id,
       estadoId: 0,
       tallas: "",
       insumo: [],
+
       descripcion: "",
       cantidad_utilizada: [],
     };
     setSelectedCatalogo(initialBodyCatalogo);
+    setImagenes([]);
     reset(initialBodyCatalogo);
     setOpenModal(true);
   };
 
   const handleClose = () => {
     setOpenModal(false);
+    setValue("imagen", undefined);
     setNumberOfInsumos([]);
+    reset();
     setSelectedCatalogo(null);
   };
   const handleSave = async (data) => {
     if (numberOfInsumos.length <= 0)
       return toast.error("¡Debes añadir mínimo un insumo!", {
         toastId: "errorNoInsumosAdded",
+        autoClose: 2000,
+      });
+    if (imagenes.length <= 0)
+      return toast.error("¡Debes añadir mínimo una imagen!", {
+        toastId: "errorNoImageAdded",
         autoClose: 2000,
       });
     const {
@@ -169,7 +217,6 @@ const CatalogoDashboard = () => {
       precio,
       descripcion,
       categoriaId,
-      imagen,
     } = data;
     const tallasNumeros = tallas.map(Number);
     const tallasOrdenadas = tallasNumeros.sort((a, b) => a - b);
@@ -188,11 +235,14 @@ const CatalogoDashboard = () => {
     formDataAddCatalog.append("estadoId", 1);
     formDataAddCatalog.append("categoriaId", categoriaId);
     formDataAddCatalog.append("tallas", tallasParsed);
-    formDataAddCatalog.append("file", imagen[0]);
+    imagenes.forEach((imagen) => formDataAddCatalog.append("file", imagen));
+
     const response = selectedCatalogo.id
       ? await updateCatalogos(selectedCatalogo.id, formDataAddCatalog)
       : await createCatalogo(formDataAddCatalog);
     if (response.status === 200 || response.status === 201) {
+      console.log(response);
+
       const id = response.data.data.id;
       const createFichatecnica = await createCatalogoInsumos({
         catalogoId: id,
@@ -338,7 +388,9 @@ const CatalogoDashboard = () => {
           Agregar al catálogo
         </Button>
       </Box>
-      {(loading || loadingCategoria || loadingTallas) && <Loading></Loading>}
+      {(loading || loadingCategoria || loadingTallas || loadingInsumos) && (
+        <Loading></Loading>
+      )}
       <Box
         m="0px 20px"
         p="0px 10px"
@@ -460,8 +512,8 @@ const CatalogoDashboard = () => {
                   value: 4,
                 },
                 maxLength: {
-                  message: "¡Máximo permitido 100 caracteres!",
-                  value: 30,
+                  message: "¡Máximo permitido 255 caracteres!",
+                  value: 255,
                 },
               })}
               value={selectedCatalogo?.descripcion || ""}
@@ -615,23 +667,71 @@ const CatalogoDashboard = () => {
             <div style={{ width: "100%" }}>
               <label className="subir-img">
                 <input
-                  {...registerCatalogo("imagen", {
-                    required: "La imagen es requerida",
-                    validate: () => {
-                      return (
-                        isAnImage(watch("imagen")[0].name.split(".")[1]) ||
-                        "¡Solo se permiten imágenes!"
-                      );
-                    },
-                  })}
+                  onChange={handleAddImage}
                   type="file"
                   accept="image/*"
+                  multiple
                 />
-                <div style={{ width: "100%" }}>{"Subir imagen"}</div>
+                <div style={{ width: "100%" }}>
+                  {imagenes.length > 0
+                    ? `Subir imagen (${imagenes.length} de 5)`
+                    : "Subir imagen"}
+                </div>
               </label>
               <DialogTitle sx={{ color: "red", fontSize: ".8rem" }}>
                 {errorsAddCatalogo?.imagen?.message}
               </DialogTitle>
+            </div>
+            <div
+              style={{
+                width: "48%",
+                margin: "0 auto",
+              }}
+            >
+              {imagenes.length > 1 ? (
+                <Slider {...sliderSettings}>
+                  {imagenes.map((imagen, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        setImagenes((prev) => prev.filter((_, i) => i !== idx));
+                      }}
+                      className="image-container"
+                    >
+                      <img
+                        src={
+                          imagen.url ? imagen.url : URL.createObjectURL(imagen)
+                        }
+                        alt={`Imagen ${idx}`}
+                        className="image"
+                      />
+                      <div className="overlay">
+                        <TrashColor size={38} color={"#fff"}></TrashColor>
+                      </div>
+                    </div>
+                  ))}
+                </Slider>
+              ) : (
+                imagenes.length > 0 && (
+                  <div
+                    className="image-container"
+                    onClick={() => setImagenes([])}
+                  >
+                    <img
+                      src={
+                        imagenes[0].url
+                          ? imagenes[0].url
+                          : URL.createObjectURL(imagenes[0])
+                      }
+                      alt={`Imagen `}
+                      className="image"
+                    />
+                    <div className="overlay">
+                      <TrashColor size={38} color={"#fff"}></TrashColor>
+                    </div>
+                  </div>
+                )
+              )}
             </div>
             <DialogTitle
               sx={{
@@ -641,7 +741,11 @@ const CatalogoDashboard = () => {
               }}
               color={colors.grey[100]}
             >
-              <span>Añadir insumos</span>{" "}
+              <span>
+                {insumos.length > 0
+                  ? "Añadir insumos"
+                  : "¡No tienes insumos registrados en el aplicativo!"}
+              </span>{" "}
               {numberOfInsumos.length < insumos?.length && (
                 <Button onClick={handleAddInsumo}>
                   <AddRounded size={24} color={"#fff"}></AddRounded>
@@ -649,7 +753,7 @@ const CatalogoDashboard = () => {
               )}
             </DialogTitle>
             {numberOfInsumos.length >= 1 ? (
-              numberOfInsumos.map((idx) => (
+              numberOfInsumos.map((_, idx) => (
                 <div
                   style={{ marginTop: "10px" }}
                   key={idx}
@@ -677,17 +781,18 @@ const CatalogoDashboard = () => {
                       },
                     }}
                     variant="outlined"
-                    {...registerCatalogo(`insumo[${idx - 1}]`, {
+                    {...registerCatalogo(`insumo[${idx}]`, {
                       required: "Debes escoger un insumo!",
                     })}
-                    defaultValue={watch(`insumo[${idx - 1}]`)}
-                    onChange={(e) =>
-                      setValue(`insumo[${idx - 1}]`, e.target.value)
+                    defaultValue={
+                      selectedCatalogo?.insumos?.[idx]?.id ||
+                      watch(`insumo[${idx}]`)
                     }
+                    onChange={(e) => setValue(`insumo[${idx}]`, e.target.value)}
                     FormHelperTextProps={{
                       sx: { color: "red", fontSize: ".8rem" },
                     }}
-                    helperText={errorsAddCatalogo?.insumo?.[idx - 1]?.message}
+                    helperText={errorsAddCatalogo?.insumo?.[idx]?.message}
                   >
                     {insumos.map((ins) => (
                       <MenuItem key={ins.id} value={ins.id}>
@@ -699,7 +804,7 @@ const CatalogoDashboard = () => {
                     margin="dense"
                     name="cantidad_utilizada"
                     label={`Cantidad utilizada (Máximo ${findMaxQuantityInsumo(
-                      parseInt(watch(`insumo[${idx - 1}]`))
+                      parseInt(getValues(`insumo[${idx}]`))
                     )})`}
                     sx={{
                       "& .MuiOutlinedInput-root": {
@@ -719,7 +824,7 @@ const CatalogoDashboard = () => {
                     type="number"
                     fullWidth
                     variant="outlined"
-                    {...registerCatalogo(`cantidad_utilizada[${idx - 1}]`, {
+                    {...registerCatalogo(`cantidad_utilizada[${idx}]`, {
                       required: "¡La cantidad usada es requerida!",
                       pattern: {
                         value: /^[0-9]+$/, // Expresión regular para números
@@ -731,22 +836,25 @@ const CatalogoDashboard = () => {
                       },
                       max: {
                         value: findMaxQuantityInsumo(
-                          parseInt(watch(`insumo[${idx - 1}]`))
+                          parseInt(watch(`insumo[${idx}]`))
                         ),
                         message: `¡La cantidad máxima es de ${findMaxQuantityInsumo(
-                          parseInt(watch(`insumo[${idx - 1}]`))
+                          parseInt(watch(`insumo[${idx}]`))
                         )}!`,
                       },
                     })}
-                    defaultValue={0}
+                    defaultValue={
+                      selectedCatalogo?.insumos?.[idx]?.CatalogoInsumos
+                        ?.cantidad_utilizada
+                    }
                     onChange={(e) =>
-                      setValue(`cantidad_utilizada[${idx - 1}]`, e.target.value)
+                      setValue(`cantidad_utilizada[${idx}]`, e.target.value)
                     }
                     FormHelperTextProps={{
                       sx: { color: "red", fontSize: ".8rem" },
                     }}
                     helperText={
-                      errorsAddCatalogo?.cantidad_utilizada?.[idx - 1]?.message
+                      errorsAddCatalogo?.cantidad_utilizada?.[idx]?.message
                     }
                   />
                 </div>
@@ -825,18 +933,35 @@ const CatalogoDashboard = () => {
                   borderRadius: "2rem",
                   overflow: "hidden",
                   boxShadow: 3,
+                  width: "350px",
+                  height: "350px",
                   transition: "transform 0.3s",
                   cursor: "pointer",
                 }}
               >
-                {/* Imagen del producto */}
-                <img
-                  src={selectedCatalogo?.imagen}
-                  alt={selectedCatalogo?.producto}
-                  style={{ width: "100%", display: "block" }}
-                />
-
-                {/* Overlay con texto que aparece al hacer hover */}
+                {selectedCatalogo?.Imagens?.length > 1 ? (
+                  <Slider {...sliderSettings}>
+                    {selectedCatalogo?.Imagens?.map((imagenPreview) => (
+                      <img
+                        key={imagenPreview.id}
+                        src={imagenPreview.url}
+                        onMouseEnter={() => log(imagenPreview)}
+                        alt={selectedCatalogo?.producto}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          display: "block",
+                        }}
+                      ></img>
+                    ))}
+                  </Slider>
+                ) : (
+                  <img
+                    src={selectedCatalogo?.Imagens?.[0]?.url}
+                    alt={selectedCatalogo?.producto}
+                    style={{ width: "100%", display: "block" }}
+                  ></img>
+                )}
                 <Box
                   sx={{
                     position: "absolute",
@@ -856,26 +981,32 @@ const CatalogoDashboard = () => {
                     },
                   }}
                 >
-                  {selectedCatalogo?.insumos?.length >=1 ? <div>
-                    {selectedCatalogo?.insumos?.map(insumo=>(<Typography
-                    key={insumo.id}
-                    variant="h6"
-                    sx={{
-                      textAlign: "center",
-                      padding: "16px",
-                    }}
-                  >
-                    {`${insumo.nombre}: ${insumo.cantidad}`}
-                  </Typography>))}
-                  </div> :                   <Typography
-                    variant="h6"
-                    sx={{
-                      textAlign: "center",
-                      padding: "16px",                        
-                    }}
-                  >
-                    ¡Sin insumos asociados!
-                  </Typography> }
+                  {selectedCatalogo?.insumos?.length >= 1 ? (
+                    <div>
+                      {selectedCatalogo?.insumos?.map((insumo) => (
+                        <Typography
+                          key={insumo.id}
+                          variant="h6"
+                          sx={{
+                            textAlign: "center",
+                            padding: "16px",
+                          }}
+                        >
+                          {`${insumo.nombre}: ${insumo.cantidad}`}
+                        </Typography>
+                      ))}
+                    </div>
+                  ) : (
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        textAlign: "center",
+                        padding: "16px",
+                      }}
+                    >
+                      ¡Sin insumos asociados!
+                    </Typography>
+                  )}
                 </Box>
               </Box>
             </Grid>

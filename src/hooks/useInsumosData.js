@@ -34,6 +34,15 @@ export default function useInsumosData() {
     );
     return respuesta;
   };
+  const updateCantidadInsumos = async (insumos) => {
+    const respuesta = await updateFetch(
+      `https://modisteria-back-production.up.railway.app/api/insumos/cantidadInsumos`,
+      "PUT",
+      insumos,
+      { "x-token": token }
+    );
+    return respuesta;
+  };
   const createInsumo = async (infoUpdate) => {
     const respuesta = await createFetch(
       `https://modisteria-back-production.up.railway.app/api/insumos/createInsumo`,
@@ -59,6 +68,7 @@ export default function useInsumosData() {
     deleteInsumo,
     createInsumo,
     updateInsumos,
+    updateCantidadInsumos,
     loading,
   };
 }

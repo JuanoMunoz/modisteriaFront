@@ -135,7 +135,16 @@ const Permisos = () => {
 
   return (
     <>
-      <Header title="Permisos" subtitle="Lista de permisos" />
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
+        <Typography variant="h4" sx={{ ml: 4 }}>
+          Permisos
+        </Typography>
+      </Box>
       {loading && <Loading></Loading>}
       <Box
         m="0px 20px"

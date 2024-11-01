@@ -61,7 +61,11 @@ export default function ProductoCarrito({ data, changeSubtotal }) {
   return (
     <div className="itemCarrito">
       <div className="imgCarrito">
-        <img src={data?.catalogo?.imagen} alt="" className="imgCarrito" />
+        <img
+          src={data?.catalogo?.Imagens[0]?.url}
+          alt=""
+          className="imgCarrito"
+        />
       </div>
       <div className="">
         <span>{data?.catalogo?.producto}</span>

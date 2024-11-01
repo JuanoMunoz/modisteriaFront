@@ -289,21 +289,30 @@ const Roles = () => {
 
   return (
     <>
-      <Header title="Roles" subtitle="Lista de roles" />
-      <Button
-        variant="contained"
-        onClick={handleAdd}
-        sx={{
-          mb: 2,
-          backgroundColor: colors.purple[400],
-          "&:hover": {
-            backgroundColor: colors.purple[300],
-          },
-          color: "white",
-        }}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
       >
-        Agregar Rol
-      </Button>
+        <Typography variant="h4" sx={{ ml: 4 }}>
+          Roles
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={handleAdd}
+          sx={{
+            backgroundColor: colors.purple[400],
+            "&:hover": {
+              backgroundColor: colors.purple[300],
+            },
+            color: "white",
+            mr: "10px",
+          }}
+        >
+          Agregar Rol
+        </Button>
+      </Box>
       {(loading || loadingpermisos) && <Loading></Loading>}
       <Box
         m="0px 20px"

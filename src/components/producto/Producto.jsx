@@ -2,21 +2,32 @@ import { Fragment, useRef } from "react";
 import { useState, useEffect } from "react";
 import { Cart, Info } from "../../components/svg/Svg";
 import Modal from "../../components/modal/Modal";
-import { useCart } from "../../context/CartContext";
 import { toast } from "react-toastify";
 import useDecodedJwt from "../../hooks/useJwt";
 import axios from "axios";
 import { useJwt } from "../../context/JWTContext";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import { formToCop } from "../../assets/constants.d";
 export default function Product({ data, isLoading }) {
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
   const navigate = useNavigate();
+  const sliderSettings = {
+    infinite: true,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    speed: 1500,
 
+    autoplaySpeed: 1200,
+    cssEase: "linear",
+  };
   const [showModal, setShowModal] = useState(false);
-  const { cartData } = useCart();
+
   const [cantidad, setCantidad] = useState(1);
   const [title, setTitle] = useState("");
   const [sizes, setSizes] = useState([]);
@@ -29,6 +40,7 @@ export default function Product({ data, isLoading }) {
   const toggleModal = () => {
     setShowModal(!showModal);
   };
+  console.log(data);
 
   const pedidoAlreadyExists = async (catalogoId, talla) => {
     try {
@@ -102,8 +114,8 @@ export default function Product({ data, isLoading }) {
       cantidad: cantidad,
       catalogo: {
         producto: data.producto,
-        imagen: data.imagen,
         precio: data.precio,
+        Imagens: data.Imagens,
       },
       usuarioId: payload?.id,
     };
@@ -174,7 +186,7 @@ export default function Product({ data, isLoading }) {
       {" "}
       <div className={`card ${isAnimating ? "show" : ""}`}>
         <div className="image_container">
-          <img src={data.imagen} className=" image_container" />
+          <img src={data.Imagens[0]?.url} className=" image_container" />
         </div>
         <div className="title">
           <span>{title}</span>
@@ -233,7 +245,15 @@ export default function Product({ data, isLoading }) {
       >
         <section className="contenedorDetalle">
           <div className="imageDetalle">
-            <img src={data.imagen} className="imageDetalle" />
+            {data.Imagens.length === 1 ? (
+              <img src={data.Imagens[0].url} className="imageDetalle" />
+            ) : (
+              <Slider {...sliderSettings}>
+                {data.Imagens.map((imagen) => (
+                  <img src={imagen.url} className="imageDetalle" />
+                ))}
+              </Slider>
+            )}
           </div>
           <div className="infoDetalle">
             <span className="tituloPrenda">{title}</span>

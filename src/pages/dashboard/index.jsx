@@ -81,10 +81,16 @@ const Dashboard = () => {
 
   return (
     <div style={{ margin: " 0 20px", boxSizing: "border-box", height: "55vh" }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title="Dashboard" subtitle="Bienvenid@ a tu dashboard" />
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
+        <Typography variant="h4" sx={{ ml: 4 }}>
+          Dashboard
+        </Typography>
       </Box>
-
       <Box
         display="grid"
         gridTemplateColumns="repeat(12, 1fr)"

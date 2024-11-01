@@ -186,29 +186,34 @@ const Usuarios = () => {
       field: "estadoId",
       headerName: "Estado",
       flex: 1,
-      renderCell: ({ row }) => (
-        <Switch
-          sx={{
-            "& .MuiSwitch-switchBase.Mui-checked": {
-              color: colors.purple[200],
-              "&:hover": {
-                backgroundColor: alpha(
-                  colors.purple[200],
-                  theme.palette.action.hoverOpacity
-                ),
+      renderCell: ({ row }) =>
+        payload?.email !== row.email ? (
+          <Switch
+            sx={{
+              "& .MuiSwitch-switchBase.Mui-checked": {
+                color: colors.purple[200],
+                "&:hover": {
+                  backgroundColor: alpha(
+                    colors.purple[200],
+                    theme.palette.action.hoverOpacity
+                  ),
+                },
               },
-            },
-            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-              backgroundColor: colors.purple[200],
-            },
-          }}
-          color="warning"
-          onChange={(e) => {
-            handleStateUsuarios(e, row.id);
-          }}
-          defaultChecked={row.estadoId == 1}
-        />
-      ),
+              "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                backgroundColor: colors.purple[200],
+              },
+            }}
+            color="warning"
+            onChange={(e) => {
+              handleStateUsuarios(e, row.id);
+            }}
+            defaultChecked={row.estadoId == 1}
+          />
+        ) : (
+          <Box sx={{ textAlign: "center", mx: "auto" }}>
+            <h4>Usuario activo</h4>
+          </Box>
+        ),
     },
     {
       field: "acciones",

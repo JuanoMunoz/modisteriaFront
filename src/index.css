@@ -23,6 +23,7 @@ body,
   width: 100%;
   font-family: "Comfortaa", sans-serif;
   scrollbar-color: rgb(187, 14, 202) #222;
+  caret-color: rgb(187, 14, 202);
 }
 
 .app {
