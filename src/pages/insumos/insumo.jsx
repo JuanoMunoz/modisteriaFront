@@ -183,6 +183,7 @@ const Insumos = () => {
       if (updatedData.status === 200 && updatedData.data) {
         setData(updatedData.data);
       }
+      git;
     }
     console.log(respueta);
   };
