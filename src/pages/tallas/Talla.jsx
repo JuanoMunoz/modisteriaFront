@@ -121,6 +121,7 @@ const Tallas = () => {
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
     { field: "nombre", headerName: "Nombre", flex: 1 },
+    { field: "tipo", headerName: "Tipo", flex: 1 },
     {
       field: "acciones",
       headerName: "Acciones",

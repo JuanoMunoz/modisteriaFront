@@ -239,7 +239,7 @@ const Roles = () => {
       headerName: "Estado",
       flex: 1,
       renderCell: ({ row }) =>
-        row.id !== 2 ? (
+        row.id >= 5 ? (
           <Switch
             sx={{
               "& .MuiSwitch-switchBase.Mui-checked": {
@@ -270,7 +270,7 @@ const Roles = () => {
       headerName: "Acciones",
       flex: 1,
       renderCell: ({ row }) =>
-        row.id !== 2 ? (
+        row.id >= 5 ? (
           <Box sx={{ textAlign: "center", mx: "auto" }}>
             <Button onClick={() => handleEdit(row.id)}>
               <Edit size={20} color={colors.grey[100]} />
