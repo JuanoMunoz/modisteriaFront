@@ -144,7 +144,7 @@ export default function Register() {
                   ? "Debe tener al menos 4 caracteres"
                   : ""
               }
-              placeholder={"Nombres"}
+              placeholder={"Nombres:"}
               color={minUserName}
             ></Input>
             <Input
@@ -159,7 +159,7 @@ export default function Register() {
                   ? "Ingrese un número válido (+57)"
                   : ""
               }
-              placeholder={"Télefono"}
+              placeholder={"Télefono:"}
             ></Input>
             <Input
               type={"text"}
@@ -169,7 +169,7 @@ export default function Register() {
               description={
                 watch("correo")?.length > 0 ? "Ingrese un correo válido" : ""
               }
-              placeholder={"Correo"}
+              placeholder={"Correo:"}
               color={mailValidation() ? "#000" : "#f00"}
             ></Input>
             <Input
@@ -179,7 +179,7 @@ export default function Register() {
                   ? "Debe tener al menos 8 caracteres"
                   : ""
               }
-              placeholder={"Contraseña"}
+              placeholder={"Contraseña:"}
               color={minPassword}
               canHidden
             ></Input>

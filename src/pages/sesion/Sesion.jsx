@@ -149,7 +149,8 @@ export default function InicioSesion() {
             </button>
           </form>
           <hr className="separacionForgot" />
-          <button className="forgotPass" onClick={toggleModal}>
+          
+          <button className="btnForgot" onClick={toggleModal}>
             ¿Olvidaste tu Contraseña?
           </button>
         </div>
