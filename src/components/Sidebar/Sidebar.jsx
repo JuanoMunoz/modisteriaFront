@@ -17,6 +17,7 @@ import {
   InventoryOutlined,
   HelpOutlineOutlined,
   StraightenOutlined,
+  HistoryOutlined,
 } from "@mui/icons-material";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
@@ -174,16 +175,16 @@ const Sidebar = ({ nombre }) => {
               setSelected={setSelected}
             />
             <Item
-              title="Categoria Insumos"
-              to="/dashboard/categoriaInsumos"
-              icon={<Inventory2Outlined />}
+              title="Control Insumos"
+              to="/dashboard/controlInsumos"
+              icon={<HistoryOutlined />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Categoria Prendas"
-              to="/dashboard/categoriaPrenda"
-              icon={<StyleOutlined />}
+              title="Categoria Insumos"
+              to="/dashboard/categoriaInsumos"
+              icon={<Inventory2Outlined />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -215,7 +216,14 @@ const Sidebar = ({ nombre }) => {
               selected={selected}
               setSelected={setSelected}
             />
-                        <Typography
+            <Item
+              title="Categoria Prendas"
+              to="/dashboard/categoriaPrenda"
+              icon={<StyleOutlined />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Typography
               variant="h6"
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}

@@ -32,6 +32,7 @@ import { useForm } from "react-hook-form";
 import { alpha, Chip } from "@mui/material";
 import useCategoriaData from "../../hooks/useCategoriaData";
 import useCatalogoData from "../../hooks/useCatalogoData";
+import Transition from "../../components/transition/Transition";
 import useTallaData from "../../hooks/useTallaData";
 import useInsumosData from "../../hooks/useInsumosData";
 import { formToCop } from "../../assets/constants.d";
@@ -79,18 +80,20 @@ const CatalogoDashboard = () => {
   const [imagenes, setImagenes] = useState([]);
   const [insumos, setInsumos] = useState([]);
   const [tallas, setTallas] = useState([]);
+  const [kindOfTallas, setKindOfTallas] = useState([]);
   console.log(selectedCatalogo);
 
   const { initialFetchAllCategorias, loading: loadingCategoria } =
     useCategoriaData();
   const { initialFetchAllTallas, loading: loadingTallas } = useTallaData();
-  const { initialFetchAllInsumos, loading: loadingInsumos } = useInsumosData();
+  const { initialFetchAllInsumosControlled, loading: loadingInsumos } =
+    useInsumosData();
   useEffect(() => {
     const initialFetchCatalogo = async () => {
       const respuesta = await initialFetchAllCatalogos();
       const categoria = await initialFetchAllCategorias();
       const tallas = await initialFetchAllTallas();
-      const insumos = await initialFetchAllInsumos();
+      const insumos = await initialFetchAllInsumosControlled();
       if (respuesta.status === 200 && respuesta.data) {
         console.log(respuesta.data.rows);
 
@@ -101,6 +104,9 @@ const CatalogoDashboard = () => {
       }
       if (tallas.status === 200 && tallas.data) {
         setTallas(tallas.data);
+        setKindOfTallas(
+          tallas.data.filter((talla) => talla.tipo === "alfanumérica")
+        );
       }
       if (insumos.status === 200 && insumos.data) {
         setInsumos(insumos.data);
@@ -181,7 +187,7 @@ const CatalogoDashboard = () => {
       estadoId: 0,
       tallas: "",
       insumo: [],
-
+      linea: "",
       descripcion: "",
       cantidad_utilizada: [],
     };
@@ -215,6 +221,7 @@ const CatalogoDashboard = () => {
       tallas,
       producto,
       precio,
+      linea,
       descripcion,
       categoriaId,
     } = data;
@@ -235,6 +242,7 @@ const CatalogoDashboard = () => {
     formDataAddCatalog.append("estadoId", 1);
     formDataAddCatalog.append("categoriaId", categoriaId);
     formDataAddCatalog.append("tallas", tallasParsed);
+    formDataAddCatalog.append("linea", linea);
     imagenes.forEach((imagen) => formDataAddCatalog.append("file", imagen));
 
     const response = selectedCatalogo.id
@@ -383,6 +391,7 @@ const CatalogoDashboard = () => {
             },
             color: "white",
             mr: "10px",
+            textTransform: "capitalize",
           }}
         >
           Agregar al catálogo
@@ -437,7 +446,12 @@ const CatalogoDashboard = () => {
         )}
       </Box>
 
-      <Dialog open={openModal} onClose={handleClose}>
+      <Dialog
+        keepMounted
+        TransitionComponent={Transition}
+        open={openModal}
+        onClose={handleClose}
+      >
         <form onSubmit={handleSaveCatalogo(handleSave)}>
           <DialogTitle color={colors.grey[100]}>
             {selectedCatalogo?.id ? "Editar Catálogo" : "Agregar al Catálogo"}
@@ -601,6 +615,47 @@ const CatalogoDashboard = () => {
                 </MenuItem>
               ))}
             </TextField>
+            <TextField
+              margin="dense"
+              name="linea"
+              label="Línea"
+              fullWidth
+              select
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&:hover fieldset": {
+                    borderColor: "purple",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "purple",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  "&.Mui-focused": {
+                    color: "purple",
+                  },
+                },
+              }}
+              variant="outlined"
+              {...registerCatalogo("linea", {
+                required: "Debes escoger una línea!",
+              })}
+              value={selectedCatalogo?.linea || "básica"}
+              onChange={handleInputChange}
+              FormHelperTextProps={{ sx: { color: "red", fontSize: ".8rem" } }}
+              helperText={errorsAddCatalogo?.linea?.message}
+            >
+              <MenuItem value="premium">Premium</MenuItem>
+              <MenuItem value="especial">Especial</MenuItem>
+              <MenuItem value="básica">Básica</MenuItem>
+              <MenuItem value="temporada">Temporada</MenuItem>
+              <MenuItem value="ecológica">Ecológica</MenuItem>
+              <MenuItem value="accesorios">Accesorios</MenuItem>
+              <MenuItem value="infantil">Infantil</MenuItem>
+              <MenuItem value="deportiva">Deportiva</MenuItem>
+              <MenuItem value="casual">Casual</MenuItem>
+              <MenuItem value="formal">Formal</MenuItem>
+            </TextField>
             <FormControl
               component="fieldset"
               sx={{
@@ -608,7 +663,56 @@ const CatalogoDashboard = () => {
               }}
             >
               <FormLabel sx={{ color: `${colors.grey[100]}!important` }}>
-                Tallas
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <h4>Tallas</h4>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: "4px",
+                    }}
+                  >
+                    <h5>Numéricas</h5>
+                    <Switch
+                      sx={{
+                        "& .MuiSwitch-switchBase.Mui-checked": {
+                          color: colors.purple[200],
+                          "&:hover": {
+                            backgroundColor: alpha(
+                              colors.purple[200],
+                              theme.palette.action.hoverOpacity
+                            ),
+                          },
+                        },
+                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                          {
+                            backgroundColor: colors.purple[200],
+                          },
+                      }}
+                      onChange={(e) => {
+                        if (e.target.checked)
+                          return setKindOfTallas(
+                            tallas.filter(
+                              (talla) => talla.tipo === "alfanumérica"
+                            )
+                          );
+                        return setKindOfTallas(
+                          tallas.filter((talla) => talla.tipo === "numérica")
+                        );
+                      }}
+                      defaultChecked
+                      size="small"
+                    />
+                    <h5>Alfanuméricas</h5>
+                  </div>
+                </div>
               </FormLabel>
               <FormGroup
                 sx={{
@@ -622,7 +726,7 @@ const CatalogoDashboard = () => {
                   container
                   spacing={2}
                 >
-                  {tallas
+                  {kindOfTallas
                     .sort((a, b) => a.id - b.id)
                     .map((talla) => (
                       <Grid item xs={6} key={talla.id}>
@@ -802,9 +906,10 @@ const CatalogoDashboard = () => {
                   </TextField>
                   <TextField
                     margin="dense"
+                    inputProps={{ step: "any" }}
                     name="cantidad_utilizada"
                     label={`Cantidad utilizada (Máximo ${findMaxQuantityInsumo(
-                      parseInt(getValues(`insumo[${idx}]`))
+                      parseFloat(getValues(`insumo[${idx}]`))
                     )})`}
                     sx={{
                       "& .MuiOutlinedInput-root": {
@@ -827,7 +932,7 @@ const CatalogoDashboard = () => {
                     {...registerCatalogo(`cantidad_utilizada[${idx}]`, {
                       required: "¡La cantidad usada es requerida!",
                       pattern: {
-                        value: /^[0-9]+$/, // Expresión regular para números
+                        value: /^\d+(.\d+)?$/, // Expresión regular para números
                         message: "Solo se permiten números",
                       },
                       min: {
@@ -836,10 +941,10 @@ const CatalogoDashboard = () => {
                       },
                       max: {
                         value: findMaxQuantityInsumo(
-                          parseInt(watch(`insumo[${idx}]`))
+                          parseFloat(watch(`insumo[${idx}]`))
                         ),
                         message: `¡La cantidad máxima es de ${findMaxQuantityInsumo(
-                          parseInt(watch(`insumo[${idx}]`))
+                          parseFloat(watch(`insumo[${idx}]`))
                         )}!`,
                       },
                     })}
@@ -864,10 +969,18 @@ const CatalogoDashboard = () => {
             )}
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} color="error">
+            <Button
+              sx={{ textTransform: "capitalize" }}
+              onClick={handleClose}
+              color="error"
+            >
               Cancelar
             </Button>
-            <Button type="submit" color="success">
+            <Button
+              sx={{ textTransform: "capitalize" }}
+              type="submit"
+              color="success"
+            >
               Guardar
             </Button>
           </DialogActions>
@@ -875,6 +988,8 @@ const CatalogoDashboard = () => {
       </Dialog>
 
       <Dialog
+        keepMounted
+        TransitionComponent={Transition}
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
       >
@@ -888,16 +1003,26 @@ const CatalogoDashboard = () => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={() => setOpenDeleteDialog(false)}
+            color="inherit"
+          >
             Cancelar
           </Button>
-          <Button onClick={confirmDelete} color="error">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={confirmDelete}
+            color="error"
+          >
             Eliminar
           </Button>
         </DialogActions>
       </Dialog>
 
       <Dialog
+        keepMounted
+        TransitionComponent={Transition}
         open={openPreview}
         onClose={() => setOpenPreview(false)}
         maxWidth="md"
@@ -1059,6 +1184,7 @@ const CatalogoDashboard = () => {
         </DialogContent>
         <DialogActions sx={{ paddingRight: 3 }}>
           <Button
+            sx={{ textTransform: "capitalize" }}
             onClick={() => setOpenPreview(false)}
             color="error"
             variant="contained"
@@ -1068,13 +1194,22 @@ const CatalogoDashboard = () => {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+      <Dialog
+        keepMounted
+        TransitionComponent={Transition}
+        open={openErrorModal}
+        onClose={() => setOpenErrorModal(false)}
+      >
         <DialogTitle color={colors.grey[100]}>Error</DialogTitle>
         <DialogContent>
           <Typography color={colors.grey[100]}>{errorMessage}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenErrorModal(false)} color="error">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={() => setOpenErrorModal(false)}
+            color="error"
+          >
             Cerrar
           </Button>
         </DialogActions>

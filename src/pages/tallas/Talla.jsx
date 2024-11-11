@@ -8,13 +8,14 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  MenuItem,
   Typography,
 } from "@mui/material";
 import Loading from "../../components/loading/Loading";
 import { TrashColor, Edit } from "../../components/svg/Svg";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import Header from "../../components/Header/Header";
+import Transition from "../../components/transition/Transition";
 import { useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
 import useTallaData from "../../hooks/useTallaData";
@@ -25,6 +26,7 @@ const Tallas = () => {
     handleSubmit: handleSaveTalla,
     formState: { errors: errorsAddTalla },
     register: registerTalla,
+    watch,
     reset,
   } = useForm();
   const [openModal, setOpenModal] = useState(false);
@@ -65,8 +67,9 @@ const Tallas = () => {
   const handleAdd = () => {
     setselectedTalla({
       nombre: "",
+      tipo: "",
     });
-    reset({ nombre: "" });
+    reset({ nombre: "", tipo: "alfanumérica" });
     setOpenModal(true);
   };
 
@@ -76,7 +79,7 @@ const Tallas = () => {
   };
 
   const handleSave = async (data) => {
-    const dataParsed = { nombre: data.nombre.toUpperCase() };
+    const dataParsed = { nombre: data.nombre.toUpperCase(), tipo: data.tipo };
     const response = selectedTalla.id
       ? await updateTalla(selectedTalla.id, dataParsed)
       : await createTalla({ ...dataParsed, estadoId: 1 });
@@ -141,21 +144,31 @@ const Tallas = () => {
 
   return (
     <>
-      <Header title="Tallas" subtitle="Lista de tallas" />
-      <Button
-        variant="contained"
-        onClick={handleAdd}
-        sx={{
-          mb: 2,
-          backgroundColor: colors.purple[400],
-          "&:hover": {
-            backgroundColor: colors.purple[300],
-          },
-          color: "white",
-        }}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
       >
-        Agregar Talla
-      </Button>
+        <Typography variant="h4" sx={{ ml: 4 }}>
+          Tallas
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={handleAdd}
+          sx={{
+            backgroundColor: colors.purple[400],
+            "&:hover": {
+              backgroundColor: colors.purple[300],
+            },
+            color: "white",
+            mr: "10px",
+            textTransform: "capitalize",
+          }}
+        >
+          Agregar Talla
+        </Button>
+      </Box>
       {loading && <Loading></Loading>}
       <Box
         m="0px 20px"
@@ -203,7 +216,12 @@ const Tallas = () => {
         )}
       </Box>
 
-      <Dialog open={openModal} onClose={handleClose}>
+      <Dialog
+        keepMounted
+        TransitionComponent={Transition}
+        open={openModal}
+        onClose={handleClose}
+      >
         <form onSubmit={handleSaveTalla(handleSave)}>
           <DialogTitle color={colors.grey[100]}>
             {selectedTalla?.id ? "Editar Talla" : "Agregar Talla"}
@@ -234,8 +252,10 @@ const Tallas = () => {
               {...registerTalla("nombre", {
                 required: "La talla necesita un nombre.",
                 maxLength: {
-                  message: "¡La talla solo puede tener hasta 4 caracteres!",
-                  value: 4,
+                  message: `¡La talla solo puede tener hasta ${
+                    watch("tipo") === "alfanumérica" ? 4 : 2
+                  } caracteres!`,
+                  value: watch("tipo") === "alfanumérica" ? 4 : 2,
                 },
                 validate: {
                   isAlreadyInserted: (value) => {
@@ -255,6 +275,12 @@ const Tallas = () => {
                       ) || "La talla ya se encuentra registrada"
                     );
                   },
+                  isNotNumberWhenNumericSelected: (value) => {
+                    if (watch("tipo") === "alfanumérica") return;
+                    return (
+                      /^\d+$/.test(value) || "Este tipo solo permite números"
+                    );
+                  },
                 },
               })}
               value={selectedTalla?.nombre || ""}
@@ -262,12 +288,53 @@ const Tallas = () => {
               FormHelperTextProps={{ sx: { color: "red" } }}
               helperText={errorsAddTalla?.nombre?.message}
             />
+            <TextField
+              margin="dense"
+              name="tipo"
+              label="Tipo Talla"
+              fullWidth
+              select
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&:hover fieldset": {
+                    borderColor: "purple",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "purple",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  "&.Mui-focused": {
+                    color: "purple",
+                  },
+                },
+              }}
+              variant="outlined"
+              {...registerTalla("tipo", {
+                required: "¡Debes escoger el tipo de talla!",
+              })}
+              value={selectedTalla?.tipo || "alfanumérica"}
+              onChange={handleInputChange}
+              FormHelperTextProps={{ sx: { color: "red" } }}
+              helperText={errorsAddTalla?.tipo?.message}
+            >
+              <MenuItem value={"alfanumérica"}>Alfanumérica</MenuItem>
+              <MenuItem value={"numérica"}>Numérica</MenuItem>
+            </TextField>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} color="error">
+            <Button
+              sx={{ textTransform: "capitalize" }}
+              onClick={handleClose}
+              color="error"
+            >
               Cancelar
             </Button>
-            <Button type="submit" color="success">
+            <Button
+              sx={{ textTransform: "capitalize" }}
+              type="submit"
+              color="success"
+            >
               Guardar
             </Button>
           </DialogActions>
@@ -275,6 +342,8 @@ const Tallas = () => {
       </Dialog>
 
       <Dialog
+        keepMounted
+        TransitionComponent={Transition}
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
       >
@@ -288,22 +357,39 @@ const Tallas = () => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={() => setOpenDeleteDialog(false)}
+            color="inherit"
+          >
             Cancelar
           </Button>
-          <Button onClick={confirmDelete} color="error">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={confirmDelete}
+            color="error"
+          >
             Eliminar
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+      <Dialog
+        keepMounted
+        TransitionComponent={Transition}
+        open={openErrorModal}
+        onClose={() => setOpenErrorModal(false)}
+      >
         <DialogTitle color={colors.grey[100]}>Error</DialogTitle>
         <DialogContent>
           <Typography color={colors.grey[100]}>{errorMessage}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenErrorModal(false)} color="error">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={() => setOpenErrorModal(false)}
+            color="error"
+          >
             Cerrar
           </Button>
         </DialogActions>

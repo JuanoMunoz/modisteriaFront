@@ -14,7 +14,7 @@ import Loading from "../../components/loading/Loading";
 import { TrashColor, Edit } from "../../components/svg/Svg";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import Header from "../../components/Header/Header";
+import Transition from "../../components/transition/Transition";
 import { useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { alpha } from "@mui/material";
@@ -236,24 +236,31 @@ const CategoriaInsumo = () => {
 
   return (
     <>
-      <Header
-        title="Categorías de Insumos"
-        subtitle="Lista de categorías de insumos"
-      />
-      <Button
-        variant="contained"
-        onClick={handleAdd}
-        sx={{
-          mb: 2,
-          backgroundColor: colors.purple[400],
-          "&:hover": {
-            backgroundColor: colors.purple[300],
-          },
-          color: "white",
-        }}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
       >
-        Agregar Categoría
-      </Button>
+        <Typography variant="h4" sx={{ ml: 4 }}>
+          Categorías de insumo
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={handleAdd}
+          sx={{
+            backgroundColor: colors.purple[400],
+            "&:hover": {
+              backgroundColor: colors.purple[300],
+            },
+            color: "white",
+            mr: "10px",
+            textTransform: "capitalize",
+          }}
+        >
+          Agregar categoría
+        </Button>
+      </Box>
       {loading && <Loading />}
       <Box
         m="0px 20px"
@@ -301,7 +308,12 @@ const CategoriaInsumo = () => {
         )}
       </Box>
 
-      <Dialog open={openModal} onClose={handleClose}>
+      <Dialog
+        keepMounted
+        TransitionComponent={Transition}
+        open={openModal}
+        onClose={handleClose}
+      >
         <form onSubmit={handleSaveCategoria(handleSave)}>
           <DialogTitle color={colors.grey[100]}>
             {selectedCategoria?.id ? "Editar Categoría" : "Agregar Categoría"}
@@ -403,10 +415,18 @@ const CategoriaInsumo = () => {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} color="error">
+            <Button
+              sx={{ textTransform: "capitalize" }}
+              onClick={handleClose}
+              color="error"
+            >
               Cancelar
             </Button>
-            <Button type="submit" color="success">
+            <Button
+              sx={{ textTransform: "capitalize" }}
+              type="submit"
+              color="success"
+            >
               Guardar
             </Button>
           </DialogActions>
@@ -414,6 +434,8 @@ const CategoriaInsumo = () => {
       </Dialog>
 
       <Dialog
+        keepMounted
+        TransitionComponent={Transition}
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
       >
@@ -427,22 +449,39 @@ const CategoriaInsumo = () => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={() => setOpenDeleteDialog(false)}
+            color="inherit"
+          >
             Cancelar
           </Button>
-          <Button onClick={confirmDelete} color="error">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={confirmDelete}
+            color="error"
+          >
             Eliminar
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+      <Dialog
+        keepMounted
+        TransitionComponent={Transition}
+        open={openErrorModal}
+        onClose={() => setOpenErrorModal(false)}
+      >
         <DialogTitle color={colors.grey[100]}>Error</DialogTitle>
         <DialogContent>
           <Typography color={colors.grey[100]}>{errorMessage}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenErrorModal(false)} color="error">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={() => setOpenErrorModal(false)}
+            color="error"
+          >
             Cerrar
           </Button>
         </DialogActions>

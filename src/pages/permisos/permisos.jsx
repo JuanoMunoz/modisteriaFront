@@ -13,13 +13,12 @@ import {
   Switch,
 } from "@mui/material";
 import Loading from "../../components/loading/Loading";
-import { TrashColor, Edit } from "../../components/svg/Svg";
+import { Edit } from "../../components/svg/Svg";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import Header from "../../components/Header/Header";
 import { useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { alpha } from "@mui/material";
+import Transition from "../../components/transition/Transition";
 import usePermisosData from "../../hooks/usePermisosData";
 const Permisos = () => {
   const theme = useTheme();
@@ -113,7 +112,6 @@ const Permisos = () => {
   };
   // Fin métodos CRUD
   const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
     { field: "nombre", headerName: "Nombre", flex: 1 },
     { field: "descripcion", headerName: "Descripción", flex: 1 },
     {
@@ -182,17 +180,17 @@ const Permisos = () => {
             columns={columns}
             components={{ Toolbar: GridToolbar }}
             getRowId={(row) => row.id}
-            initialState={{
-              sorting: {
-                sortModel: [{ field: "id", sort: "asc" }],
-              },
-            }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
           />
         )}
       </Box>
 
-      <Dialog open={openModal} onClose={handleClose}>
+      <Dialog
+        keepMounted
+        TransitionComponent={Transition}
+        open={openModal}
+        onClose={handleClose}
+      >
         <form onSubmit={handleSavePermiso(handleSave)}>
           <DialogTitle color={colors.grey[100]}>Editar Permiso</DialogTitle>
           <DialogContent>
@@ -225,17 +223,25 @@ const Permisos = () => {
                   message: "La descripción debe tener mínimo 4 caracteres!",
                 },
               })}
-              value={selectedPermiso?.descripcion}
+              value={selectedPermiso?.descripcion || ""}
               onChange={handleInputChange}
               FormHelperTextProps={{ sx: { color: "red" } }}
               helperText={errorsAddPermiso?.descripcion?.message}
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} color="error">
+            <Button
+              sx={{ textTransform: "capitalize" }}
+              onClick={handleClose}
+              color="error"
+            >
               Cancelar
             </Button>
-            <Button type="submit" color="success">
+            <Button
+              sx={{ textTransform: "capitalize" }}
+              type="submit"
+              color="success"
+            >
               Guardar
             </Button>
           </DialogActions>
@@ -265,13 +271,22 @@ const Permisos = () => {
         </DialogActions>
       </Dialog> */}
 
-      <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+      <Dialog
+        keepMounted
+        TransitionComponent={Transition}
+        open={openErrorModal}
+        onClose={() => setOpenErrorModal(false)}
+      >
         <DialogTitle color={colors.grey[100]}>Error</DialogTitle>
         <DialogContent>
           <Typography color={colors.grey[100]}>{errorMessage}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenErrorModal(false)} color="error">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={() => setOpenErrorModal(false)}
+            color="error"
+          >
             Cerrar
           </Button>
         </DialogActions>

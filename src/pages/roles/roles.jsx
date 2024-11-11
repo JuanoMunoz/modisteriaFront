@@ -25,7 +25,7 @@ import Loading from "../../components/loading/Loading";
 import { TrashColor, Edit, Eye } from "../../components/svg/Svg";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import Header from "../../components/Header/Header";
+import Transition from "../../components/transition/Transition";
 import { useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { alpha } from "@mui/material";
@@ -218,7 +218,6 @@ const Roles = () => {
 
   // Fin métodos CRUD
   const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
     { field: "nombre", headerName: "Nombre", flex: 1 },
     {
       field: "permisosId",
@@ -308,6 +307,7 @@ const Roles = () => {
             },
             color: "white",
             mr: "10px",
+            textTransform: "capitalize",
           }}
         >
           Agregar Rol
@@ -352,7 +352,7 @@ const Roles = () => {
             getRowId={(row) => row.id}
             initialState={{
               sorting: {
-                sortModel: [{ field: "id", sort: "asc" }],
+                sortModel: [{ field: "nombre", sort: "asc" }],
               },
             }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
@@ -360,7 +360,12 @@ const Roles = () => {
         )}
       </Box>
 
-      <Dialog open={openModal} onClose={handleClose}>
+      <Dialog
+        open={openModal}
+        keepMounted
+        TransitionComponent={Transition}
+        onClose={handleClose}
+      >
         <form onSubmit={handleSaveRol(handleSave)}>
           <DialogTitle color={colors.grey[100]}>
             {selectedRol?.id ? "Editar Rol" : "Agregar Rol"}
@@ -468,10 +473,18 @@ const Roles = () => {
             </FormControl>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} color="error">
+            <Button
+              sx={{ textTransform: "capitalize" }}
+              onClick={handleClose}
+              color="error"
+            >
               Cancelar
             </Button>
-            <Button type="submit" color="success">
+            <Button
+              sx={{ textTransform: "capitalize" }}
+              type="submit"
+              color="success"
+            >
               Guardar
             </Button>
           </DialogActions>
@@ -480,6 +493,8 @@ const Roles = () => {
 
       <Dialog
         open={openPermisosModal}
+        keepMounted
+        TransitionComponent={Transition}
         onClose={() => setOpenPermisosModal(false)}
       >
         <DialogTitle fontSize={"24px"} color={colors.grey[100]}>
@@ -500,13 +515,19 @@ const Roles = () => {
           </List>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenPermisosModal(false)} color="error">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={() => setOpenPermisosModal(false)}
+            color="error"
+          >
             cerrar
           </Button>
         </DialogActions>
       </Dialog>
       <Dialog
         open={openDeleteDialog}
+        keepMounted
+        TransitionComponent={Transition}
         onClose={() => setOpenDeleteDialog(false)}
       >
         <DialogTitle color={colors.grey[100]}>
@@ -518,22 +539,39 @@ const Roles = () => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={() => setOpenDeleteDialog(false)}
+            color="inherit"
+          >
             Cancelar
           </Button>
-          <Button onClick={confirmDelete} color="error">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={confirmDelete}
+            color="error"
+          >
             Eliminar
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+      <Dialog
+        keepMounted
+        TransitionComponent={Transition}
+        open={openErrorModal}
+        onClose={() => setOpenErrorModal(false)}
+      >
         <DialogTitle color={colors.grey[100]}>Error</DialogTitle>
         <DialogContent>
           <Typography color={colors.grey[100]}>{errorMessage}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenErrorModal(false)} color="error">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={() => setOpenErrorModal(false)}
+            color="error"
+          >
             Cerrar
           </Button>
         </DialogActions>

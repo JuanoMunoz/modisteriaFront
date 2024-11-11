@@ -14,7 +14,6 @@ import {
   FormControl,
   MenuItem,
   Switch,
-  styled,
 } from "@mui/material";
 import "./insumoDashboard.css";
 import Loading from "../../components/loading/Loading";
@@ -22,11 +21,14 @@ import { TrashColor, Edit, AddRounded, Add } from "../../components/svg/Svg";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import { useTheme } from "@mui/material";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { alpha } from "@mui/material";
+import Transition from "../../components/transition/Transition";
 import useInsumosData from "../../hooks/useInsumosData";
 import useCategoriaDataInsumo from "../../hooks/useCategoriaDataInsumo";
 import { toast, ToastContainer } from "react-toastify";
+import { useJwt } from "../../context/JWTContext";
+import useDecodedJwt from "../../hooks/useJwt";
 const Insumos = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -36,18 +38,19 @@ const Insumos = () => {
     register: registerInsumo,
     reset,
   } = useForm();
+  const { token } = useJwt();
+  const payload = useDecodedJwt(token);
 
   const {
     handleSubmit: handleSaveControlInsumos,
     register: registerControlInsumo,
-    setValue,
-    watch,
-    getValues,
-    formState: { errors: errorsAddControlInsumo },
+    watch: watchControlInsumo,
+    reset: resetControlInsumo,
   } = useForm();
   const [openModal, setOpenModal] = useState(false);
   const [insumoToAdd, setInsumoToAdd] = useState();
   const [cantidadesInsumos, setCantidadesInsumos] = useState({});
+  const [motivos, setMotivos] = useState({});
   const [controlInsumos, setControlInsumos] = useState([]);
   const [openModalReponerInsumos, setOpenModalReponerInsumos] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -107,6 +110,26 @@ const Insumos = () => {
     }
     setCantidadesInsumos((prev) => ({ ...prev, [idx]: value }));
   };
+  const handleChangeMotivos = (e, idx) => {
+    const { value } = e.target;
+    setMotivos((prev) => ({ ...prev, [idx]: value }));
+  };
+  const addActualInsumoQuantity = (idx) => {
+    const cantidadACambiar = parseFloat(cantidadesInsumos[idx]);
+    const cantidadTotal = controlInsumos[idx].cantidad;
+    setCantidadesInsumos((prev) => ({
+      ...prev,
+      [idx]: cantidadACambiar + 1,
+    }));
+  };
+  const substractActualInsumoQuantity = (idx) => {
+    const cantidadACambiar = parseFloat(cantidadesInsumos[idx]);
+    if (cantidadACambiar <= 1) return;
+    setCantidadesInsumos((prev) => ({
+      ...prev,
+      [idx]: cantidadACambiar - 1,
+    }));
+  };
 
   const addInsumo = () => {
     if (!insumoToAdd)
@@ -160,30 +183,38 @@ const Insumos = () => {
     setSelectedInsumo(null);
   };
 
-  useEffect(() => {
-    console.log(errorsAddControlInsumo.cantidadInsumo);
-  }, [errorsAddControlInsumo.cantidadInsumo]);
-
   const saveControlInsumos = async (data) => {
     const insumos = [];
-
     data.cantidadInsumo.forEach((cantidad, idx) => {
       insumos.push({
         id: controlInsumos[idx].id,
         cantidad:
           data.accionInsumo[idx] === "sumar"
-            ? parseInt(cantidad)
-            : parseInt(cantidad) * -1,
+            ? parseFloat(cantidad)
+            : parseFloat(cantidad) * -1,
+        motivo: motivos[idx],
       });
     });
-    const respueta = await updateCantidadInsumos({ insumos });
+    const respueta = await updateCantidadInsumos({
+      insumos,
+      usuarioId: payload?.id,
+    });
     if (respueta.status === 201) {
       const updatedData = await fetchAllInsumos();
 
       if (updatedData.status === 200 && updatedData.data) {
         setData(updatedData.data);
+        setControlInsumos([]);
+        setCantidadesInsumos([]);
+        setMotivos([]);
+        setOpenModalReponerInsumos(false);
       }
-      git;
+    } else {
+      return toast.error(respueta.data.errors[0], {
+        autoClose: 2500,
+        toastId: "errorSubstractInsumos",
+        style: { color: "black" },
+      });
     }
     console.log(respueta);
   };
@@ -207,7 +238,6 @@ const Insumos = () => {
     setInsumoToDelete(insumo);
     setOpenDeleteDialog(true);
   };
-
   const confirmDelete = async () => {
     if (insumoToDelete.estadoId === 1) {
       setErrorMessage("No se puede eliminar el insumo porque está activo.");
@@ -238,7 +268,6 @@ const Insumos = () => {
   };
   // Fin métodos CRUD
   const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
     { field: "nombre", headerName: "Nombre", flex: 1 },
     {
       field: "cantidad",
@@ -324,6 +353,7 @@ const Insumos = () => {
                 },
                 color: "white",
                 mr: "10px",
+                textTransform: "capitalize",
               }}
             >
               Reponer insumos
@@ -339,6 +369,7 @@ const Insumos = () => {
               },
               color: "white",
               mr: "10px",
+              textTransform: "capitalize",
             }}
           >
             Nuevo insumo
@@ -384,7 +415,7 @@ const Insumos = () => {
             getRowId={(row) => row.id}
             initialState={{
               sorting: {
-                sortModel: [{ field: "id", sort: "asc" }],
+                sortModel: [{ field: "cantidad", sort: "desc" }],
               },
             }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
@@ -392,7 +423,12 @@ const Insumos = () => {
         )}
       </Box>
 
-      <Dialog open={openModal} onClose={handleClose}>
+      <Dialog
+        keepMounted
+        TransitionComponent={Transition}
+        open={openModal}
+        onClose={handleClose}
+      >
         <form onSubmit={handleSaveInsumo(handleSave)}>
           <DialogTitle color={colors.grey[100]}>
             {selectedInsumo?.id ? "Editar Insumo" : "Agregar Insumo"}
@@ -482,14 +518,14 @@ const Insumos = () => {
               {...registerInsumo("cantidad", {
                 required: "La cantidad es requerida",
                 pattern: {
-                  value: /^[0-9]+$/, // Expresión regular para números
+                  value: /^\d+(.\d+)?$/, // Expresión regular para números
                   message: "Solo se permiten números",
                 },
                 min: {
                   message: "¡Debes ingresar una cantidad mayor a cero!",
                   value: 1,
                 },
-                max: { message: "¡Límite máximo de 100!", value: 100 },
+                max: { message: "¡Límite máximo de 250!", value: 250 },
               })}
               value={selectedInsumo?.cantidad || ""}
               onChange={handleInputChange}
@@ -570,10 +606,18 @@ const Insumos = () => {
             </TextField>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} color="error">
+            <Button
+              sx={{ textTransform: "capitalize" }}
+              onClick={handleClose}
+              color="error"
+            >
               Cancelar
             </Button>
-            <Button type="submit" color="success">
+            <Button
+              sx={{ textTransform: "capitalize" }}
+              type="submit"
+              color="success"
+            >
               Guardar
             </Button>
           </DialogActions>
@@ -581,6 +625,8 @@ const Insumos = () => {
       </Dialog>
 
       <Dialog
+        keepMounted
+        TransitionComponent={Transition}
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
       >
@@ -594,27 +640,46 @@ const Insumos = () => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={() => setOpenDeleteDialog(false)}
+            color="inherit"
+          >
             Cancelar
           </Button>
-          <Button onClick={confirmDelete} color="error">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={confirmDelete}
+            color="error"
+          >
             Eliminar
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+      <Dialog
+        keepMounted
+        TransitionComponent={Transition}
+        open={openErrorModal}
+        onClose={() => setOpenErrorModal(false)}
+      >
         <DialogTitle color={colors.grey[100]}>Error</DialogTitle>
         <DialogContent>
           <Typography color={colors.grey[100]}>{errorMessage}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenErrorModal(false)} color="error">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={() => setOpenErrorModal(false)}
+            color="error"
+          >
             Cerrar
           </Button>
         </DialogActions>
       </Dialog>
       <Dialog
+        keepMounted
+        TransitionComponent={Transition}
         open={openModalReponerInsumos}
         onClose={() => setOpenModalReponerInsumos(false)}
       >
@@ -629,6 +694,7 @@ const Insumos = () => {
                 <Select
                   labelId="labelId"
                   value={insumoToAdd}
+                  color="primary"
                   onChange={handleInsumoToAdd}
                   label="Insumo"
                 >
@@ -661,69 +727,123 @@ const Insumos = () => {
               </div>
               {controlInsumos &&
                 controlInsumos.map((insumo, idx) => (
-                  <div key={insumo.id} className="body-insumos">
-                    <h4>{insumo.nombre}</h4>
-                    <FormControl sx={{ m: 1 }} variant="standard">
-                      <Select
-                        defaultValue={"sumar"}
-                        {...registerControlInsumo(`accionInsumo[${idx}]`)}
-                        labelId="demo-customized-select-label"
-                        id="demo-customized-select"
-                      >
-                        <MenuItem value={"sumar"}>Sumar</MenuItem>
-                        <MenuItem value={"restar"}>Restar</MenuItem>
-                      </Select>
-                    </FormControl>
-                    <div className="acciones">
-                      <span className="quantity-button">-</span>
-                      <TextField
-                        {...registerControlInsumo(`cantidadInsumo[${idx}]`, {
-                          required: `La cantidad de "${insumo.nombre}" es requerida`,
-                        })}
-                        value={cantidadesInsumos[idx]}
-                        margin="dense"
-                        onChange={(e) => handleChangeCantidadInsumo(e, idx)}
-                        name={`cantidadInsumo[${idx}]`}
-                        placeholder="0"
-                        InputProps={{
-                          disableUnderline: true,
-                          style: {
-                            textAlign: "center",
-                          },
-                        }}
-                        type="text"
-                        variant="standard"
-                        sx={{
-                          width: "30px",
-                          "& .MuiOutlinedInput-root": {
-                            "&:hover fieldset": {
-                              borderColor: "purple",
+                  <div key={insumo.id} style={{ marginTop: "6px" }}>
+                    <div className="body-insumos">
+                      <h4>{insumo.nombre}</h4>
+                      <FormControl sx={{ m: 1 }} variant="standard">
+                        <Select
+                          defaultValue={"sumar"}
+                          {...registerControlInsumo(`accionInsumo[${idx}]`)}
+                          labelId="demo-customized-select-label"
+                          id="demo-customized-select"
+                        >
+                          <MenuItem value={"sumar"}>Sumar</MenuItem>
+                          <MenuItem value={"restar"}>Restar</MenuItem>
+                        </Select>
+                      </FormControl>
+                      <div className="acciones">
+                        <span
+                          onClick={() => substractActualInsumoQuantity(idx)}
+                          className="quantity-button no-select"
+                        >
+                          -
+                        </span>
+                        <TextField
+                          {...registerControlInsumo(`cantidadInsumo[${idx}]`, {
+                            required: `La cantidad de "${insumo.nombre}" es requerida`,
+                          })}
+                          value={cantidadesInsumos[idx]}
+                          margin="dense"
+                          onChange={(e) => handleChangeCantidadInsumo(e, idx)}
+                          name={`cantidadInsumo[${idx}]`}
+                          defaultValue="1"
+                          InputProps={{
+                            disableUnderline: true,
+                            style: {
+                              textAlign: "center",
                             },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "purple",
+                          }}
+                          type="text"
+                          variant="standard"
+                          sx={{
+                            width: "30px",
+                            "& .MuiOutlinedInput-root": {
+                              "&:hover fieldset": {
+                                borderColor: "purple",
+                              },
+                              "&.Mui-focused fieldset": {
+                                borderColor: "purple",
+                              },
                             },
-                          },
-                          "& .MuiInputLabel-root": {
-                            "&.Mui-focused": {
-                              color: "purple",
+                            "& .MuiInputLabel-root": {
+                              "&.Mui-focused": {
+                                color: "purple",
+                              },
                             },
-                          },
-                        }}
-                      />
-                      <span className="quantity-button">+</span>
+                          }}
+                        />
+                        <span
+                          onClick={() => addActualInsumoQuantity(idx)}
+                          className="no-select quantity-button"
+                        >
+                          +
+                        </span>
+                      </div>
                     </div>
+                    <TextField
+                      margin="dense"
+                      {...registerControlInsumo(`motivo[${idx}]`, {
+                        required: `La justificación de "${insumo.nombre}" es requerida`,
+                      })}
+                      label={`Motivo para ${
+                        watchControlInsumo(`accionInsumo[${idx}]`) === "restar"
+                          ? "disminuir"
+                          : "agregar"
+                      } "${insumo.nombre}"`}
+                      type="text"
+                      name={`motivo[${idx}]`}
+                      fullWidth
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "&:hover fieldset": {
+                            borderColor: "purple",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "purple",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          "&.Mui-focused": {
+                            color: "purple",
+                          },
+                        },
+                      }}
+                      variant="outlined"
+                      value={motivos[idx]}
+                      onChange={(e) => handleChangeMotivos(e, idx)}
+                    />
                   </div>
                 ))}
             </div>
           </DialogContent>
           <DialogActions>
             <Button
-              onClick={() => setOpenModalReponerInsumos(false)}
+              sx={{ textTransform: "capitalize" }}
+              onClick={() => {
+                setControlInsumos([]);
+                setCantidadesInsumos([]);
+                setMotivos([]);
+                setOpenModalReponerInsumos(false);
+              }}
               color="error"
             >
               Cerrar
             </Button>
-            <Button type="submit" color="success">
+            <Button
+              sx={{ textTransform: "capitalize" }}
+              type="submit"
+              color="success"
+            >
               Guardar
             </Button>
           </DialogActions>

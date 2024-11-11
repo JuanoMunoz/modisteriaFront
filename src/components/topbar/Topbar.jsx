@@ -1,28 +1,37 @@
-import { Box, IconButton, useTheme } from "@mui/material";
-import { useContext } from "react";
-import { ColorModeContext, tokens } from "../../theme";
-import InputBase from "@mui/material/InputBase";
+import { Box, colors, IconButton, useTheme } from "@mui/material";
+import * as React from "react";
+import Button from "@mui/material/Button";
+import { useContext, useState } from "react";
+import { ColorModeContext } from "../../theme";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import { LogoutOutlined } from "@mui/icons-material";
-import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import SearchIcon from "@mui/icons-material/Search";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Transition from "../transition/Transition";
+import { useNavigate } from "react-router-dom";
 
 const Topbar = () => {
   const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+  const [isLogoutModalOpened, setIsLogoutModalOpened] = useState(false);
+  const navigate = useNavigate();
   const colorMode = useContext(ColorModeContext);
-
+  const toggleLogoutModal = () => setIsLogoutModalOpened(!isLogoutModalOpened);
+  const logout = () => {
+    setIsLogoutModalOpened(!isLogoutModalOpened);
+    navigate("/");
+  };
   return (
     <Box display="flex" justifyContent="space-between" p={2}>
       <Box>
-      {/* //   display="flex"
+        {/* //   display="flex"
       //   backgroundColor={colors.primary[400]}
       //   borderRadius="3px"
       // > */}
-      {/* //   <InputBase sx={{ ml: 2, flex: 1 }} placeholder="Search" />
+        {/* //   <InputBase sx={{ ml: 2, flex: 1 }} placeholder="Search" />
       //   <IconButton type="button" sx={{ p: 1 }}>
       //     <SearchIcon />
       //   </IconButton> */}
@@ -30,8 +39,8 @@ const Topbar = () => {
 
       {/* ICONS */}
       <Box display="flex">
-      <IconButton onClick={colorMode.toggleColorMode}>
-
+        <IconButton onClick={toggleLogoutModal}>
+          <LogoutOutlined></LogoutOutlined>
         </IconButton>
         <IconButton onClick={colorMode.toggleColorMode}>
           {theme.palette.mode === "dark" ? (
@@ -41,6 +50,37 @@ const Topbar = () => {
           )}
         </IconButton>
       </Box>
+      <Dialog
+        open={isLogoutModalOpened}
+        keepMounted
+        TransitionComponent={Transition}
+        onClose={toggleLogoutModal}
+      >
+        <DialogTitle color={colors.grey[100]}>
+          {"¿Deseas salir del panel del administrador?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+            Recuerda que puedes volver en todo momento.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            color="error"
+            sx={{ textTransform: "capitalize" }}
+            onClick={toggleLogoutModal}
+          >
+            Cancelar
+          </Button>
+          <Button
+            color="success"
+            sx={{ textTransform: "capitalize" }}
+            onClick={logout}
+          >
+            Aceptar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

@@ -24,6 +24,7 @@ import useUsuariosData from "../../hooks/useUsuarioData";
 import { useJwt } from "../../context/JWTContext";
 import userolesData from "../../hooks/useRolData";
 import useDecodedJwt from "../../hooks/useJwt";
+import Transition from "../../components/transition/Transition";
 const Usuarios = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -258,6 +259,7 @@ const Usuarios = () => {
             },
             color: "white",
             mr: "10px",
+            textTransform: "capitalize",
           }}
         >
           Agregar Usuario
@@ -310,7 +312,12 @@ const Usuarios = () => {
         )}
       </Box>
 
-      <Dialog open={openModal} onClose={handleClose}>
+      <Dialog
+        open={openModal}
+        keepMounted
+        TransitionComponent={Transition}
+        onClose={handleClose}
+      >
         <form onSubmit={handleSaveUsuario(handleSave)}>
           <DialogTitle color={colors.grey[100]}>
             {selectedUsuario?.id ? "Editar Usuario" : "Agregar Usuario"}
@@ -562,8 +569,9 @@ const Usuarios = () => {
               {...registerUsuario("roleId", {
                 required: "Debes escoger un rol!",
               })}
-              value={parseInt(selectedUsuario?.roleId) || roles[0]?.id}
+              value={selectedUsuario?.roleId || roles[0]?.id}
               onChange={handleInputChange}
+              onClick={() => console.log(selectedUsuario?.roleId)}
               FormHelperTextProps={{ sx: { color: "red" } }}
               helperText={errorsAddUsuario?.categoriaId?.message}
             >
@@ -575,10 +583,18 @@ const Usuarios = () => {
             </TextField>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} color="error">
+            <Button
+              sx={{ textTransform: "capitalize" }}
+              onClick={handleClose}
+              color="error"
+            >
               Cancelar
             </Button>
-            <Button type="submit" color="success">
+            <Button
+              sx={{ textTransform: "capitalize" }}
+              type="submit"
+              color="success"
+            >
               Guardar
             </Button>
           </DialogActions>
@@ -587,6 +603,8 @@ const Usuarios = () => {
 
       <Dialog
         open={openDeleteDialog}
+        keepMounted
+        TransitionComponent={Transition}
         onClose={() => setOpenDeleteDialog(false)}
       >
         <DialogTitle color={colors.grey[100]}>
@@ -599,22 +617,39 @@ const Usuarios = () => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={() => setOpenDeleteDialog(false)}
+            color="inherit"
+          >
             Cancelar
           </Button>
-          <Button onClick={confirmDelete} color="error">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={confirmDelete}
+            color="error"
+          >
             Eliminar
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+      <Dialog
+        open={openErrorModal}
+        keepMounted
+        TransitionComponent={Transition}
+        onClose={() => setOpenErrorModal(false)}
+      >
         <DialogTitle color={colors.grey[100]}>Error</DialogTitle>
         <DialogContent>
           <Typography color={colors.grey[100]}>{errorMessage}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenErrorModal(false)} color="error">
+          <Button
+            sx={{ textTransform: "capitalize" }}
+            onClick={() => setOpenErrorModal(false)}
+            color="error"
+          >
             Cerrar
           </Button>
         </DialogActions>

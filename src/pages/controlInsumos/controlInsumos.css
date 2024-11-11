@@ -1,0 +1,83 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h4 {
+  margin-left: 4rem;
+  font-size: 1.4rem;
+}
+.main-control-insumo {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2.3rem;
+}
+.card-control-insumo {
+  width: 90%;
+  padding: 5px 10px;
+  box-sizing: border-box;
+  min-height: 5rem;
+  border-radius: 0.5rem;
+  background: #1f1f1f;
+  box-shadow: 0 4px 8px rgba(0, 0, 0);
+  transition: 0.6s;
+}
+.card-control-insumo:hover {
+  scale: 1.025;
+}
+.header-card {
+  display: flex;
+  color: #d1d3d6e6;
+  padding: 0 20px;
+  justify-content: space-between;
+  letter-spacing: 1.15px;
+}
+
+.header-insumo {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.fecha-autor {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.motivo-card {
+  font-size: 24px;
+  display: flex;
+  justify-content: start;
+  text-align: start;
+  margin-left: 20px;
+  margin-right: 10px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  text-wrap: pretty;
+}
+.name {
+  color: rgb(187, 14, 202);
+  cursor: pointer;
+}
+.tela {
+  border-bottom-color: rgb(187, 14, 202);
+  border-bottom-width: medium;
+  border-bottom-style: solid;
+  padding-bottom: 3px;
+  margin-left: 1px;
+}
+.cantidad-insumo-error {
+  color: red;
+}
+.cantidad-insumo-success {
+  color: rgb(11, 176, 11);
+}
+.footer-history {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 20px;
+}

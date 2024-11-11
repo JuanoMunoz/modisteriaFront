@@ -24,6 +24,7 @@ import PQRs from "./pages/PQRs/PQRs";
 import CategoriaInsumos from "./pages/categoriaInsumo/categoriaInsumo";
 import CategoriaPrenda from "./pages/categoriaPrenda/categoriaPrenda";
 import Tallas from "./pages/tallas/Talla";
+import ControlInsumos from "./pages/controlInsumos/ControlInsumos";
 function App() {
   return (
     <>
@@ -54,6 +55,10 @@ function App() {
           <Route path="/dashboard/roles" element={<Roles />} />
           <Route path="/dashboard/permisos" element={<Permisos />} />
           <Route path="/dashboard/ventas" element={<Ventas />} />
+          <Route
+            path="/dashboard/controlInsumos"
+            element={<ControlInsumos />}
+          />
           <Route path="/dashboard/bar" element={<Bar />} />
           <Route path="/dashboard/line" element={<Line />} />
           <Route path="/dashboard/pqrs" element={<PQRs />} />
