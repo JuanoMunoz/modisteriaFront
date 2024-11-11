@@ -367,7 +367,20 @@ input[type="radio"]:hover {
   top: 7px;
   transition: 0.2s ease-in-out;
 }
-
+.icon-large {
+  cursor: pointer;
+  color: black;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+.titleElegirpPago {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+.icon-large:hover {
+  color: purple;
+  transform: scale(1.2);
+}
 .qrcode-data input[type="checkbox"]:checked {
   background-color: rgb(187, 14, 202);
 }

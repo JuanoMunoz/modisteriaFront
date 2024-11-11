@@ -4,7 +4,9 @@
   align-items: center;
   margin-bottom: 2rem;
 }
-
+.header-actions {
+  margin-right: 20px;
+}
 .header h4 {
   margin-left: 4rem;
   font-size: 1.4rem;

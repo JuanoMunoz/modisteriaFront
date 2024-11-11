@@ -16,6 +16,7 @@ import useActiveUserInfo from "../../hooks/useActiveUserInfo";
 import useIsFirstRender from "../../hooks/useIsMount";
 import { formToCop, imageExtensions } from "../../assets/constants.d";
 import useFetch from "../../hooks/useFetch";
+import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 export default function Venta() {
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
@@ -245,7 +246,14 @@ export default function Venta() {
           </button>
         </article>
         <article className={`recogida ${elegirPago ? "activo" : ""}`}>
-          <h2>Elige la forma de pago</h2>
+          <div className="titleElegirpPago">
+            <KeyboardDoubleArrowLeftIcon
+              className="icon-large"
+              sx={{ fontSize: "50px" }}
+              onClick={() => setElegirPago(false)}
+            ></KeyboardDoubleArrowLeftIcon>
+            <h2> Elige la forma de pago</h2>
+          </div>
           <label className="card-option">
             <div className="choice">
               <div>
@@ -327,8 +335,8 @@ export default function Venta() {
           <div className="info-ficha-tecnica">
             <div className="info-price-ficha-tecnica">
               {" "}
-              <span>Subtotal:</span>
-              <span>{formToCop(subtotal)} COP</span>
+              <span>Domicilio:</span>
+              <span>{formToCop(domicilio)} COP</span>
             </div>
             <div className="info-price-ficha-tecnica">
               <span>Total:</span>
