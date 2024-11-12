@@ -21,7 +21,6 @@ export default function Venta() {
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
   const [elegirPago, setElegirPago] = useState(false);
-  const [formaPago, setFormaPago] = useState("");
   const isFirstRender = useIsFirstRender();
   const { loading: loadingFetch, triggerFetch } = useFetch();
   const { cartData, subtotal } = useCart();
@@ -36,9 +35,6 @@ export default function Venta() {
   const [showFullQr, setShowFullQr] = useState(false);
   const handleChangeAddress = (e) => {
     setLugarEntrega(e.target.value);
-  };
-  const handleChangePayMethod = (e) => {
-    setFormaPago(e.target.value);
   };
   const addressToggle = () => {
     setAddress(!address);
@@ -147,7 +143,7 @@ export default function Venta() {
     setElegirPago(true);
   };
   const handleAddCotizacion = async () => {
-    if (formaPago === "transferencia" && !imagen) {
+    if (!imagen) {
       qrToggle();
       return;
     }
@@ -158,9 +154,8 @@ export default function Venta() {
       ? formDataAdd.append("valorDomicilio", domicilio)
       : formDataAdd.append("valorDomicilio", 0);
     formDataAdd.append("valorPrendas", subtotal);
-    formDataAdd.append("metodoPago", formaPago);
     formDataAdd.append("pedidoId", ids);
-    formaPago === "transferencia" && formDataAdd.append("file", imagen);
+    formDataAdd.append("file", imagen);
 
     const response = await triggerFetch(
       "https://modisteria-back-production.up.railway.app/api/ventas/createVenta",
@@ -181,6 +176,8 @@ export default function Venta() {
       });
     }
   };
+  console.log(cartData);
+
   return (
     <>
       <Metadata title={"Venta - Modisteria Doña Luz"}></Metadata>
@@ -252,7 +249,7 @@ export default function Venta() {
               sx={{ fontSize: "50px" }}
               onClick={() => setElegirPago(false)}
             ></KeyboardDoubleArrowLeftIcon>
-            <h2> Elige la forma de pago</h2>
+            <h2>Proceso de pago</h2>
           </div>
           <label className="card-option">
             <div className="choice">
@@ -261,28 +258,8 @@ export default function Venta() {
                   type="radio"
                   className="radio-styles"
                   name="pago"
-                  value="efectivo"
-                  onChange={handleChangePayMethod}
-                  checked={formaPago === "efectivo"}
-                />
-                <span className="input-text">Pagar en efectivo 💵</span>
-              </div>
-              <h4 className="info-adicional" style={{ color: "#808080" }}>
-                *Ten el dinero a la mano
-              </h4>
-            </div>
-            <div className="price-choice"></div>
-          </label>
-          <label className="card-option">
-            <div className="choice">
-              <div>
-                <input
-                  type="radio"
-                  onChange={handleChangePayMethod}
-                  className="radio-styles"
-                  name="pago"
                   value="transferencia"
-                  checked={formaPago === "transferencia"}
+                  checked={true}
                 />
                 <span className="input-text">Pagar por transferencia</span>
               </div>
@@ -325,10 +302,16 @@ export default function Venta() {
             {cartData.map((value) => (
               <div key={value.idPedido} className="ficha-producto">
                 <div>
-                  {value?.catalogo.producto}{" "}
+                  "{value?.catalogo.producto}"{" "}
+                  <span style={{ marginLeft: "5px" }}>Talla</span>
                   <span className="talla-producto">{value.Talla.nombre}</span>
                 </div>
-                <span>x{value.cantidad}</span>
+                <div>
+                  <span style={{ marginRight: "4px" }}>
+                    {formToCop(value.valorUnitario)}
+                  </span>
+                  x<span style={{ marginLeft: "4px" }}>{value.cantidad}</span>
+                </div>
               </div>
             ))}
           </div>

@@ -56,6 +56,7 @@ const Roles = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openPermisosModal, setOpenPermisosModal] = useState(false);
   const [selectedRol, setselectedRol] = useState(null);
+  const [permisosId, setPermisosId] = useState([]);
   const [rolToDelete, setrolToDelete] = useState(null);
   const [rolToEditName, setRolToEditName] = useState(null);
   const [openErrorModal, setOpenErrorModal] = useState(false);
@@ -93,11 +94,13 @@ const Roles = () => {
   };
   const handlePermission = (id) => {
     const rolToEdit = data.find((rol) => rol.id === id);
+    const permisosId = rolToEdit?.Permisos?.map((permiso) => permiso.id);
     const rolParsed = {
       id: rolToEdit?.id,
       nombre: rolToEdit?.nombre,
-      permisosId: rolToEdit?.Permisos?.map((permiso) => permiso.id),
+      permisosId,
     };
+    setPermisosId(permisosId);
     setselectedRol(rolParsed);
     reset(rolParsed);
     setOpenPermisosModal(true);
@@ -132,6 +135,7 @@ const Roles = () => {
       nombre: "",
       permisosId: [],
     };
+    setPermisosId([]);
     setselectedRol(rolBase);
     reset(rolBase);
     setOpenModal(true);
@@ -451,10 +455,7 @@ const Roles = () => {
                             {...registerRol(`permisosId`, {
                               required: "¡Debes elegir mínimo un permiso!",
                             })}
-                            defaultChecked={
-                              selectedRol?.permisosId.includes(permiso.id) ||
-                              false
-                            }
+                            defaultChecked={permisosId.includes(permiso.id)}
                             onChange={handleInputChange}
                             value={permiso.id}
                           />

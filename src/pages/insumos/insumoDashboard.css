@@ -46,3 +46,38 @@
     transform: scale(1.2);
   }
 }
+
+.custom-select-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.custom-select-container label {
+  font-size: 14px;
+  color: #bbb; /* Color del texto del label */
+  font-family: "Roboto", sans-serif; /* Fuente similar a MUI */
+}
+
+.custom-select-container select {
+  appearance: none;
+  background-color: #333; /* Fondo oscuro similar */
+  color: #fff; /* Texto blanco */
+  font-size: 16px;
+  padding: 10px 12px;
+  border: 1px solid #555; /* Borde gris */
+  border-radius: 4px;
+  font-family: "Roboto", sans-serif;
+  width: 100%; /* Asegura que el select ocupe todo el ancho */
+  box-sizing: border-box;
+}
+
+.custom-select-container select:focus {
+  border-color: #777; /* Cambio de color al hacer focus */
+  outline: none;
+}
+
+.custom-select-container select option {
+  background-color: #333;
+  color: #fff;
+}

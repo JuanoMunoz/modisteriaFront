@@ -59,12 +59,33 @@ export default function useCitasData() {
     return respuesta;
   };
 
+  const fetchAllUsuarios = async () => {
+    const respuesta = await getFetch(
+      "https://modisteria-back-production.up.railway.app/api/usuarios/getAllUsers",
+      "GET",
+      null,
+      { "x-token": token }
+    );
+    return respuesta;
+  };
+  const initialFetchAllUsuarios = async () => {
+    const respuesta = await triggerFetch(
+      "https://modisteria-back-production.up.railway.app/api/usuarios/getAllUsers",
+      "GET",
+      null,
+      { "x-token": token }
+    );
+    return respuesta;
+  };
+
   return {
     initialFetchAllCitas,
     fetchAllCitas,
     deleteCita,
     createCita,
     updateCita,
+    fetchAllUsuarios,
+    initialFetchAllUsuarios,
     loading,
   };
 }

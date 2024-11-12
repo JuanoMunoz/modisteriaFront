@@ -23,37 +23,44 @@ const CitasDashboard = () => {
   const colors = tokens(theme.palette.mode);
   const {
     handleSubmit: handleSaveCita,
-    formState: { errors: errorsAddCita },
+    formState: { errors: errorsEditCita },
     register: registerCita,
     reset,
   } = useForm();
+
   const [openModal, setOpenModal] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedCita, setSelectedCita] = useState(null);
   const [citaToDelete, setCitaToDelete] = useState(null);
-  const [openErrorModal, setOpenErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [data, setData] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
+
   const {
-    fetchAllCitas,
     loading,
     updateCita,
-    createCita,
     deleteCita,
+    createCita,
     initialFetchAllCitas,
+    initialFetchAllUsuarios,
   } = useCitasData();
 
   useEffect(() => {
-    const initialFetchCitas = async () => {
-      const respuesta = await initialFetchAllCitas();
-      if (respuesta.status === 200 && respuesta.data) {
-        setData(respuesta.data);
+    const initialFetchCitasAndUsuarios = async () => {
+      const respuestaCitas = await initialFetchAllCitas();
+      const respuestaUsuarios = await initialFetchAllUsuarios();
+      if (respuestaCitas.status === 200 && respuestaCitas.data) {
+        setData(respuestaCitas.data);
       } else {
         setErrorMessage("Error al cargar las citas.");
-        setOpenErrorModal(true);
+      }
+      if (respuestaUsuarios.status === 200 && respuestaUsuarios.data) {
+        setUsuarios(respuestaUsuarios.data);
+      } else {
+        setErrorMessage("Error al cargar los usuarios.");
       }
     };
-    initialFetchCitas();
+    initialFetchCitasAndUsuarios();
   }, []);
 
   const handleEdit = (id) => {
@@ -63,63 +70,49 @@ const CitasDashboard = () => {
     setOpenModal(true);
   };
 
-  const handleAdd = () => {
-    const initialCitaBody = {
-      fecha: "",
-      referencia: "",
-      objetivo: "",
-      precio: "",
-      usuarioId: "",
-      tiempo: "",
-      estadoId: 1,
-    };
-    setSelectedCita(initialCitaBody);
-    reset(initialCitaBody);
-    setOpenModal(true);
-  };
-
   const handleClose = () => {
     setOpenModal(false);
     setSelectedCita(null);
   };
 
   const handleSave = async (formData) => {
+    const fechaIso = new Date(formData.fecha).toISOString();
+
+    const maxId =
+      data.length > 0 ? Math.max(...data.map((cita) => cita.id)) : 0;
+    const newId = maxId + 1;
+
+    const dataToSend = {
+      ...formData,
+      fecha: fechaIso,
+      id: newId,
+    };
+
+    console.log("Datos enviados a la API:", dataToSend);
+
     try {
-      if (selectedCita?.id) {
-        const respuesta = await updateCita(selectedCita.id, {
-          ...formData,
-        });
+      const respuestaCitas = await (selectedCita
+        ? updateCita(selectedCita.id, dataToSend)
+        : createCita(dataToSend));
 
-        if (respuesta.status === 200 || respuesta.status === 201) {
-          const updatedData = data.map((cita) =>
-            cita.id === selectedCita.id ? { ...cita, ...formData } : cita
-          );
-          setData(updatedData);
-        } else {
-          throw new Error("Error al editar la cita.");
-        }
+      if (respuestaCitas.status === 200 || respuestaCitas.status === 201) {
+        const updatedData = selectedCita
+          ? data.map((cita) =>
+              cita.id === selectedCita.id ? { ...cita, ...dataToSend } : cita
+            )
+          : [...data, dataToSend];
+
+        setData(updatedData);
+        await initialFetchAllUsuarios();
+        handleClose();
       } else {
-        const respuesta = await createCita({
-          ...formData,
-          estadoId: 1,
-        });
-
-        if (respuesta.status === 201) {
-          const updatedData = await fetchAllCitas();
-
-          if (updatedData.status === 200 && updatedData.data) {
-            setData(updatedData.data);
-          }
-        } else {
-          throw new Error("Error al crear la cita.");
-        }
+        throw new Error(
+          respuestaCitas.data.message || "Error al guardar la cita."
+        );
       }
     } catch (error) {
-      console.error("Error details:", error);
-      setErrorMessage(error.message || "Error al editar la cita.");
-      setOpenErrorModal(true);
-    } finally {
-      handleClose();
+      console.log(error);
+      setErrorMessage(error.message || "Error al guardar la cita.");
     }
   };
 
@@ -130,22 +123,29 @@ const CitasDashboard = () => {
   };
 
   const confirmDelete = async () => {
-    if (citaToDelete.estadoId !== 2) {
-      setErrorMessage("No se puede eliminar la cita si está activa.");
-      setOpenErrorModal(true);
+    if (
+      citaToDelete.estadoId !== 9 &&
+      citaToDelete.estadoId !== 10 &&
+      citaToDelete.estadoId !== 11
+    ) {
+      setErrorMessage("Solo se pueden eliminar citas inactivas o canceladas.");
       setOpenDeleteDialog(false);
       return;
     }
-    const respuesta = await deleteCita(citaToDelete.id);
-    if (respuesta.status === 201) {
+    const respuestaCitas = await deleteCita(citaToDelete.id);
+    if (respuestaCitas.status === 201) {
       setData(data.filter((cita) => cita.id !== citaToDelete.id));
       setOpenDeleteDialog(false);
       setCitaToDelete(null);
     } else {
-      setErrorMessage(respuesta.data.message);
-      setOpenErrorModal(true);
+      setErrorMessage(respuestaCitas.data.message);
       setOpenDeleteDialog(false);
     }
+  };
+
+  const getUsuarioNombre = (usuarioId) => {
+    const usuario = usuarios.find((user) => user.id === usuarioId);
+    return usuario ? `${usuario.nombre}` : "Usuario desconocido";
   };
 
   const columns = [
@@ -198,8 +198,41 @@ const CitasDashboard = () => {
         </div>
       ),
     },
-    { field: "precio", headerName: "Precio", flex: 0.7 },
-    { field: "usuarioId", headerName: "Usuario", flex: 0.7 },
+    {
+      field: "precio",
+      headerName: "Precio",
+      flex: 0.7,
+      renderCell: (params) => (
+        <div
+          style={{
+            whiteSpace: "normal",
+            wordWrap: "break-word",
+            textAlign: "left",
+          }}
+        >
+          {params.value || "Por establecer"}
+        </div>
+      ),
+    },
+    {
+      field: "usuarioId",
+      headerName: "Usuario",
+      flex: 0.7,
+      renderCell: (params) => {
+        const usuarioNombre = getUsuarioNombre(params.value);
+        return (
+          <div
+            style={{
+              whiteSpace: "normal",
+              wordWrap: "break-word",
+              textAlign: "left",
+            }}
+          >
+            {usuarioNombre}
+          </div>
+        );
+      },
+    },
     {
       field: "tiempo",
       headerName: "Tiempo",
@@ -241,11 +274,14 @@ const CitasDashboard = () => {
         <Box display="flex" alignItems="left">
           <Button
             onClick={() => handleEdit(row.id)}
-            sx={{ p: 0, mr: 1, ml: -3 }}
+            sx={{ p: 0.5, minWidth: "30px", height: "36px", mr: 1, ml: 1 }}
           >
             <Edit size={20} color={colors.grey[100]} />
           </Button>
-          <Button onClick={() => handleDelete(row.id)} sx={{ p: 0, ml: -5 }}>
+          <Button
+            onClick={() => handleDelete(row.id)}
+            sx={{ p: 0.5, minWidth: "30px", height: "36px", ml: 0 }}
+          >
             <TrashColor size={20} color={colors.grey[100]} />
           </Button>
         </Box>
@@ -266,7 +302,11 @@ const CitasDashboard = () => {
         </Typography>
         <Button
           variant="contained"
-          onClick={handleAdd}
+          onClick={() => {
+            setSelectedCita(null);
+            reset();
+            setOpenModal(true);
+          }}
           sx={{
             backgroundColor: colors.purple[400],
             "&:hover": {
@@ -300,10 +340,10 @@ const CitasDashboard = () => {
             backgroundColor: colors.primary[200],
           },
           "& .MuiCheckbox-root": {
-            color: `${colors.purple[200]} !important`,
+            color: "${colors.purple[200]} !important",
           },
           "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-            color: `${colors.grey[100]} !important`,
+            color: "${colors.grey[100]} !important",
           },
         }}
       >
@@ -314,172 +354,154 @@ const CitasDashboard = () => {
             rows={data}
             columns={columns}
             components={{ Toolbar: GridToolbar }}
-            initialState={{
-              sorting: {
-                sortModel: [{ field: "id", sort: "asc" }],
-              },
-            }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+            getRowId={(row) => row.id}
           />
         )}
       </Box>
 
-      {/* Modal para agregar/editar cita */}
-      <Dialog open={openModal} onClose={handleClose}>
+      <Dialog
+        open={openModal}
+        onClose={handleClose}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
         <form onSubmit={handleSaveCita(handleSave)}>
-          <DialogTitle color={colors.grey[100]}>
+          <DialogTitle id="modal-title" color={colors.grey[100]}>
             {selectedCita?.id ? "Editar Cita" : "Agregar Cita"}
           </DialogTitle>
           <DialogContent>
-            <TextField
-              margin="dense"
-              name="fecha"
-              label="Fecha"
-              type="date"
-              fullWidth
-              variant="outlined"
-              {...registerCita("fecha", {
-                required: "La fecha es requerida.",
-              })}
-              value={selectedCita?.fecha || ""}
-              onChange={(e) =>
-                setSelectedCita({
-                  ...selectedCita,
-                  fecha: e.target.value,
-                })
-              }
-              FormHelperTextProps={{ sx: { color: "red" } }}
-              helperText={errorsAddCita?.fecha?.message}
-            />
-            <TextField
-              margin="dense"
-              name="referencia"
-              label="Referencia"
-              type="text"
-              fullWidth
-              variant="outlined"
-              {...registerCita("referencia", {
-                required: "La referencia es requerida.",
-              })}
-              value={selectedCita?.referencia || ""}
-              onChange={(e) =>
-                setSelectedCita({
-                  ...selectedCita,
-                  referencia: e.target.value,
-                })
-              }
-              FormHelperTextProps={{ sx: { color: "red" } }}
-              helperText={errorsAddCita?.referencia?.message}
-            />
-            <TextField
-              margin="dense"
-              name="objetivo"
-              label="Objetivo"
-              type="text"
-              fullWidth
-              variant="outlined"
-              {...registerCita("objetivo")}
-              value={selectedCita?.objetivo || ""}
-              onChange={(e) =>
-                setSelectedCita({
-                  ...selectedCita,
-                  objetivo: e.target.value,
-                })
-              }
-            />
-            <TextField
-              margin="dense"
-              name="precio"
-              label="Precio"
-              type="number"
-              fullWidth
-              variant="outlined"
-              {...registerCita("precio")}
-              value={selectedCita?.precio || ""}
-              onChange={(e) =>
-                setSelectedCita({
-                  ...selectedCita,
-                  precio: e.target.value,
-                })
-              }
-            />
-            <TextField
-              margin="dense"
-              name="usuarioId"
-              label="Usuario ID"
-              type="text"
-              fullWidth
-              variant="outlined"
-              {...registerCita("usuarioId")}
-              value={selectedCita?.usuarioId || ""}
-              onChange={(e) =>
-                setSelectedCita({
-                  ...selectedCita,
-                  usuarioId: e.target.value,
-                })
-              }
-            />
-            <TextField
-              margin="dense"
-              name="tiempo"
-              label="Tiempo"
-              type="text"
-              fullWidth
-              variant="outlined"
-              {...registerCita("tiempo")}
-              value={selectedCita?.tiempo || ""}
-              onChange={(e) =>
-                setSelectedCita({
-                  ...selectedCita,
-                  tiempo: e.target.value,
-                })
-              }
-            />
+            {selectedCita ? (
+              <>
+                <TextField
+                  label="Tiempo"
+                  fullWidth
+                  variant="outlined"
+                  {...registerCita("tiempo", { required: true })}
+                  error={!!errorsEditCita.tiempo}
+                  helperText={errorsEditCita.tiempo ? "Campo requerido" : ""}
+                />
+                <TextField
+                  label="Precio"
+                  type="number"
+                  fullWidth
+                  variant="outlined"
+                  {...registerCita("precio", { required: true })}
+                  error={!!errorsEditCita.precio}
+                  helperText={errorsEditCita.precio ? "Campo requerido" : ""}
+                />
+                <TextField
+                  label="Estado"
+                  fullWidth
+                  select
+                  {...registerCita("estadoId", { required: true })}
+                  error={!!errorsEditCita.estadoId}
+                  helperText={errorsEditCita.estadoId ? "Campo requerido" : ""}
+                  SelectProps={{
+                    native: true,
+                  }}
+                >
+                  <option value="9">Por aprobar</option>
+                  <option value="10">Aprobada</option>
+                  <option value="11">Aceptada</option>
+                  <option value="12">Cancelada</option>
+                  <option value="13">Terminada</option>
+                </TextField>
+              </>
+            ) : (
+              <>
+                <TextField
+                  label="Fecha"
+                  type="datetime-local"
+                  fullWidth
+                  variant="outlined"
+                  {...registerCita("fecha", { required: true })}
+                  error={!!errorsEditCita.fecha}
+                  helperText={errorsEditCita.fecha ? "Campo requerido" : ""}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+
+                <TextField
+                  label="Referencia"
+                  fullWidth
+                  variant="outlined"
+                  {...registerCita("referencia", { required: true })}
+                  error={!!errorsEditCita.referencia}
+                  helperText={
+                    errorsEditCita.referencia ? "Campo requerido" : ""
+                  }
+                />
+                <TextField
+                  label="Objetivo"
+                  fullWidth
+                  variant="outlined"
+                  {...registerCita("objetivo", { required: true })}
+                  error={!!errorsEditCita.objetivo}
+                  helperText={errorsEditCita.objetivo ? "Campo requerido" : ""}
+                />
+                <TextField
+                  label="Usuario"
+                  select
+                  fullWidth
+                  variant="outlined"
+                  {...registerCita("usuarioId", { required: true })}
+                  error={!!errorsEditCita.usuarioId}
+                  helperText={errorsEditCita.usuarioId ? "Campo requerido" : ""}
+                  SelectProps={{
+                    native: true,
+                  }}
+                >
+                  <option value=""></option>
+                  {usuarios.map((usuario) => (
+                    <option key={usuario.id} value={usuario.id}>
+                      {usuario.nombre}
+                    </option>
+                  ))}
+                </TextField>
+                <TextField
+                  label="Estado"
+                  fullWidth
+                  select
+                  {...registerCita("estadoId", { required: true })}
+                  error={!!errorsEditCita.estadoId}
+                  helperText={errorsEditCita.estadoId ? "Campo requerido" : ""}
+                  SelectProps={{
+                    native: true,
+                  }}
+                >
+                  <option value="9">Por aprobar</option>
+                </TextField>
+              </>
+            )}
+            {errorMessage && (
+              <Typography color="error">{errorMessage}</Typography>
+            )}
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} color="error">
-              Cancelar
-            </Button>
-            <Button type="submit" color="success">
+            <Button onClick={handleClose}>Cancelar</Button>
+            <Button type="submit" color="primary">
               Guardar
             </Button>
           </DialogActions>
         </form>
       </Dialog>
 
-      {/* Modal para confirmar eliminación */}
       <Dialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
       >
-        <DialogTitle color={colors.grey[100]}>
-          Confirmar Eliminación
-        </DialogTitle>
+        <DialogTitle>Confirmar Eliminación</DialogTitle>
         <DialogContent>
           <Typography>
-            ¿Estás seguro de que deseas eliminar la cita "
-            {citaToDelete?.referencia}"?
+            ¿Estás seguro de que deseas eliminar esta cita?
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
-            Cancelar
-          </Button>
+          <Button onClick={() => setOpenDeleteDialog(false)}>Cancelar</Button>
           <Button onClick={confirmDelete} color="error">
             Eliminar
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Modal para errores */}
-      <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
-        <DialogTitle color={colors.grey[100]}>Error</DialogTitle>
-        <DialogContent>
-          <Typography color={colors.grey[100]}>{errorMessage}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenErrorModal(false)} color="error">
-            Cerrar
           </Button>
         </DialogActions>
       </Dialog>

@@ -32,7 +32,6 @@ const Usuarios = () => {
     handleSubmit: handleSaveUsuario,
     formState: { errors: errorsAddUsuario },
     register: registerUsuario,
-    setFocus,
     reset,
   } = useForm();
   const [openModal, setOpenModal] = useState(false);
@@ -40,6 +39,7 @@ const Usuarios = () => {
   const payload = useDecodedJwt(token);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [mailToEdit, setMailToEdit] = useState(null);
+  const [lastRoleId, setLastRoleId] = useState(null);
   const [selectedUsuario, setselectedUsuario] = useState(null);
   const [userToDelete, setUserToDelete] = useState(null);
   const [openErrorModal, setOpenErrorModal] = useState(false);
@@ -72,11 +72,12 @@ const Usuarios = () => {
   /// Métodos para CRUD
   const handleEdit = (id) => {
     const userToEdit = data.find((user) => user.id === id);
+    setLastRoleId(userToEdit.roleId);
     setMailToEdit(userToEdit.email);
     setselectedUsuario(userToEdit);
+
     reset(userToEdit);
     setOpenModal(true);
-    setFocus("nombre");
   };
 
   const handleStateUsuarios = async (e, id) => {
@@ -105,6 +106,7 @@ const Usuarios = () => {
       roleId: 1,
       estadoId: 0,
     };
+    setLastRoleId("1");
     setselectedUsuario(newUser);
     reset(newUser);
     setOpenModal(true);
@@ -545,6 +547,9 @@ const Usuarios = () => {
             />
 
             <TextField
+              {...registerUsuario("roleId", {
+                required: "Debes escoger un rol!",
+              })}
               margin="dense"
               name="rol"
               label="Rol"
@@ -566,10 +571,7 @@ const Usuarios = () => {
                 },
               }}
               variant="outlined"
-              {...registerUsuario("roleId", {
-                required: "Debes escoger un rol!",
-              })}
-              value={selectedUsuario?.roleId || roles[0]?.id}
+              value={lastRoleId}
               onChange={handleInputChange}
               onClick={() => console.log(selectedUsuario?.roleId)}
               FormHelperTextProps={{ sx: { color: "red" } }}

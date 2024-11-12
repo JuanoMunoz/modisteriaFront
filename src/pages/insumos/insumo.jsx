@@ -565,45 +565,26 @@ const Insumos = () => {
               <MenuItem value={"controlado"}>Controlado</MenuItem>
               <MenuItem value={"no controlado"}>No controlado</MenuItem>
             </TextField>
-            <TextField
-              margin="dense"
-              name="categoriaId"
-              label="Categoría"
-              fullWidth
-              select
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&:hover fieldset": {
-                    borderColor: "purple",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "purple",
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  "&.Mui-focused": {
-                    color: "purple",
-                  },
-                },
-              }}
-              variant="outlined"
-              {...registerInsumo("categoriaId", {
-                required: "Debes escoger una categoría!",
-              })}
-              value={
-                parseInt(selectedInsumo?.categoriaId) ||
-                availableCategorias[0]?.id
-              }
-              onChange={handleInputChange}
-              FormHelperTextProps={{ sx: { color: "red" } }}
-              helperText={errorsAddInsumo?.categoriaId?.message}
-            >
-              {availableCategorias.map((cat) => (
-                <MenuItem key={cat.id} value={cat.id}>
-                  {cat.nombre}
-                </MenuItem>
-              ))}
-            </TextField>
+            <div class="custom-select-container">
+              <label for="insumo">Tipo insumo</label>
+              <select
+                id="insumo"
+                {...registerInsumo("categoriaId", {
+                  required: "Debes escoger una categoría!",
+                })}
+                value={
+                  selectedInsumo?.categoriaId || availableCategorias[0]?.id
+                }
+                onChange={handleInputChange}
+                name="categoriaId"
+              >
+                {availableCategorias.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
           </DialogContent>
           <DialogActions>
             <Button
