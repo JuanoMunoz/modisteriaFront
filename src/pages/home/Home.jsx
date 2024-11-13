@@ -5,6 +5,7 @@ import { ToastContainer } from "react-toastify";
 import { useJwt } from "../../context/JWTContext";
 import { postSession, postsNoSession } from "../../assets/constants.d";
 
+
 export default function Home() {
   const [postIndex, setPostIndex] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -128,6 +129,31 @@ export default function Home() {
               <h2 className="post__title">{post.title}</h2>
             </article>
           ))}
+        </div>
+      </div>
+
+      <div className="seccion1">
+        <div className="div1">
+          <div className="contenido1">
+            <h2 data-aos="fade-left">Redescubre tu estilo con prendas a medida</h2>
+            <hr className="separacion1"/>
+              <p
+                data-aos="fade-right"
+                data-aos-offset="300"
+                data-aos-easing="ease-in-sine"
+              >
+              ¡Renueva tu estilo y destaca con prendas hechas a tu medida! Agenda una cita con nuestra modista experta y transforma tus ideas en realidad.
+              </p>
+
+              <button 
+                className="btn-registro"
+                data-aos="fade-up"
+                data-aos-anchor-placement="top-bottom"
+                data-aos-delay="500"
+              >
+                <span>Agendar</span>
+              </button>
+          </div>
         </div>
       </div>
       <ToastContainer></ToastContainer>

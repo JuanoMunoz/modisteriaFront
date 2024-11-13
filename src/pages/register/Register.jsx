@@ -199,7 +199,8 @@ export default function Register() {
             <button className="btn-registro">
               <span>Registrarme</span>
             </button>
-          </form>
+          </form><br />
+          <span className="yaCuenta">¿Ya tienes una cuenta? <a href="sesion">Inicia Sesión</a></span>
         </div>
       </div>
       <Modal

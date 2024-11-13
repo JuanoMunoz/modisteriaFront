@@ -147,7 +147,8 @@ export default function InicioSesion() {
             >
               <span>Inicia Sesión</span>
             </button>
-          </form>
+          </form><br /><br />
+          <span className="noCuenta">¿Aún no tienes cuenta? <a href="registro">Registrate</a></span>
           <hr className="separacionForgot" />
           
           <button className="btnForgot" onClick={toggleModal}>

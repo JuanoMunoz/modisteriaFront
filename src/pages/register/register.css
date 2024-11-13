@@ -5,6 +5,10 @@
   border-color: 10px solid #1f0909;
 }
 
+.yaCuenta{
+  color: #000;
+}
+
 .black {
   color: #000;
   font-weight: bold;
@@ -24,7 +28,7 @@
 }
 
 .form {
-  margin-right: 150px;
+  margin-right: 100px;
   margin-top: 50px;
 }
 
@@ -74,6 +78,7 @@
   color: ghostwhite;
   background-color: rgb(187, 14, 202);
   margin-top: 20px;
+  margin-right: 50px;
 }
 
 .btn-registro span {
