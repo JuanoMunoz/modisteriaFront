@@ -34,10 +34,19 @@ const Bar = () => {
 
     return (
         <Box m="20px">
-            <Header title="Bar Chart" subtitle="Simple Bar Chart" />
+            <Header title="Grafica" subtitle="Insumos" />
             <Box height="75vh">
                 {loading ? (
-                    <p>Cargando datos...</p>
+                <Box marginLeft={"160px"}>
+                    <div class="wrapper">
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="shadow"></div>
+                        <div class="shadow"></div>
+                        <div class="shadow"></div>
+                    </div>
+                </Box>
                 ) : (
                     <BarChart data={data} />
                 )}

@@ -332,13 +332,14 @@ const Insumos = () => {
 
   return (
     <>
+    <br />
       <Box
         display="flex"
         justifyContent="space-between"
         alignItems="center"
         mb={2}
       >
-        <Typography variant="h4" sx={{ ml: 4 }}>
+        <Typography variant="h4" sx={{ ml: 4 }} fontSize={"40px"}>
           Insumos
         </Typography>
         <Box display={"flex"} gap={"5px"}>
@@ -376,7 +377,7 @@ const Insumos = () => {
           </Button>
         </Box>
       </Box>
-      {(loading || loadingCategoria) && <Loading></Loading>}
+      <br />
       <Box
         m="0px 20px"
         p="0px 10px"
@@ -406,7 +407,16 @@ const Insumos = () => {
         }}
       >
         {loading ? (
-          <Typography>Cargando insumos...</Typography>
+          <Box marginLeft={"175px"}>
+          <div class="wrapper">
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="shadow"></div>
+            <div class="shadow"></div>
+            <div class="shadow"></div>
+          </div>
+        </Box>
         ) : (
           <DataGrid
             rows={data}

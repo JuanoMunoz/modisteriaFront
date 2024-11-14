@@ -17,6 +17,8 @@ export default function Card({
     <section className="card-control-insumo">
       <div className="header-card">
         <div className="header-insumo">
+          
+        <span className="tela">"{tela}"</span>
           {cantidad < 0 ? (
             <TrendingDown
               sx={{ marginBottom: "5px" }}
@@ -40,7 +42,6 @@ export default function Card({
             >
               {Math.abs(cantidad)}
             </span>{" "}
-            <span className="tela">"{tela}"</span>
           </h4>
         </div>
         <div className="fecha-autor">

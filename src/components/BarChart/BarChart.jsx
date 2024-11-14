@@ -40,6 +40,11 @@ const BarChart = ({ data, isDashboard = false }) => {
                         fill: colors.grey[100],
                     },
                 },
+                tooltip:{
+                    container:{
+                        background: "#000000"
+                    }
+                }
             }}
             keys={["cantidad"]}
             indexBy="country"
@@ -47,7 +52,7 @@ const BarChart = ({ data, isDashboard = false }) => {
             padding={0.3}
             valueScale={{ type: "linear" }}
             indexScale={{ type: "band", round: true }}
-            colors={{ scheme: "nivo" }}
+            colors={() => "gray"}
             borderColor={{
                 from: "color",
                 modifiers: [["darker", "1.6"]],
