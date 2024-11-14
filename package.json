@@ -28,6 +28,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
+    "aos": "^2.3.4",
     "axios": "^1.7.4",
     "chart.js": "^3.9.1",
     "jwt-decode": "^4.0.0",

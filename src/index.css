@@ -24,6 +24,8 @@ body,
   font-family: "Comfortaa", sans-serif;
   scrollbar-color: rgb(187, 14, 202) #222;
   caret-color: rgb(187, 14, 202);
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
 
 .app {

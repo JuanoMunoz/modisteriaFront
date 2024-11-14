@@ -2,7 +2,7 @@ import Metadata from "../../components/metadata/Metadata";
 import { useEffect, useRef, useState } from "react";
 import useLLM from "../../hooks/useLLM";
 import "./citas.css";
-import videoSource from "/citasVideo.mp4";
+import videoSource from "/citaVideo.mp4";
 import { useJwt } from "../../context/JWTContext";
 import Modal from "../../components/modal/Modal";
 import { Calendar } from "../../components/svg/Svg";
