@@ -222,3 +222,38 @@
   border: none;
   display: flex;
 }
+
+.seccion2{
+  margin-top: 20px;
+  height: 70vh;
+  background-image: url('https://i.pinimg.com/1200x/0c/3f/e6/0c3fe6ed67f63ab0483e1b41f1e0591a.jpg');
+  background-size: cover;
+}
+
+.div2{
+  display: flex;
+  justify-content: end;
+  background-color: rgba(2, 2, 2, 0.548);
+  height: 70vh;
+}
+
+.contenido2{
+  width: 410px;
+  padding: 20px;
+  text-align: start;
+  margin-right: 110px;
+  margin-top: 10px;
+}
+
+.contenido2 h2{
+  font-size: 32px;
+  font-weight: bold;
+  color: white;
+}
+
+.separacion2{
+  background-color: rgb(187, 14, 202);
+  height: 3px;
+  border: none;
+  display: flex;
+}

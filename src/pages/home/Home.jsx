@@ -145,14 +145,45 @@ export default function Home() {
               ¡Renueva tu estilo y destaca con prendas hechas a tu medida! Agenda una cita con nuestra modista experta y transforma tus ideas en realidad.
               </p>
 
-              <button 
-                className="btn-registro"
+              <a href="cita">
+                <button 
+                  className="btn-registro"
+                  data-aos="fade-up"
+                  data-aos-anchor-placement="top-bottom"
+                  data-aos-delay="500"
+                >
+                  <span>Agendar</span>
+                </button>
+              </a>
+          </div>
+        </div>
+      </div>
+
+
+      <div className="seccion2">
+        <div className="div2">
+          <div className="contenido2">
+            <h2
+              data-aos="fade-right"
+              data-aos-offset="300"
+              data-aos-easing="ease-in-sine"
+            >
+              Nuestro catálogo de ropa
+            </h2>
+            <hr className="separacion2"/>
+              <p
                 data-aos="fade-up"
-                data-aos-anchor-placement="top-bottom"
-                data-aos-delay="500"
               >
-                <span>Agendar</span>
-              </button>
+                ¡Descubre el estilo perfecto para cada momento! Explora nuestro catálogo de ropa y encuentra desde básicos versátiles hasta piezas únicas que reflejan tu personalidad.
+              </p>
+              <a href="cita">
+                <button 
+                  className="btn-registro"
+                  data-aos="fade-left"
+                >
+                  <span>Catálgo</span>
+                </button>
+              </a>
           </div>
         </div>
       </div>

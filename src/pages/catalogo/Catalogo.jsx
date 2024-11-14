@@ -34,6 +34,7 @@ export default function Catalogo() {
     if (e.target.value > 250000 || e.target.value < 1) return;
     setFilterPrice(e.target.value);
   };
+
   const { triggerFetch } = useFetch();
   useEffect(() => {
     const fetchData = async () => {
@@ -44,6 +45,7 @@ export default function Catalogo() {
     };
     fetchData();
   }, []);
+  
   const handleCategoryChange = (e) => {
     setCategoria(e.target.value);
   };
