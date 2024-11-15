@@ -10,6 +10,7 @@ import StatBox from "../../components/StatBox/StatBox";
 import useFetch from "../../hooks/useFetch";
 import { useJwt } from "../../context/JWTContext";
 import { useEffect, useState } from "react";
+import './dashboard-index.css';
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -87,10 +88,10 @@ const Dashboard = () => {
         alignItems="center"
         mb={2}
       >
-        <Typography variant="h4" sx={{ ml: 4 }}>
+        <Typography variant="h4" sx={{ ml: 4 }} fontSize={"40px"}>
           Dashboard
         </Typography>
-      </Box>
+      </Box><br />
       <Box
         display="grid"
         gridTemplateColumns="repeat(12, 1fr)"
@@ -105,16 +106,17 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <Box display="flex" flexDirection="column" alignItems="center">
-            <EmailIcon sx={{ color: colors.purple[200], fontSize: "26px" }} />
+            <EmailIcon sx={{ color: colors.purple[500], fontSize: "32px" }} />
+            <br />
             <Typography variant="h4" color={colors.grey[100]} fontWeight="bold">
               {pqrs.length}
             </Typography>
             <Typography
               variant="h6"
-              color={colors.purple[500]}
+              color={colors.white}
               fontWeight="600"
             >
-              PQRs pendientes por revisar
+              PQRs pendientes
             </Typography>
           </Box>
         </Box>
@@ -125,20 +127,22 @@ const Dashboard = () => {
           display="flex"
           alignItems="center"
           justifyContent="center"
+          borderRadius={"10px"}
         >
           <Box display="flex" flexDirection="column" alignItems="center">
             <PointOfSaleIcon
-              sx={{ color: colors.purple[200], fontSize: "26px" }}
+              sx={{ color: colors.purple[500], fontSize: "32px" }}
             />
+            <br />
             <Typography variant="h4" color={colors.grey[100]} fontWeight="bold">
               {ventas.length}
             </Typography>
             <Typography
               variant="h6"
-              color={colors.purple[500]}
+              color={colors.white}
               fontWeight="600"
             >
-              Cantidad ventas realizadas
+              Ventas realizadas
             </Typography>
           </Box>
         </Box>
@@ -149,17 +153,19 @@ const Dashboard = () => {
           display="flex"
           alignItems="center"
           justifyContent="center"
+          borderRadius={"10px"}
         >
           <Box display="flex" flexDirection="column" alignItems="center">
             <PersonAddIcon
-              sx={{ color: colors.purple[200], fontSize: "26px" }}
+              sx={{ color: colors.purple[500], fontSize: "32px" }}
             />
+            <br />
             <Typography variant="h4" color={colors.grey[100]} fontWeight="bold">
               {usuarios.length}
             </Typography>
             <Typography
               variant="h6"
-              color={colors.purple[500]}
+              color={colors.white}
               fontWeight="600"
             >
               Usuarios registrados
@@ -173,15 +179,17 @@ const Dashboard = () => {
           display="flex"
           alignItems="center"
           justifyContent="center"
+          borderRadius={"10px"}
         >
-          <Box display="flex" flexDirection="column" alignItems="center">
-            <TrafficIcon sx={{ color: colors.purple[200], fontSize: "26px" }} />
+          <Box display="flex" flexDirection="column" alignItems="center" >
+            <TrafficIcon sx={{ color: colors.purple[500], fontSize: "32px" }} />
+            <br />
             <Typography variant="h4" color={colors.grey[100]} fontWeight="bold">
               {cotizaciones.length}
             </Typography>
             <Typography
               variant="h6"
-              color={colors.purple[500]}
+              color={colors.white}
               fontWeight="600"
             >
               Cotizaciones pendientes
@@ -194,6 +202,8 @@ const Dashboard = () => {
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
           mb="0px"
+          height="550px"
+          borderRadius={"10px"}
         >
           <Box
             mt="0px"
@@ -203,20 +213,30 @@ const Dashboard = () => {
             alignItems="center"
           >
             <Box>
+              <br /><br />
               <Typography
                 variant="h5"
                 fontWeight="600"
+                fontSize="25px"
                 color={colors.grey[100]}
               >
                 Insumos disponibles
               </Typography>
             </Box>
           </Box>
-          <Box height="250px" m="-20px 0 0 0">
+          <br />
+          <Box height="450px" m="-20px 0 0 0">
             {loading ? (
-              <p>Cargando datos...</p>
+              <div class="wrapper">
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="shadow"></div>
+                <div class="shadow"></div>
+                <div class="shadow"></div>
+              </div>
             ) : (
-              <BarChart data={insumos} isDashboard={true} />
+              <BarChart data={insumos} isDashboard={true}/>
             )}
           </Box>
         </Box>
@@ -235,11 +255,16 @@ const Dashboard = () => {
             borderBottom={`4px solid ${colors.primary[500]}`}
             colors={colors.grey[100]}
             p="15px"
+            backgroundColor={colors.purple[500]}
+            borderRadius={"10px 10px 0px 0px"}
+            height={"70px"}
           >
             <Typography color={colors.grey[100]} variant="h5" fontWeight="600">
               PQRS Recientes
             </Typography>
           </Box>
+
+          <br />
           {pqrs.map((pqr, i) => (
             <Box
               key={`${pqr.id}-${i}`}

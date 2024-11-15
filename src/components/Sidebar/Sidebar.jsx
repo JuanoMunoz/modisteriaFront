@@ -6,6 +6,7 @@ import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
+import snoopi from "/snoopi.jpeg";
 import {
   ShoppingCartOutlined,
   ViewListOutlined,
@@ -64,7 +65,7 @@ const Sidebar = ({ nombre }) => {
         },
         "& .pro-menu-item.active": {
           color: "rgb(187, 14, 202) !important",
-          borderBottom: "3px solid rgb(187, 14, 202) ",
+          borderBottom: "0px solid rgb(187, 14, 202) ",
         },
       }}
     >
@@ -82,13 +83,10 @@ const Sidebar = ({ nombre }) => {
             {!isCollapsed && (
               <Box
                 display="flex"
-                justifyContent="space-between"
+                justifyContent="end"
                 alignItems="center"
                 ml="15px"
               >
-                <Typography variant="h3" color={colors.grey[100]}>
-                  Modistería <br></br>Doña Luz
-                </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />
                 </IconButton>
@@ -103,7 +101,7 @@ const Sidebar = ({ nombre }) => {
                   alt="profile-user"
                   width="100px"
                   height="100px"
-                  src={`../../assets/logoo.png`}
+                  src={snoopi}
                   style={{ cursor: "pointer", borderRadius: "50%" }}
                 />
               </Box>

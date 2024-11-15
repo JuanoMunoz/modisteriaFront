@@ -291,13 +291,14 @@ const CitasDashboard = () => {
 
   return (
     <>
+    <br />
       <Box
         display="flex"
         justifyContent="space-between"
         alignItems="center"
         mb={2}
       >
-        <Typography variant="h4" sx={{ ml: 4 }}>
+        <Typography variant="h4" sx={{ ml: 4 }} fontSize={"40px"}>
           Citas
         </Typography>
         <Button
@@ -318,7 +319,7 @@ const CitasDashboard = () => {
           Agregar Cita
         </Button>
       </Box>
-      {loading && <Loading />}
+      <br />
       <Box
         m="0px 20px"
         p="0px 10px"
@@ -348,7 +349,16 @@ const CitasDashboard = () => {
         }}
       >
         {loading ? (
-          <Typography>Cargando citas...</Typography>
+          <Box marginLeft={"175px"}>
+            <div class="wrapper">
+              <div class="circle"></div>
+              <div class="circle"></div>
+              <div class="circle"></div>
+              <div class="shadow"></div>
+              <div class="shadow"></div>
+              <div class="shadow"></div>
+            </div>
+          </Box>
         ) : (
           <DataGrid
             rows={data}
