@@ -11,7 +11,6 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
-import Loading from "../../components/loading/Loading";
 import { TrashColor, Edit } from "../../components/svg/Svg";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";

@@ -19,12 +19,12 @@ import Ventas from "./pages/ventas/index";
 import Bar from "./pages/bar/index";
 import Line from "./pages/line/index";
 import Dashboard from "./pages/dashboard/index";
-import CatalogoDashboard from "./pages/catalogoDashboard/index";
-import PQRs from "./pages/PQRs/PQRs";
+import CatalogoDashboard from "./pages/catalogoDashboard/index"; 
 import CategoriaInsumos from "./pages/categoriaInsumo/categoriaInsumo";
 import CategoriaPrenda from "./pages/categoriaPrenda/categoriaPrenda";
 import Tallas from "./pages/tallas/Talla";
 import ControlInsumos from "./pages/controlInsumos/ControlInsumos";
+import UnidadesInsumo from "./pages/unidadesMedida/UnidadesMedida";
 function App() {
   return (
     <>
@@ -61,9 +61,8 @@ function App() {
           />
           <Route path="/dashboard/bar" element={<Bar />} />
           <Route path="/dashboard/line" element={<Line />} />
-          <Route path="/dashboard/pqrs" element={<PQRs />} />
+          <Route path="/dashboard/unidades-medida" element={<UnidadesInsumo />} />
           <Route path="/dashboard/tallas" element={<Tallas />} />
-          {/* <Route path="/calendar" element={<Calendar />} /> */}
         </Route>
         <Route path="*" element={<Error404 />}></Route>
       </Routes>

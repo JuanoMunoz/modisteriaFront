@@ -236,8 +236,8 @@ const Sidebar = ({ nombre }) => {
               setSelected={setSelected}
             />
             <Item
-              title="PQRs"
-              to="/dashboard/pqrs"
+              title="Unidades de medida"
+              to="/dashboard/unidades-medida"
               icon={<HelpOutlineOutlined />}
               selected={selected}
               setSelected={setSelected}
