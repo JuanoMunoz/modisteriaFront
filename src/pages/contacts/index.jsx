@@ -12,8 +12,8 @@ import {
   MenuItem,
   Switch,
 } from "@mui/material";
-import constants, { formToCop } from "../../assets/constants.d";
-import Loading from "../../components/loading/Loading";
+import constants from "../../assets/constants.d";
+import Header from "../../components/Header/Header";
 import { TrashColor, Edit } from "../../components/svg/Svg";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
@@ -54,7 +54,7 @@ const Usuarios = () => {
     updateUsuario,
     deleteUsuario,
   } = useUsuariosData();
-  const { initialFetchAllroles, loading: loadingRoles } = userolesData();
+  const { initialFetchAllroles } = userolesData();
   useEffect(() => {
     const initialFetchUsuarios = async () => {
       const respuesta = await initialFetchAllUsuarios();
@@ -242,32 +242,12 @@ const Usuarios = () => {
 
   return (
     <>
-    <br />
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-      >
-        <Typography variant="h4" sx={{ ml: 4 }} fontSize={"40px"}>
-          Usuarios
-        </Typography>
-        <Button
-          variant="contained"
-          onClick={handleAdd}
-          sx={{
-            backgroundColor: colors.purple[400],
-            "&:hover": {
-              backgroundColor: colors.purple[300],
-            },
-            color: "white",
-            mr: "10px",
-            textTransform: "capitalize",
-          }}
-        >
-          Agregar Usuario
-        </Button>
-      </Box>
+      <br />
+      <Header
+        title="Usuarios"
+        buttonText="Agregar usuario"
+        handleAdd={handleAdd}
+      ></Header>
       <br />
 
       <Box
@@ -299,18 +279,16 @@ const Usuarios = () => {
         }}
       >
         {loading ? (
-
           <Box marginLeft={"175px"}>
-                <div class="wrapper">
-                <div class="circle"></div>
-                <div class="circle"></div>
-                <div class="circle"></div>
-                <div class="shadow"></div>
-                <div class="shadow"></div>
-                <div class="shadow"></div>
-              </div>
+            <div class="wrapper">
+              <div class="circle"></div>
+              <div class="circle"></div>
+              <div class="circle"></div>
+              <div class="shadow"></div>
+              <div class="shadow"></div>
+              <div class="shadow"></div>
+            </div>
           </Box>
-
         ) : (
           <DataGrid
             rows={data}

@@ -9,8 +9,8 @@ import {
   TextField,
   Typography,
   Switch,
+  MenuItem,
 } from "@mui/material";
-import Loading from "../../components/loading/Loading";
 import { TrashColor, Edit } from "../../components/svg/Svg";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
@@ -50,7 +50,7 @@ const CategoriaInsumo = () => {
     const initialFetchCategorias = async () => {
       const respuesta = await initialFetchAllCategorias();
       if (respuesta.status === 200 && respuesta.data) {
-        setData(respuesta.data.filter((c) => c.tipo === "insumo"));
+        setData(respuesta.data);
       } else {
         setErrorMessage("Error al cargar las categorías.");
         setOpenErrorModal(true);
@@ -70,6 +70,7 @@ const CategoriaInsumo = () => {
   const handleAdd = () => {
     const initialCategoryBody = {
       nombre: "",
+      tipo: "Controlado",
       descripcion: "",
     };
     setSelectedCategoria(initialCategoryBody);
@@ -87,26 +88,23 @@ const CategoriaInsumo = () => {
       if (selectedCategoria?.id) {
         const respuesta = await updateCategoria(selectedCategoria.id, {
           nombre: formData.nombre,
+          tipo: formData.tipo,
           descripcion: formData.descripcion,
           estadoId: selectedCategoria.estadoId,
         });
 
         if (respuesta.status === 200 || respuesta.status === 201) {
-          const updatedData = data.map((categoria) =>
-            categoria.id === selectedCategoria.id
-              ? { ...categoria, ...formData }
-              : categoria
-          );
-          setData(updatedData);
+          const updatedData = await fetchAllCategorias();
+          setData(updatedData.data);
         } else {
           throw new Error("Error al editar la categoría.");
         }
       } else {
         const respuesta = await createCategoria({
           nombre: formData.nombre,
+          tipo: formData.tipo,
           descripcion: formData.descripcion,
           estadoId: 1,
-          tipo: "insumo",
         });
 
         if (respuesta.status === 201) {
@@ -157,8 +155,12 @@ const CategoriaInsumo = () => {
   };
 
   const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
     { field: "nombre", headerName: "Nombre", flex: 1 },
+    {
+      field: "tipo",
+      headerName: "Tipo insumo",
+      flex: 1,
+    },
     {
       field: "descripcion",
       headerName: "Descripción",
@@ -236,7 +238,7 @@ const CategoriaInsumo = () => {
 
   return (
     <>
-    <br />
+      <br />
       <Box
         display="flex"
         justifyContent="space-between"
@@ -293,15 +295,15 @@ const CategoriaInsumo = () => {
       >
         {loading ? (
           <Box marginLeft={"175px"}>
-          <div class="wrapper">
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="shadow"></div>
-            <div class="shadow"></div>
-            <div class="shadow"></div>
-          </div>
-        </Box>
+            <div class="wrapper">
+              <div class="circle"></div>
+              <div class="circle"></div>
+              <div class="circle"></div>
+              <div class="shadow"></div>
+              <div class="shadow"></div>
+              <div class="shadow"></div>
+            </div>
+          </Box>
         ) : (
           <DataGrid
             rows={data}
@@ -392,6 +394,44 @@ const CategoriaInsumo = () => {
                 },
               }}
             />
+            <TextField
+              margin="dense"
+              name="tipo"
+              label="Tipo insumo"
+              fullWidth
+              select
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&:hover fieldset": {
+                    borderColor: "purple",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "purple",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  "&.Mui-focused": {
+                    color: "purple",
+                  },
+                },
+              }}
+              variant="outlined"
+              {...registerCategoria("tipo", {
+                required: "¡Debes escoger el tipo del insumo!",
+              })}
+              value={selectedCategoria?.tipo || "controlado"}
+              onChange={(e) =>
+                setSelectedCategoria({
+                  ...selectedCategoria,
+                  tipo: e.target.value,
+                })
+              }
+              FormHelperTextProps={{ sx: { color: "red" } }}
+              helperText={errorsAddCategoria?.tipo?.message}
+            >
+              <MenuItem value={"Controlado"}>Controlado</MenuItem>
+              <MenuItem value={"No controlado"}>No controlado</MenuItem>
+            </TextField>
             <TextField
               margin="dense"
               name="descripcion"

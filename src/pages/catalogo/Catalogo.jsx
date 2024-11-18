@@ -39,13 +39,13 @@ export default function Catalogo() {
   useEffect(() => {
     const fetchData = async () => {
       const response = await triggerFetch(
-        "https://modisteria-back-production.up.railway.app/api/categorias/getAllCategorias?type=prenda"
+        "https://modisteria-back-production.up.railway.app/api/categorias/getAllCategoriasPrendas"
       );
       setCatalogoData(response.data);
     };
     fetchData();
   }, []);
-  
+
   const handleCategoryChange = (e) => {
     setCategoria(e.target.value);
   };
@@ -88,12 +88,18 @@ export default function Catalogo() {
           </div>
         </div>
 
-      {fetchCatalagoData?.length >= 1 ? (<div className="catalogo">
-          {!isLoading &&
-            fetchCatalagoData?.map((data) => (
-              <Product key={data.id} isLoading={isLoading} data={data} />
-            ))}
-        </div>):<div className="sinProductos"><span>Sin productos disponibles</span> <Alert size={"20"}></Alert></div>}
+        {fetchCatalagoData?.length >= 1 ? (
+          <div className="catalogo">
+            {!isLoading &&
+              fetchCatalagoData?.map((data) => (
+                <Product key={data.id} isLoading={isLoading} data={data} />
+              ))}
+          </div>
+        ) : (
+          <div className="sinProductos">
+            <span>Sin productos disponibles</span> <Alert size={"20"}></Alert>
+          </div>
+        )}
       </section>
       {fetchCatalagoData?.length >= 1 && (
         <div className="cPaginador">

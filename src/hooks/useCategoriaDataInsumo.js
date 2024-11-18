@@ -11,7 +11,7 @@ export default function useCategoriaDataInsumo() {
 
   const fetchAllCategorias = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/categorias/getAllCategorias?type=insumo",
+      "https://modisteria-back-production.up.railway.app/api/categoriainsumos/getAllCategoriaInsumos",
       "GET",
       null,
       { "x-token": token }
@@ -21,7 +21,7 @@ export default function useCategoriaDataInsumo() {
 
   const initialFetchAllCategorias = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/categorias/getAllCategorias?type=insumo",
+      "https://modisteria-back-production.up.railway.app/api/categoriainsumos/getAllCategoriaInsumos",
       "GET",
       null,
       { "x-token": token }
@@ -31,7 +31,7 @@ export default function useCategoriaDataInsumo() {
 
   const updateCategoria = async (id, infoUpdate) => {
     const respuesta = await updateFetch(
-      `https://modisteria-back-production.up.railway.app/api/categorias/updateCategoria/${id}`,
+      `https://modisteria-back-production.up.railway.app/api/categoriainsumos/updateCategoriaInsumo/${id}`,
       "PUT",
       infoUpdate,
       { "x-token": token }
@@ -41,7 +41,7 @@ export default function useCategoriaDataInsumo() {
 
   const createCategoria = async (infoUpdate) => {
     const respuesta = await createFetch(
-      `https://modisteria-back-production.up.railway.app/api/categorias/createCategoria`,
+      `https://modisteria-back-production.up.railway.app/api/categoriainsumos/createCategoriaInsumo`,
       "POST",
       infoUpdate,
       { "x-token": token }
@@ -51,7 +51,7 @@ export default function useCategoriaDataInsumo() {
 
   const deleteCategoria = async (id) => {
     const respuesta = await deleteFetch(
-      `https://modisteria-back-production.up.railway.app/api/categorias/deleteCategoria/${id}`,
+      `https://modisteria-back-production.up.railway.app/api/categoriainsumos/deleteCategoriaInsumo/${id}`,
       "DELETE",
       null,
       { "x-token": token }

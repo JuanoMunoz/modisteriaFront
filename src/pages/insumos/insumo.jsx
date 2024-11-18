@@ -275,11 +275,6 @@ const Insumos = () => {
       flex: 1,
     },
     {
-      field: "tipo",
-      headerName: "Tipo insumo",
-      flex: 1,
-    },
-    {
       field: "categoriaId",
       headerName: "Categoría",
       flex: 1,
@@ -332,7 +327,7 @@ const Insumos = () => {
 
   return (
     <>
-    <br />
+      <br />
       <Box
         display="flex"
         justifyContent="space-between"
@@ -408,15 +403,15 @@ const Insumos = () => {
       >
         {loading ? (
           <Box marginLeft={"175px"}>
-          <div class="wrapper">
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="shadow"></div>
-            <div class="shadow"></div>
-            <div class="shadow"></div>
-          </div>
-        </Box>
+            <div class="wrapper">
+              <div class="circle"></div>
+              <div class="circle"></div>
+              <div class="circle"></div>
+              <div class="shadow"></div>
+              <div class="shadow"></div>
+              <div class="shadow"></div>
+            </div>
+          </Box>
         ) : (
           <DataGrid
             rows={data}
@@ -542,39 +537,7 @@ const Insumos = () => {
               FormHelperTextProps={{ sx: { color: "red" } }}
               helperText={errorsAddInsumo?.cantidad?.message}
             />
-            <TextField
-              margin="dense"
-              name="tipo"
-              label="Tipo insumo"
-              fullWidth
-              select
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&:hover fieldset": {
-                    borderColor: "purple",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "purple",
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  "&.Mui-focused": {
-                    color: "purple",
-                  },
-                },
-              }}
-              variant="outlined"
-              {...registerInsumo("tipo", {
-                required: "¡Debes escoger el tipo del insumo!",
-              })}
-              value={selectedInsumo?.tipo || "controlado"}
-              onChange={handleInputChange}
-              FormHelperTextProps={{ sx: { color: "red" } }}
-              helperText={errorsAddInsumo?.categoriaId?.message}
-            >
-              <MenuItem value={"controlado"}>Controlado</MenuItem>
-              <MenuItem value={"no controlado"}>No controlado</MenuItem>
-            </TextField>
+
             <div class="custom-select-container">
               <label for="insumo">Tipo insumo</label>
               <select

@@ -122,7 +122,6 @@ const Tallas = () => {
   };
   // Fin métodos CRUD
   const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
     { field: "nombre", headerName: "Nombre", flex: 1 },
     { field: "tipo", headerName: "Tipo", flex: 1 },
     {
@@ -144,7 +143,7 @@ const Tallas = () => {
 
   return (
     <>
-    <br />
+      <br />
       <Box
         display="flex"
         justifyContent="space-between"
@@ -209,7 +208,7 @@ const Tallas = () => {
               <div class="shadow"></div>
               <div class="shadow"></div>
             </div>
-          </Box>  
+          </Box>
         ) : (
           <DataGrid
             rows={data}
@@ -218,7 +217,7 @@ const Tallas = () => {
             getRowId={(row) => row.id}
             initialState={{
               sorting: {
-                sortModel: [{ field: "id", sort: "asc" }],
+                sortModel: [{ field: "tipo", sort: "asc" }],
               },
             }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
