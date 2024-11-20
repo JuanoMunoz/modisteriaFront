@@ -1,12 +1,21 @@
 import { useState } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
-import { Box, IconButton, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  Typography,
+  useTheme,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from "@mui/material";
 import { Link } from "react-router-dom";
 import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
 import snoopi from "/snoopi.jpeg";
+
 import {
   ShoppingCartOutlined,
   ViewListOutlined,
@@ -19,10 +28,15 @@ import {
   HelpOutlineOutlined,
   StraightenOutlined,
   HistoryOutlined,
+  Settings,
+  TableChart,
+  BarChart,
+  PointOfSale,
 } from "@mui/icons-material";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -121,7 +135,7 @@ const Sidebar = ({ nombre }) => {
             </Box>
           )}
 
-          <Box paddingLeft={isCollapsed ? undefined : "10%"}>
+          <Box>
             <Item
               title="Dashboard"
               to="/dashboard"
@@ -129,156 +143,222 @@ const Sidebar = ({ nombre }) => {
               selected={selected}
               setSelected={setSelected}
             />
-
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
+            <Accordion
+              sx={{ background: `${colors.primary[400]}`, border: "none" }}
             >
-              Configuración
-            </Typography>
-            <Item
-              title="Usuarios"
-              to="/dashboard/contacts"
-              icon={<ContactsOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Roles"
-              to="/dashboard/roles"
-              icon={<AdminPanelSettingsOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Permisos"
-              to="/dashboard/permisos"
-              icon={<LockOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
+              <AccordionSummary
+                aria-controls="panel1-content"
+                id="panel1-header"
+                expandIcon={<ArrowDropDownIcon />}
+              >
+                {isCollapsed ? (
+                  <Settings></Settings>
+                ) : (
+                  <Typography
+                    variant="h6"
+                    color={colors.grey[300]}
+                    sx={{ m: "15px 0 5px 20px" }}
+                  >
+                    Configuración
+                  </Typography>
+                )}
+              </AccordionSummary>
+              <AccordionDetails>
+                <Item
+                  title="Usuarios"
+                  to="/dashboard/contacts"
+                  icon={<ContactsOutlinedIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Roles"
+                  to="/dashboard/roles"
+                  icon={<AdminPanelSettingsOutlined />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Permisos"
+                  to="/dashboard/permisos"
+                  icon={<LockOutlined />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion
+              sx={{ background: `${colors.primary[400]}`, border: "none" }}
             >
-              Compra
-            </Typography>
-            <Item
-              title="Insumos"
-              to="/dashboard/insumo"
-              icon={<InventoryOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Control Insumos"
-              to="/dashboard/controlInsumos"
-              icon={<HistoryOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Categoria Insumos"
-              to="/dashboard/categoriaInsumos"
-              icon={<Inventory2Outlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
+              <AccordionSummary
+                aria-controls="panel1-content"
+                id="panel1-header"
+                expandIcon={<ArrowDropDownIcon />}
+              >
+                {isCollapsed ? (
+                  <ShoppingCartOutlined />
+                ) : (
+                  <Typography
+                    variant="h6"
+                    color={colors.grey[300]}
+                    sx={{ m: "15px 0 5px 20px" }}
+                  >
+                    Compra
+                  </Typography>
+                )}
+              </AccordionSummary>
+              <AccordionDetails>
+                <Item
+                  title="Insumos"
+                  to="/dashboard/insumo"
+                  icon={<InventoryOutlined />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Control Insumos"
+                  to="/dashboard/controlInsumos"
+                  icon={<HistoryOutlined />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Categoria Insumos"
+                  to="/dashboard/categoriaInsumos"
+                  icon={<Inventory2Outlined />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion
+              sx={{ background: `${colors.primary[400]}`, border: "none" }}
             >
-              Venta
-            </Typography>
-            <Item
-              title="Ventas"
-              to="/dashboard/ventas"
-              icon={<ShoppingCartOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Citas"
-              to="/dashboard/cita"
-              icon={<CalendarTodayOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Catálogo"
-              to="/dashboard/catalogo"
-              icon={<ViewListOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Categoria Prendas"
-              to="/dashboard/categoriaPrenda"
-              icon={<StyleOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
+              <AccordionSummary
+                aria-controls="panel1-content"
+                id="panel1-header"
+                expandIcon={<ArrowDropDownIcon />}
+              >
+                {isCollapsed ? (
+                  <PointOfSale />
+                ) : (
+                  <Typography
+                    variant="h6"
+                    color={colors.grey[300]}
+                    sx={{ m: "15px 0 5px 20px" }}
+                  >
+                    Venta
+                  </Typography>
+                )}
+              </AccordionSummary>
+              <AccordionDetails>
+                <Item
+                  title="Ventas"
+                  to="/dashboard/ventas"
+                  icon={<ShoppingCartOutlined />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Citas"
+                  to="/dashboard/cita"
+                  icon={<CalendarTodayOutlined />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Catálogo"
+                  to="/dashboard/catalogo"
+                  icon={<ViewListOutlined />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Categoria Prendas"
+                  to="/dashboard/categoriaPrenda"
+                  icon={<StyleOutlined />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion
+              sx={{ background: `${colors.primary[400]}`, border: "none" }}
             >
-              Tablas
-            </Typography>
-            <Item
-              title="Tallas"
-              to="/dashboard/tallas"
-              icon={<StraightenOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Unidades de medida"
-              to="/dashboard/unidades-medida"
-              icon={<HelpOutlineOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
+              <AccordionSummary
+                aria-controls="panel1-content"
+                id="panel1-header"
+                expandIcon={<ArrowDropDownIcon />}
+              >
+                {isCollapsed ? (
+                  <TableChart />
+                ) : (
+                  <Typography
+                    variant="h6"
+                    color={colors.grey[300]}
+                    sx={{ m: "15px 0 5px 20px" }}
+                  >
+                    Tablas de referencia
+                  </Typography>
+                )}
+              </AccordionSummary>
+              <AccordionDetails>
+                <Item
+                  title="Tallas"
+                  to="/dashboard/tallas"
+                  icon={<StraightenOutlined />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Unidades de medida"
+                  to="/dashboard/unidades-medida"
+                  icon={<HelpOutlineOutlined />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion
+              sx={{
+                background: `${colors.primary[400]}`,
+                border: "none",
+              }}
             >
-              {/* Pages */}
-            </Typography>
-            {/* <Item
-              title="Calendario"
-              to="/dashboard/calendar"
-              icon={<CalendarTodayOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            /> */}
-
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
-            >
-              Gráficas
-            </Typography>
-            <Item
-              title="Bar Chart"
-              to="/dashboard/bar"
-              icon={<BarChartOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Line Chart"
-              to="/dashboard/line"
-              icon={<TimelineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+              <AccordionSummary
+                aria-controls="panel1-content"
+                id="panel1-header"
+                expandIcon={<ArrowDropDownIcon />}
+              >
+                {isCollapsed ? (
+                  <BarChart />
+                ) : (
+                  <Typography
+                    variant="h6"
+                    color={colors.grey[300]}
+                    sx={{ m: "15px 0 5px 20px" }}
+                  >
+                    Gráficas
+                  </Typography>
+                )}
+              </AccordionSummary>
+              <AccordionDetails>
+                <Item
+                  title="Bar Chart"
+                  to="/dashboard/bar"
+                  icon={<BarChartOutlinedIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Line Chart"
+                  to="/dashboard/line"
+                  icon={<TimelineOutlinedIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              </AccordionDetails>
+            </Accordion>
           </Box>
         </Menu>
       </ProSidebar>

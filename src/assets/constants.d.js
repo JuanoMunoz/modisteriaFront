@@ -111,4 +111,8 @@ export const formToCop = (value) => {
   }).format(value);
 };
 
+export const toggleState = (setState) => {
+  setState((prev) => !prev);
+};
+
 export default constants;

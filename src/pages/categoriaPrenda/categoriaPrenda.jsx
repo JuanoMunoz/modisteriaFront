@@ -10,7 +10,6 @@ import {
   Typography,
   Switch,
 } from "@mui/material";
-import Loading from "../../components/loading/Loading";
 import { TrashColor, Edit } from "../../components/svg/Svg";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
@@ -235,7 +234,7 @@ const CategoriaPrenda = () => {
 
   return (
     <>
-    <br />
+      <br />
       <Box
         display="flex"
         justifyContent="space-between"
@@ -291,16 +290,16 @@ const CategoriaPrenda = () => {
         }}
       >
         {loading ? (
-        <Box marginLeft={"175px"}>
-          <div class="wrapper">
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="shadow"></div>
-            <div class="shadow"></div>
-            <div class="shadow"></div>
-          </div>
-        </Box>
+          <Box marginLeft={"175px"}>
+            <div class="wrapper">
+              <div class="circle"></div>
+              <div class="circle"></div>
+              <div class="circle"></div>
+              <div class="shadow"></div>
+              <div class="shadow"></div>
+              <div class="shadow"></div>
+            </div>
+          </Box>
         ) : (
           <DataGrid
             rows={data}

@@ -318,11 +318,14 @@ const Usuarios = () => {
             overflowY: "scroll",
             scrollbarWidth: "none",
           },
-          
         }}
       >
         <form onSubmit={handleSaveUsuario(handleSave)}>
-          <DialogTitle color={colors.grey[100]} fontSize={"25px"} textAlign={"center"}>
+          <DialogTitle
+            color={colors.grey[100]}
+            fontSize={"25px"}
+            textAlign={"center"}
+          >
             {selectedUsuario?.id ? "Editar Usuario" : "Agregar Usuario"}
           </DialogTitle>
           <DialogContent>
@@ -589,18 +592,15 @@ const Usuarios = () => {
             <InputDash
               label="Nombre"
               description="El nombre debe de ser tiqui"
-              type="text"
+              type="password"
               width="535px"
-            >
-            </InputDash>
+            ></InputDash>
 
             <SelectDash
               label="Rol"
               description="El campo rol es obligatorio"
               width="535px"
-            >
-            </SelectDash>
-
+            ></SelectDash>
           </DialogContent>
           <DialogActions>
             <Button
