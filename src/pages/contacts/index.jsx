@@ -25,6 +25,8 @@ import { useJwt } from "../../context/JWTContext";
 import userolesData from "../../hooks/useRolData";
 import useDecodedJwt from "../../hooks/useJwt";
 import Transition from "../../components/transition/Transition";
+import InputDash from "../../components/inputDashboard/InputDash";
+import SelectDash from "../../components/selectDash/SelectDash";
 const Usuarios = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -310,9 +312,17 @@ const Usuarios = () => {
         keepMounted
         TransitionComponent={Transition}
         onClose={handleClose}
+        sx={{
+          "& .MuiDialog-paper": {
+            backgroundColor: "black",
+            overflowY: "scroll",
+            scrollbarWidth: "none",
+          },
+          
+        }}
       >
         <form onSubmit={handleSaveUsuario(handleSave)}>
-          <DialogTitle color={colors.grey[100]}>
+          <DialogTitle color={colors.grey[100]} fontSize={"25px"} textAlign={"center"}>
             {selectedUsuario?.id ? "Editar Usuario" : "Agregar Usuario"}
           </DialogTitle>
           <DialogContent>
@@ -574,6 +584,23 @@ const Usuarios = () => {
                 </MenuItem>
               ))}
             </TextField>
+
+            {/*INPUT NUEVO*/}
+            <InputDash
+              label="Nombre"
+              description="El nombre debe de ser tiqui"
+              type="text"
+              width="535px"
+            >
+            </InputDash>
+
+            <SelectDash
+              label="Rol"
+              description="El campo rol es obligatorio"
+              width="535px"
+            >
+            </SelectDash>
+
           </DialogContent>
           <DialogActions>
             <Button
