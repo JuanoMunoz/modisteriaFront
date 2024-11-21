@@ -60,3 +60,35 @@ export const ColumnsUnidadesDeMedida = ({ onEdit, onDelete }) => [
     },
   },
 ];
+
+export const ColumnsVentas = ({ onConfirm }) => [
+  { field: "id", headerName: "ID", flex: 1 },
+  { field: "imagen", headerName: "Imagen", flex: 1 },
+  { field: "fecha", headerName: "Fecha", flex: 1 },
+  { field: "nombrePersona", headerName: "Nombre Persona", flex: 1 },
+  { field: "valorDomicilio", headerName: "Valor Domicilio", flex: 1 },
+  { field: "valorPrendas", headerName: "Valor Prendas", flex: 1 },
+  { field: "valorFinal", headerName: "Valor Final", flex: 1 },
+  { field: "metodoPago", headerName: "Método de Pago", flex: 1 },
+  { field: "estadoId", headerName: "Estado", flex: 1 },
+  { field: "citaId", headerName: "Cita ID", flex: 1, renderCell: (params) => (params.value ? params.value : "Sin cita") },
+  {
+    field: "acciones",
+    headerName: "Acciones",
+    flex: 1,
+    renderCell: ({ row }) => (
+      <button
+        onClick={() => onConfirm(row.id)}
+        style={{
+          backgroundColor: "#7C0D84",
+          color: "white",
+          border: "none",
+          padding: "5px 10px",
+          cursor: "pointer",
+        }}
+      >
+        Confirmar Venta
+      </button>
+    ),
+  },
+];
