@@ -1,69 +1,66 @@
-import Card from "../../components/card/Card";
-import { useState, useEffect } from "react";
-import Loading from "../../components/loading/Loading";
+import Header from "../../components/Header/Header";
+import { ColumnsVentas } from "../../assets/columns";
+import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
+import ContainerDataGrid from "../../components/containerDatagrid/ContainerDataGrid";
 import useVentasData from "../../hooks/useVentasData";
-import { Button } from "@mui/material";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import useIsFirstRender from "../../hooks/useIsMount";
+import LoadingTableData from "../../components/loadingTableData/LoadingTableData";
+import Transition from "../../components/transition/Transition";
+import { toast, ToastContainer } from "react-toastify";
+import { useEffect, useState } from "react";
+
 export default function Ventas() {
-  const [ventasData, setVentasData] = useState([]);
-  const [lastModifications, setLastModifications] = useState(true);
-  const isFirstRender = useIsFirstRender();
-  const [filteredData, setFilteredData] = useState([]);
-  const { initialFetchAllVentas, loading } = useVentasData();
+  const [data, setData] = useState([]);
+  const { fetchAllVentas, updateVentas, loading } = useVentasData();
+
   useEffect(() => {
-    const loadVentas = async () => {
-      const response = await initialFetchAllVentas();
+    const fetchData = async () => {
+      const response = await fetchAllVentas();
       if (response.status === 200) {
-        setVentasData(response.data);
-        setFilteredData(response.data);
+        setData(response.data);
+      } else {
+        console.error("Error fetching ventas:", response);
       }
     };
-    loadVentas();
+    fetchData();
   }, []);
-  const handleFilterDataDates = () => setLastModifications(!lastModifications);
-  useEffect(() => {
-    if (isFirstRender) return;
-    console.log(lastModifications);
 
-    if (lastModifications) {
-      setFilteredData(ventasData);
-    } else {
-      const sortedData = [...ventasData].sort((a, b) => b.id - a.id);
-      setFilteredData(sortedData);
+  const handleConfirm = async (id) => {
+    try {
+      const response = await updateVentas(id, { estadoId: 14 });
+      if (response.status === 200) {
+        const updatedData = await fetchAllVentas();
+        if (updatedData.status === 200) {
+          setData(updatedData.data);
+        }
+        toast.success("¡Venta confirmada con éxito!");
+      } else {
+        toast.error("Error al confirmar la venta");
+      }
+    } catch (error) {
+      console.error("Error confirming venta:", error);
+      toast.error("Error al confirmar la venta");
     }
-  }, [lastModifications, ventasData]);
+  };
+
+  const columns = ColumnsVentas({ onConfirm: handleConfirm });
 
   return (
     <>
-      {loading && <Loading></Loading>}
-      <header className="header">
-        <h4>Ventas</h4>
-        <div className="header-actions">
-          <Button
-            variant="contained"
-            onClick={handleFilterDataDates}
-            color="primary"
-            startIcon={<FilterListIcon />}
-            endIcon={
-              lastModifications ? (
-                <ArrowUpwardIcon />
-              ) : (
-                <ArrowDownwardIcon></ArrowDownwardIcon>
-              )
-            }
-          >
-            {lastModifications ? "Más recientes" : "Más viejas"}
-          </Button>
-        </div>
-      </header>
-      <main className="main-control-insumo">
-        {filteredData &&
-          filteredData.map((venta) => <h5>{JSON.stringify(venta)}</h5>)}
-        <footer className="footer-history">¡Has llegado al final!</footer>
-      </main>
+      <Header title="Ventas" />
+      <ContainerDataGrid>
+        {loading ? (
+          <LoadingTableData />
+        ) : (
+          <DataGrid
+            rows={data}
+            columns={columns}
+            components={{ Toolbar: GridToolbar }}
+            getRowId={(row) => row.id}
+            localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+          />
+        )}
+      </ContainerDataGrid>
+      <ToastContainer />
     </>
   );
-}
+};
