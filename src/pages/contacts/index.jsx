@@ -1,35 +1,23 @@
-//mirando
-import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Typography,
-  MenuItem,
-  Switch,
-} from "@mui/material";
-import constants from "../../assets/constants.d";
-import Header from "../../components/Header/Header";
-import { TrashColor, Edit } from "../../components/svg/Svg";
-import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
-import { tokens } from "../../theme";
-import { useTheme } from "@mui/material";
-import { useForm } from "react-hook-form";
-import { alpha } from "@mui/material";
 import useUsuariosData from "../../hooks/useUsuarioData";
 import { useJwt } from "../../context/JWTContext";
 import userolesData from "../../hooks/useRolData";
 import useDecodedJwt from "../../hooks/useJwt";
+import React, { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogContentText } from "@mui/material";
+import CustomDialogActions from "../../components/customDialogActions/CustomDialogActions";
+import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import Transition from "../../components/transition/Transition";
+import { useForm } from "react-hook-form";
+import Header from "../../components/Header/Header";
+import ContainerDataGrid from "../../components/containerDatagrid/ContainerDataGrid";
+import LoadingTableData from "../../components/loadingTableData/LoadingTableData";
+import constants, { toggleState } from "../../assets/constants.d";
+import DialogTitleCustom from "../../components/dialogTitle/DialogTitleCustom";
+import { toast, ToastContainer } from "react-toastify";
+import { ColumnsUsuarios } from "../../assets/columns";
 import InputDash from "../../components/inputDashboard/InputDash";
 import SelectDash from "../../components/selectDash/SelectDash";
 const Usuarios = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
   const {
     handleSubmit: handleSaveUsuario,
     formState: { errors: errorsAddUsuario },
@@ -37,15 +25,13 @@ const Usuarios = () => {
     reset,
   } = useForm();
   const [openModal, setOpenModal] = useState(false);
+  const [dialogProps, setDialogProps] = useState({
+    action: "",
+    title: "",
+    row: null,
+  });
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [mailToEdit, setMailToEdit] = useState(null);
-  const [lastRoleId, setLastRoleId] = useState(null);
-  const [selectedUsuario, setselectedUsuario] = useState(null);
-  const [userToDelete, setUserToDelete] = useState(null);
-  const [openErrorModal, setOpenErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [data, setData] = useState([]);
   const [roles, setRoles] = useState([]);
   const {
@@ -56,69 +42,55 @@ const Usuarios = () => {
     updateUsuario,
     deleteUsuario,
   } = useUsuariosData();
-  const { initialFetchAllroles } = userolesData();
+  const { initialFetchAllroles, loading: loadingRoles } = userolesData();
   useEffect(() => {
     const initialFetchUsuarios = async () => {
       const respuesta = await initialFetchAllUsuarios();
       const rolesRespuesta = await initialFetchAllroles();
-
-      if (respuesta.status === 200 && respuesta.data) {
+      if (respuesta.status === 200 && rolesRespuesta.status === 200) {
         setData(respuesta.data);
-      }
-      if (rolesRespuesta.status === 200 && rolesRespuesta.data) {
         setRoles(rolesRespuesta.data);
       }
     };
     initialFetchUsuarios();
   }, []);
-  /// Métodos para CRUD
-  const handleEdit = (id) => {
-    const userToEdit = data.find((user) => user.id === id);
-    setLastRoleId(userToEdit.roleId);
-    setMailToEdit(userToEdit.email);
-    setselectedUsuario(userToEdit);
 
-    reset(userToEdit);
-    setOpenModal(true);
+  const handleDialog = (action, title, row = null) => {
+    setDialogProps({ action, row, title });
+    reset({
+      nombre: row?.nombre || "",
+      email: row?.email || "",
+      telefono: row?.telefono || "",
+      password: row?.password || "",
+      direccion: row?.direccion || "",
+      roleId: row?.roleId || roles[0]?.id,
+    });
+    toggleState(setOpenModal);
   };
-
-  const handleStateUsuarios = async (e, id) => {
-    const isActive = e.target.checked ? 1 : 2;
-    const response = await updateUsuario(id, { estadoId: isActive });
-    if (response.status === 200 || response.status === 201) {
-      const updatedData = await fetchAllUsuarios();
-
-      if (updatedData.status === 200 && updatedData.data) {
-        setData(updatedData.data);
-      }
-    }
+  const handleAdd = () => {
+    handleDialog("add", "Añadir Usuario");
+  };
+  const handleEdit = (row) => {
+    handleDialog("edit", "Editar Usuario", row);
+  };
+  const handleDelete = (row) => {
+    handleDialog("delete", "Eliminar Usuario", row);
   };
   const getRoleId = (roleId) => {
     const role = roles.find((rol) => rol.id === roleId);
     return role ? role.nombre : "Sin Rol asignado";
   };
-
-  const handleAdd = () => {
-    const newUser = {
-      nombre: "",
-      email: "",
-      telefono: "",
-      password: "",
-      direccion: "",
-      roleId: 1,
-      estadoId: 0,
-    };
-    setLastRoleId("1");
-    setselectedUsuario(newUser);
-    reset(newUser);
-    setOpenModal(true);
+  const handleChangeState = async (e, row) => {
+    const newState = e.target.checked ? 1 : 2;
+    const respuesta = await updateUsuario(row.id, { estadoId: newState });
+    if (respuesta.status !== 200 && respuesta.status !== 201)
+      return toast.error("¨¡Error al actualizar el estado!", {
+        toastId: "error",
+        autoClose: 1300,
+      });
+    const updatedData = await fetchAllUsuarios();
+    setData(updatedData.data);
   };
-
-  const handleClose = () => {
-    setOpenModal(false);
-    setselectedUsuario(null);
-  };
-
   const handleSave = async (data) => {
     const { direccion, password, ...dataValid } = data;
     const finalData = {
@@ -126,171 +98,58 @@ const Usuarios = () => {
       ...(direccion !== "" && { direccion }),
       ...(password !== "" && { password }),
     };
-    const response = selectedUsuario.id
-      ? await updateUsuario(selectedUsuario?.id, finalData)
-      : await createUsuario({ ...finalData, estadoId: 1 });
-    if (response.status === 200 || response.status === 201) {
-      const updatedData = await fetchAllUsuarios();
-      if (updatedData.status === 200 && updatedData.data) {
-        setData(updatedData.data);
+    let response;
+    if (dialogProps.action === "add")
+      response = await createUsuario({ ...finalData, estadoId: 1 });
+    if (dialogProps.action === "edit")
+      response = await updateUsuario(dialogProps.row.id, finalData);
+    if (dialogProps.action === "delete") {
+      if (dialogProps.row.estadoId === 1)
+        return toast.error(
+          "¡No se puede eliminar el usuario porque está activo!",
+          { autoClose: 1600, toastId: "activeError" }
+        );
+      response = await deleteUsuario(dialogProps.row.id);
+    }
+    if (response.status !== 201 && response.status !== 200)
+      return toast.error(response.data.message, {
+        autoClose: 2000,
+        toastId: "error",
+      });
+    const updatedData = await fetchAllUsuarios();
+    setData(updatedData.data);
+    toggleState(setOpenModal);
+    toast.success(
+      `¡Usuario ${
+        dialogProps.action === "add"
+          ? "agregado"
+          : dialogProps.action === "edit"
+          ? "editado"
+          : "eliminado"
+      } con éxito!`,
+      {
+        autoClose: 1800,
+        toastId: "crudAction",
       }
-      handleClose();
-    } else {
-      console.log(response);
-    }
+    );
   };
-
-  const handleDelete = (id) => {
-    const user = data.find((user) => user.id === id);
-    setUserToDelete(user);
-    setOpenDeleteDialog(true);
-  };
-
-  const confirmDelete = async () => {
-    if (userToDelete.estadoId === 1) {
-      setErrorMessage("No se puede eliminar el usuario porque está activo.");
-      setOpenErrorModal(true);
-      setOpenDeleteDialog(false);
-      return;
-    }
-
-    const response = await deleteUsuario(userToDelete.id);
-
-    if (response.status === 200 || response.status === 201) {
-      setData((prevData) =>
-        prevData.filter((user) => user.id !== userToDelete.id)
-      );
-      setOpenDeleteDialog(false);
-      setUserToDelete(null);
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setselectedUsuario((prev) => ({ ...prev, [name]: value }));
-  };
-  // Fin métodos CRUD
-  const columns = [
-    { field: "nombre", headerName: "Nombre", flex: 1 },
-    { field: "email", headerName: "Correo", flex: 1 },
-    { field: "telefono", headerName: "Teléfono", flex: 1 },
-    {
-      field: "direccion",
-      headerName: "Dirección",
-      flex: 1,
-      valueGetter: (params) =>
-        params.row.direccion ? params.row.direccion : "Sin dirección agregada",
-    },
-    {
-      field: "roleId",
-      headerName: "Rol",
-      flex: 1,
-      valueGetter: (params) => getRoleId(params.row.roleId),
-    },
-    {
-      field: "estadoId",
-      headerName: "Estado",
-      flex: 1,
-      renderCell: ({ row }) =>
-        payload?.email !== row.email ? (
-          <Switch
-            sx={{
-              "& .MuiSwitch-switchBase.Mui-checked": {
-                color: colors.purple[200],
-                "&:hover": {
-                  backgroundColor: alpha(
-                    colors.purple[200],
-                    theme.palette.action.hoverOpacity
-                  ),
-                },
-              },
-              "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                backgroundColor: colors.purple[200],
-              },
-            }}
-            color="warning"
-            onChange={(e) => {
-              handleStateUsuarios(e, row.id);
-            }}
-            defaultChecked={row.estadoId == 1}
-          />
-        ) : (
-          <Box sx={{ textAlign: "center", mx: "auto" }}>
-            <h4>Usuario activo</h4>
-          </Box>
-        ),
-    },
-    {
-      field: "acciones",
-      headerName: "Acciones",
-      flex: 1,
-      renderCell: ({ row }) =>
-        row.email === payload?.email ? (
-          <Box sx={{ textAlign: "center", mx: "auto" }}>
-            <h4>Sin acciones</h4>
-          </Box>
-        ) : (
-          <Box>
-            <Button onClick={() => handleEdit(row.id)}>
-              <Edit size={20} color={colors.grey[100]} />
-            </Button>
-            <Button onClick={() => handleDelete(row.id)} sx={{ ml: 1 }}>
-              <TrashColor size={20} color={colors.grey[100]} />
-            </Button>
-          </Box>
-        ),
-    },
-  ];
-
+  const columns = ColumnsUsuarios({
+    onEdit: handleEdit,
+    onDelete: handleDelete,
+    getRoleId: getRoleId,
+    payload: payload,
+    changeState: handleChangeState,
+  });
   return (
     <>
-      <br />
       <Header
-        title="Usuarios"
-        buttonText="Agregar usuario"
+        title={"Usuarios"}
         handleAdd={handleAdd}
+        buttonText={"Agregar usuario"}
       ></Header>
-      <br />
-
-      <Box
-        m="0px 20px"
-        p="0px 10px"
-        height="55%"
-        width="98%"
-        sx={{
-          "& .MuiDataGrid-root": { border: "none" },
-          "& .MuiDataGrid-cell": { borderBottom: "none" },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.purple[500],
-            borderBottom: "none",
-            color: "white",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
-          },
-          "& .MuiDataGrid-footerContainer": {
-            borderTop: "none",
-            backgroundColor: colors.primary[200],
-          },
-          "& .MuiCheckbox-root": {
-            color: `${colors.purple[200]} !important`,
-          },
-          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-            color: `${colors.grey[100]} !important`,
-          },
-        }}
-      >
-        {loading ? (
-          <Box marginLeft={"175px"}>
-            <div class="wrapper">
-              <div class="circle"></div>
-              <div class="circle"></div>
-              <div class="circle"></div>
-              <div class="shadow"></div>
-              <div class="shadow"></div>
-              <div class="shadow"></div>
-            </div>
-          </Box>
+      <ContainerDataGrid>
+        {loading || loadingRoles ? (
+          <LoadingTableData />
         ) : (
           <DataGrid
             rows={data}
@@ -305,377 +164,170 @@ const Usuarios = () => {
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
           />
         )}
-      </Box>
+      </ContainerDataGrid>
 
       <Dialog
         open={openModal}
         keepMounted
         TransitionComponent={Transition}
-        onClose={handleClose}
-        sx={{
-          "& .MuiDialog-paper": {
-            backgroundColor: "black",
-            overflowY: "scroll",
-            scrollbarWidth: "none",
-          },
-        }}
+        onClose={() => toggleState(setOpenModal)}
       >
         <form onSubmit={handleSaveUsuario(handleSave)}>
-          <DialogTitle
-            color={colors.grey[100]}
-            fontSize={"25px"}
-            textAlign={"center"}
-          >
-            {selectedUsuario?.id ? "Editar Usuario" : "Agregar Usuario"}
-          </DialogTitle>
+          <DialogTitleCustom>{dialogProps.title}</DialogTitleCustom>
           <DialogContent>
-            <TextField
-              margin="dense"
-              name="nombre"
-              label="Nombre"
-              type="text"
-              fullWidth
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&:hover fieldset": {
-                    borderColor: "purple",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "purple",
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  "&.Mui-focused": {
-                    color: "purple",
-                  },
-                },
-              }}
-              variant="outlined"
-              {...registerUsuario("nombre", {
-                required: "El usuario necesita un nombre.",
-                minLength: {
-                  message: "Mínimo requerido 4 caracteres",
-                  value: 4,
-                },
-                maxLength: {
-                  message: "Máximo permitido 25 caracteres",
-                  value: 25,
-                },
-                validate: {
-                  noNumbers: (value) =>
-                    /^[^0-9]+$/.test(value) || "No se permiten números",
-                  noSpecials: (value) =>
-                    /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$/.test(value) ||
-                    "No se permiten caracteres especiales",
-                },
-              })}
-              value={selectedUsuario?.nombre || ""}
-              onChange={handleInputChange}
-              FormHelperTextProps={{ sx: { color: "red" } }}
-              helperText={errorsAddUsuario?.nombre?.message}
-            />
-            <TextField
-              margin="dense"
-              name="email"
-              label="Correo"
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&:hover fieldset": {
-                    borderColor: "purple",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "purple",
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  "&.Mui-focused": {
-                    color: "purple",
-                  },
-                },
-              }}
-              type="text"
-              fullWidth
-              variant="outlined"
-              {...registerUsuario("email", {
-                required: "Debes ingresar un correo",
-                pattern: {
-                  value: constants.EMAIL_REGEX, // Expresión regular para números
-                  message: "Ingresa un correo electrónico válido",
-                },
-                validate: {
-                  isAlreadyRegistered: (value) => {
-                    if (selectedUsuario?.id) {
-                      const initialMail = value;
-                      const filteredData = data.filter(
-                        (usuario) => usuario.email !== mailToEdit
-                      );
-                      return (
-                        !filteredData.some(
-                          (usuario) => usuario.email == value
-                        ) || "El correo ya se encuentra registrado"
-                      );
-                    } else {
-                      return (
-                        !data.some((usuario) => usuario.email === value) ||
-                        "El correo ya se encuentra registrado"
-                      );
+            {dialogProps.action === "delete" ? (
+              <DialogContentText>{`¿Deseas eliminar el usuario con correo "${dialogProps.row.email}" ?`}</DialogContentText>
+            ) : (
+              <div>
+                <InputDash
+                  {...registerUsuario("nombre", {
+                    required: "El usuario necesita un nombre.",
+                    minLength: {
+                      message: "Mínimo requerido 4 caracteres",
+                      value: 4,
+                    },
+                    maxLength: {
+                      message: "Máximo permitido 25 caracteres",
+                      value: 25,
+                    },
+                    validate: {
+                      noNumbers: (value) =>
+                        /^[^0-9]+$/.test(value) || "No se permiten números",
+                      noSpecials: (value) =>
+                        /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$/.test(value) ||
+                        "No se permiten caracteres especiales",
+                    },
+                  })}
+                  label={"Nombre"}
+                  type={"text"}
+                  description={
+                    errorsAddUsuario.nombre && errorsAddUsuario.nombre.message
+                  }
+                />
+                <InputDash
+                  {...registerUsuario("email", {
+                    required: "Debes ingresar un correo",
+                    pattern: {
+                      value: constants.EMAIL_REGEX, // Expresión regular para números
+                      message: "Ingresa un correo electrónico válido",
+                    },
+                    validate: {
+                      isAlreadyRegistered: (value) => {
+                        const dataToCheck =
+                          dialogProps.action === "edit"
+                            ? data.filter(
+                                (user) => user.id != dialogProps.row.id
+                              )
+                            : data;
+                        return (
+                          !dataToCheck.some(
+                            (user) =>
+                              user.email.toLowerCase().trim() ===
+                              value.toLowerCase().trim()
+                          ) || "¡El usuario ya se encuentra registrado!"
+                        );
+                      },
+                    },
+                  })}
+                  label={"Email"}
+                  type={"email"}
+                  description={
+                    errorsAddUsuario.email && errorsAddUsuario.email.message
+                  }
+                />
+                <InputDash
+                  {...registerUsuario("telefono", {
+                    required: "El teléfono no puede estar vacío.",
+                    minLength: {
+                      message: "Ingresa un número colombiano valido (+57)",
+                      value: 10,
+                    },
+                    maxLength: {
+                      message: "Ingresa un número colombiano valido (+57)",
+                      value: 10,
+                    },
+                    validate: {
+                      isColombianNumber: (value) =>
+                        constants.PHONE_REGEX.test(value) ||
+                        "Ingresa un número colombiano valido (+57)",
+                    },
+                  })}
+                  label={"Teléfono"}
+                  type={"text"}
+                  description={
+                    errorsAddUsuario.telefono &&
+                    errorsAddUsuario.telefono.message
+                  }
+                />
+                {dialogProps.action === "add" && (
+                  <InputDash
+                    {...registerUsuario("password", {
+                      required: "La contraseña es obligatoria.",
+                      minLength: {
+                        message: "Mínimo requerido 8 caracteres",
+                        value: 8,
+                      },
+                      maxLength: {
+                        message: "Máximo permitido 30 caracteres",
+                        value: 30,
+                      },
+                    })}
+                    label={"Contraseña"}
+                    type={"password"}
+                    description={
+                      errorsAddUsuario.password &&
+                      errorsAddUsuario.password.message
                     }
-                  },
-                },
-              })}
-              value={selectedUsuario?.email || ""}
-              onChange={handleInputChange}
-              FormHelperTextProps={{ sx: { color: "red" } }}
-              helperText={errorsAddUsuario?.email?.message}
-            />
-            <TextField
-              margin="dense"
-              name="telefono"
-              label="Teléfono"
-              type="text"
-              fullWidth
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&:hover fieldset": {
-                    borderColor: "purple",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "purple",
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  "&.Mui-focused": {
-                    color: "purple",
-                  },
-                },
-              }}
-              variant="outlined"
-              {...registerUsuario("telefono", {
-                required: "El teléfono no puede estar vacío.",
-                minLength: {
-                  message: "Ingresa un número colombiano valido (+57)",
-                  value: 10,
-                },
-                maxLength: {
-                  message: "Ingresa un número colombiano valido (+57)",
-                  value: 10,
-                },
-                validate: {
-                  isColombianNumber: (value) =>
-                    constants.PHONE_REGEX.test(value) ||
-                    "Ingresa un número colombiano valido (+57)",
-                },
-              })}
-              value={selectedUsuario?.telefono || ""}
-              onChange={handleInputChange}
-              FormHelperTextProps={{ sx: { color: "red" } }}
-              helperText={errorsAddUsuario?.telefono?.message}
-            />
-            {!selectedUsuario?.id && (
-              <TextField
-                margin="dense"
-                name="password"
-                label="Contraseña"
-                type="password"
-                fullWidth
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    "&:hover fieldset": {
-                      borderColor: "purple",
+                  />
+                )}
+                <InputDash
+                  {...registerUsuario("direccion", {
+                    minLength: {
+                      message:
+                        "Mínimo 10 caracteres, ¡especifica más la dirección! (ej: Carrera 67a #37-103)",
+                      value: 10,
                     },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "purple",
+                    maxLength: {
+                      message: "Máximo permitido 50 caracteres",
+                      value: 50,
                     },
-                  },
-                  "& .MuiInputLabel-root": {
-                    "&.Mui-focused": {
-                      color: "purple",
-                    },
-                  },
-                }}
-                variant="outlined"
-                {...registerUsuario("password", {
-                  required: "La contraseña es obligatoria.",
-                  minLength: {
-                    message: "Mínimo requerido 8 caracteres",
-                    value: 4,
-                  },
-                  maxLength: {
-                    message: "Máximo permitido 30 caracteres",
-                    value: 30,
-                  },
-                })}
-                value={selectedUsuario?.password || ""}
-                onChange={handleInputChange}
-                FormHelperTextProps={{ sx: { color: "red" } }}
-                helperText={errorsAddUsuario?.password?.message}
-              />
+                  })}
+                  label={"Dirección"}
+                  type={"text"}
+                  description={
+                    errorsAddUsuario.direccion &&
+                    errorsAddUsuario.direccion.message
+                  }
+                />{" "}
+                <SelectDash
+                  {...registerUsuario("roleId", {
+                    required: "Debes escoger un rol!",
+                  })}
+                  label="Rol"
+                  description={
+                    errorsAddUsuario.roleId && errorsAddUsuario.roleId.message
+                  }
+                >
+                  {roles.map((rol) => (
+                    <option key={rol.id} value={rol.id}>
+                      {rol.nombre}
+                    </option>
+                  ))}
+                </SelectDash>
+              </div>
             )}
-            <TextField
-              margin="dense"
-              name="direccion"
-              label="Dirección"
-              type="text"
-              fullWidth
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&:hover fieldset": {
-                    borderColor: "purple",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "purple",
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  "&.Mui-focused": {
-                    color: "purple",
-                  },
-                },
-              }}
-              variant="outlined"
-              {...registerUsuario("direccion", {
-                minLength: {
-                  message:
-                    "Mínimo 10 caracteres, ¡especifica más la dirección! (ej: Carrera 67a #37-103)",
-                  value: 10,
-                },
-                maxLength: {
-                  message: "Máximo permitido 50 caracteres",
-                  value: 50,
-                },
-              })}
-              value={selectedUsuario?.direccion || ""}
-              onChange={handleInputChange}
-              FormHelperTextProps={{ sx: { color: "red" } }}
-              helperText={errorsAddUsuario?.direccion?.message}
-            />
-
-            <TextField
-              {...registerUsuario("roleId", {
-                required: "Debes escoger un rol!",
-              })}
-              margin="dense"
-              name="rol"
-              label="Rol"
-              fullWidth
-              select
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&:hover fieldset": {
-                    borderColor: "purple",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "purple",
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  "&.Mui-focused": {
-                    color: "purple",
-                  },
-                },
-              }}
-              variant="outlined"
-              value={lastRoleId}
-              onChange={handleInputChange}
-              onClick={() => console.log(selectedUsuario?.roleId)}
-              FormHelperTextProps={{ sx: { color: "red" } }}
-              helperText={errorsAddUsuario?.categoriaId?.message}
-            >
-              {roles.map((rol) => (
-                <MenuItem key={rol.id} value={rol.id}>
-                  {rol.nombre}
-                </MenuItem>
-              ))}
-            </TextField>
-
-            {/*INPUT NUEVO*/}
-            <InputDash
-              label="Nombre"
-              description="El nombre debe de ser tiqui"
-              type="password"
-              width="535px"
-            ></InputDash>
-
-            <SelectDash
-              label="Rol"
-              description="El campo rol es obligatorio"
-              width="535px"
-            ></SelectDash>
           </DialogContent>
-          <DialogActions>
-            <Button
-              sx={{ textTransform: "capitalize" }}
-              onClick={handleClose}
-              color="error"
-            >
-              Cancelar
-            </Button>
-            <Button
-              sx={{ textTransform: "capitalize" }}
-              type="submit"
-              color="success"
-            >
-              Guardar
-            </Button>
-          </DialogActions>
+          <CustomDialogActions
+            cancelButton
+            customCancelColor={dialogProps.action === "delete" && "inherit"}
+            saveButton={dialogProps.action !== "delete"}
+            deleteButton={dialogProps.action === "delete"}
+            handleClose={() => toggleState(setOpenModal)}
+          />
         </form>
       </Dialog>
-
-      <Dialog
-        open={openDeleteDialog}
-        keepMounted
-        TransitionComponent={Transition}
-        onClose={() => setOpenDeleteDialog(false)}
-      >
-        <DialogTitle color={colors.grey[100]}>
-          Confirmar Eliminación
-        </DialogTitle>
-        <DialogContent>
-          <Typography>
-            ¿Estás seguro de que deseas eliminar el Usuario "
-            {userToDelete?.nombre}"?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            sx={{ textTransform: "capitalize" }}
-            onClick={() => setOpenDeleteDialog(false)}
-            color="inherit"
-          >
-            Cancelar
-          </Button>
-          <Button
-            sx={{ textTransform: "capitalize" }}
-            onClick={confirmDelete}
-            color="error"
-          >
-            Eliminar
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog
-        open={openErrorModal}
-        keepMounted
-        TransitionComponent={Transition}
-        onClose={() => setOpenErrorModal(false)}
-      >
-        <DialogTitle color={colors.grey[100]}>Error</DialogTitle>
-        <DialogContent>
-          <Typography color={colors.grey[100]}>{errorMessage}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            sx={{ textTransform: "capitalize" }}
-            onClick={() => setOpenErrorModal(false)}
-            color="error"
-          >
-            Cerrar
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ToastContainer></ToastContainer>
     </>
   );
 };
-
 export default Usuarios;

@@ -137,7 +137,7 @@ export default function UnidadesMedida() {
                 {...register("nombre", {
                   required: "El nombre es requerido",
                   minLength: { value: 4, message: "¡Mínimo 4 caracteres!" },
-                  maxLength: { value: 69, message: "¡Máximo 69 caracteres!" },
+                  maxLength: { value: 69, message: "¡Máximo 70 caracteres!" },
                   validate: {
                     isAlreadyRegistered: (value) => {
                       const dataToCheck =

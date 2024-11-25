@@ -1,48 +1,39 @@
 //mirando
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Typography,
-  Switch,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  FormHelperText,
-  FormControl,
-  FormLabel,
-  Grid,
-  List,
-  ListItem,
-  ListItemText,
-} from "@mui/material";
-import Loading from "../../components/loading/Loading";
-import { TrashColor, Edit, Eye } from "../../components/svg/Svg";
+import "./roles.css";
+import { Dialog, DialogContent, DialogContentText } from "@mui/material";
+import PermissionList from "../../components/permisssionsList/PermissionList";
+import InputDash from "../../components/inputDashboard/InputDash";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
-import { tokens } from "../../theme";
 import Transition from "../../components/transition/Transition";
-import { useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { alpha } from "@mui/material";
 import useRolData from "../../hooks/useRolData";
 import usePermisosData from "../../hooks/usePermisosData";
 import { toast, ToastContainer } from "react-toastify";
+import Header from "../../components/Header/Header";
+import ContainerDataGrid from "../../components/containerDatagrid/ContainerDataGrid";
+import LoadingTableData from "../../components/loadingTableData/LoadingTableData";
+import DialogTitleCustom from "../../components/dialogTitle/DialogTitleCustom";
+import CustomDialogActions from "../../components/customDialogActions/CustomDialogActions";
+import { toggleState } from "../../assets/constants.d";
+import { ColumnsRoles } from "../../assets/columns";
+import CheckboxCustom from "../../components/checkbox/CheckBoxCustom";
 const Roles = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
   const {
     handleSubmit: handleSaveRol,
-    watch: watchSaveRol,
     reset,
-    setFocus,
     formState: { errors: errorsAddRol },
     register: registerRol,
   } = useForm();
+  const [openModal, setOpenModal] = useState(false);
+  const [dialogProps, setDialogProps] = useState({
+    action: "",
+    title: "",
+    row: null,
+  });
+  const [data, setData] = useState([]);
+  const [permisos, setPermisos] = useState([]);
+  const [selectedPermisos, setSelectedPermisos] = useState([]);
   const {
     initialFetchAllroles,
     fetchAllroles,
@@ -52,313 +43,126 @@ const Roles = () => {
     loading,
   } = useRolData();
   const { fetchAllPermisos, loading: loadingpermisos } = usePermisosData();
-  const [openModal, setOpenModal] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [openPermisosModal, setOpenPermisosModal] = useState(false);
-  const [selectedRol, setselectedRol] = useState(null);
-  const [permisosId, setPermisosId] = useState([]);
-  const [rolToDelete, setrolToDelete] = useState(null);
-  const [rolToEditName, setRolToEditName] = useState(null);
-  const [openErrorModal, setOpenErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [data, setData] = useState([]);
-  const [permisos, setPermisos] = useState([]);
   useEffect(() => {
     const initialFetchRoles = async () => {
       const respuesta = await initialFetchAllroles();
       const permiso = await fetchAllPermisos();
-
-      if (respuesta.status === 200 && respuesta.data) {
+      if (respuesta.status === 200 && permiso.status === 200) {
         setData(respuesta.data);
-      }
-      if (permiso.status === 200 && permiso.data) {
         setPermisos(permiso.data);
       }
     };
     initialFetchRoles();
   }, []);
-
-  /// Métodos para CRUD
-  const handleEdit = (id) => {
-    const rolToEdit = data.find((rol) => rol.id === id);
-    const rolParsed = {
-      id: rolToEdit?.id,
-      nombre: rolToEdit?.nombre,
-      permisosId: rolToEdit?.Permisos?.map((permiso) => permiso.id),
-    };
-    setselectedRol(rolParsed);
-    setRolToEditName(rolParsed.nombre);
-    reset(rolParsed);
-    setOpenModal(true);
-    setFocus("nombre");
+  const handleDialog = (action, title, row = null) => {
+    setDialogProps({ action, row, title });
+    reset({
+      nombre: row?.nombre || "",
+      permisosId: row?.permisos || [],
+    });
+    toggleState(setOpenModal);
   };
-  const handlePermission = (id) => {
-    const rolToEdit = data.find((rol) => rol.id === id);
-    const permisosId = rolToEdit?.Permisos?.map((permiso) => permiso.id);
-    const rolParsed = {
-      id: rolToEdit?.id,
-      nombre: rolToEdit?.nombre,
-      permisosId,
-    };
-    setPermisosId(permisosId);
-    setselectedRol(rolParsed);
-    reset(rolParsed);
-    setOpenPermisosModal(true);
+  const handleAdd = () => {
+    handleDialog("add", "Añadir Rol");
   };
-
-  const handleStateRol = async (e, id) => {
-    const isActive = e.target.checked ? 1 : 2;
-    const rol = data.find((rol) => rol.id === id);
+  const handleEdit = (row) => {
+    handleDialog("edit", "Editar Rol", row);
+  };
+  const handleDelete = (row) => {
+    handleDialog("delete", "Eliminar Rol", row);
+  };
+  const handlePermissions = (row) => {
+    handleDialog("seePermissions", "Permisos", row);
+  };
+  const handleChangeState = async (e, row) => {
+    const newState = e.target.checked ? 1 : 2;
+    const rol = data.find((rol) => rol.id === row.id);
     if (rol.usuarios.length > 0) {
       e.preventDefault();
-      return toast.error("¡El rol ya está siendo usado!", { autoClose: 1500 });
+      return toast.error("¡El rol ya está siendo usado!", {
+        autoClose: 1500,
+      });
     }
-    const response = await updaterol(id, { estadoId: isActive });
-    if (response.status === 200 || response.status === 201) {
-      const updatedData = await fetchAllroles();
-
-      if (
-        (updatedData.status === 200 || updatedData.status === 201) &&
-        updatedData.data
-      ) {
-        setData(updatedData.data);
-      } else {
-        console.log(updatedData);
-      }
+    const respuesta = await updaterol(row.id, { estadoId: newState });
+    if (respuesta.status !== 200 && respuesta.status !== 201)
+      return toast.error("¨¡Error al actualizar el estado!", {
+        toastId: "error",
+        autoClose: 1300,
+      });
+    const updatedData = await fetchAllroles();
+    setData(updatedData.data);
+  };
+  const columns = ColumnsRoles({
+    onEdit: handleEdit,
+    onDelete: handleDelete,
+    handlePermission: handlePermissions,
+    changeState: handleChangeState,
+  });
+  const handleCheckboxChange = (permisoId) => {
+    setSelectedPermisos((prevSelected) =>
+      prevSelected.includes(permisoId)
+        ? prevSelected.filter((id) => id !== permisoId)
+        : [...prevSelected, permisoId]
+    );
+  };
+  useEffect(() => {
+    if (dialogProps.action === "edit" && dialogProps.row) {
+      const permisosRol = dialogProps.row.permisos;
+      setSelectedPermisos(permisosRol);
     } else {
-      console.log(response);
+      setSelectedPermisos([]);
     }
-  };
-
-  const handleAdd = () => {
-    const rolBase = {
-      nombre: "",
-      permisosId: [],
-    };
-    setPermisosId([]);
-    setselectedRol(rolBase);
-    reset(rolBase);
-    setOpenModal(true);
-    setFocus("nombre");
-  };
-
-  const handleClose = () => {
-    setOpenModal(false);
-    reset({
-      permisosId: [],
-    });
-    setselectedRol(null);
-  };
-
+  }, [dialogProps]);
   const handleSave = async (data) => {
     const bodyData = {
-      ...data,
-      permisosId: data.permisosId.map((permisoId) => parseInt(permisoId)),
+      nombre: data.nombre,
+      permisosId: selectedPermisos,
     };
-
-    const response = selectedRol.id
-      ? await updaterol(selectedRol.id, bodyData)
-      : await createrol({ ...bodyData, estadoId: 1 });
-    if (response.status === 200 || response.status === 201) {
-      const updatedData = await fetchAllroles();
-      if (updatedData.status === 200 && updatedData.data) {
-        setData(updatedData.data);
+    let response;
+    if (dialogProps.action === "add")
+      response = await createrol({ ...data, estadoId: 1 });
+    if (dialogProps.action === "edit")
+      response = await updaterol(dialogProps.row.id, data);
+    if (dialogProps.action === "delete") {
+      if (dialogProps.row.estadoId === 1)
+        return toast.error("¡No se puede eliminar el rol porque está activo!", {
+          autoClose: 1600,
+          toastId: "activeError",
+        });
+      response = await deleterol(dialogProps.row.id);
+    }
+    if (response.status !== 201 && response.status !== 200)
+      return toast.error(response.data.message, {
+        autoClose: 2000,
+        toastId: "error",
+      });
+    const updatedData = await fetchAllroles();
+    setData(updatedData.data);
+    toggleState(setOpenModal);
+    toast.success(
+      `¡Rol ${
+        dialogProps.action === "add"
+          ? "agregado"
+          : dialogProps.action === "edit"
+          ? "editado"
+          : "eliminado"
+      } con éxito!`,
+      {
+        autoClose: 1800,
+        toastId: "crudAction",
       }
-      handleClose();
-    } else {
-      console.log(response);
-    }
+    );
   };
-
-  const handleDelete = (id) => {
-    const rol = data.find((rol) => rol.id === id);
-    setrolToDelete(rol);
-    setOpenDeleteDialog(true);
-  };
-
-  const confirmDelete = async () => {
-    if (rolToDelete.estadoId === 1) {
-      setErrorMessage("No se puede eliminar el rol porque está activo.");
-      setOpenErrorModal(true);
-      setOpenDeleteDialog(false);
-      return;
-    }
-
-    const response = await deleterol(rolToDelete?.id);
-
-    if (response.status === 200 || response.status === 201) {
-      setData((prevData) =>
-        prevData.filter((rol) => rol.id !== rolToDelete.id)
-      );
-      setOpenDeleteDialog(false);
-      setrolToDelete(null);
-    } else {
-      setErrorMessage(response?.data?.message);
-      setOpenErrorModal(true);
-      setOpenDeleteDialog(false);
-      return;
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value, checked } = e.target;
-
-    if (name === "permisosId") {
-      if (checked) {
-        setselectedRol((prev) => ({
-          ...prev,
-          permisosId: [...prev.permisosId, value],
-        }));
-      } else {
-        setselectedRol((prev) => ({
-          ...prev,
-          permisosId: prev.permisosId.filter((id) => id !== value),
-        }));
-      }
-    } else {
-      setselectedRol((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  // Fin métodos CRUD
-  const columns = [
-    { field: "nombre", headerName: "Nombre", flex: 1 },
-    {
-      field: "permisosId",
-      headerName: "Permisos",
-      flex: 1,
-      renderCell: ({ row }) => (
-        <Button
-          onClick={() => {
-            handlePermission(row.id);
-          }}
-        >
-          <Eye size={20} color={colors.grey[100]}></Eye>
-        </Button>
-      ),
-    },
-    {
-      field: "estadoId",
-      headerName: "Estado",
-      flex: 1,
-      renderCell: ({ row }) =>
-        row.id >= 5 ? (
-          <Switch
-            sx={{
-              "& .MuiSwitch-switchBase.Mui-checked": {
-                color: colors.purple[200],
-                "&:hover": {
-                  backgroundColor: alpha(
-                    colors.purple[200],
-                    theme.palette.action.hoverOpacity
-                  ),
-                },
-              },
-              "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                backgroundColor: colors.purple[200],
-              },
-            }}
-            color="warning"
-            onChange={(e) => {
-              handleStateRol(e, row.id);
-            }}
-            checked={row.estadoId == 1}
-          />
-        ) : (
-          "Activo"
-        ),
-    },
-    {
-      field: "acciones",
-      headerName: "Acciones",
-      flex: 1,
-      renderCell: ({ row }) =>
-        row.id >= 5 ? (
-          <Box sx={{ textAlign: "center", mx: "auto" }}>
-            <Button onClick={() => handleEdit(row.id)}>
-              <Edit size={20} color={colors.grey[100]} />
-            </Button>
-            <Button onClick={() => handleDelete(row.id)} sx={{ ml: 1 }}>
-              <TrashColor size={20} color={colors.grey[100]} />
-            </Button>
-          </Box>
-        ) : (
-          <Box sx={{ textAlign: "center", mx: "auto" }}>
-            <h4>Sin acciones</h4>
-          </Box>
-        ),
-    },
-  ];
-
   return (
     <>
-    <br />
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-      >
-        <Typography variant="h4" sx={{ ml: 4 }} fontSize={"40px"}>
-          Roles
-        </Typography>
-        <Button
-          variant="contained"
-          onClick={handleAdd}
-          sx={{
-            backgroundColor: colors.purple[400],
-            "&:hover": {
-              backgroundColor: colors.purple[300],
-            },
-            color: "white",
-            mr: "10px",
-            textTransform: "capitalize",
-          }}
-        >
-          Agregar Rol
-        </Button>
-      </Box>
-
-      <br />
-      <Box
-        m="0px 20px"
-        p="0px 10px"
-        height="56%"
-        width="98%"
-        sx={{
-          "& .MuiDataGrid-root": { border: "none" },
-          "& .MuiDataGrid-cell": { borderBottom: "none" },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.purple[500],
-            borderBottom: "none",
-            color: "white",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
-          },
-          "& .MuiDataGrid-footerContainer": {
-            borderTop: "none",
-            backgroundColor: colors.primary[200],
-          },
-          "& .MuiCheckbox-root": {
-            color: `${colors.purple[200]} !important`,
-          },
-          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-            color: `${colors.grey[100]} !important`,
-          },
-        }}
-      >
-        {loading ? (
-        <Box marginLeft={"175px"}>
-            <div class="wrapper">
-              <div class="circle"></div>
-              <div class="circle"></div>
-              <div class="circle"></div>
-              <div class="shadow"></div>
-              <div class="shadow"></div>
-              <div class="shadow"></div>
-            </div>
-        </Box>
+      <Header
+        title={"Roles"}
+        handleAdd={handleAdd}
+        buttonText={"Agregar Rol"}
+      ></Header>
+      <ContainerDataGrid>
+        {loading || loadingpermisos ? (
+          <LoadingTableData></LoadingTableData>
         ) : (
           <DataGrid
             rows={data}
@@ -373,68 +177,74 @@ const Roles = () => {
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
           />
         )}
-      </Box>
-
+      </ContainerDataGrid>
       <Dialog
         open={openModal}
         keepMounted
         TransitionComponent={Transition}
-        onClose={handleClose}
+        onClose={() => toggleState(setOpenModal)}
       >
         <form onSubmit={handleSaveRol(handleSave)}>
-          <DialogTitle color={colors.grey[100]}>
-            {selectedRol?.id ? "Editar Rol" : "Agregar Rol"}
-          </DialogTitle>
+          <DialogTitleCustom>{dialogProps.title}</DialogTitleCustom>
           <DialogContent>
-            <TextField
-              margin="dense"
-              name="nombre"
-              label="Nombre"
-              type="text"
-              fullWidth
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&:hover fieldset": {
-                    borderColor: "purple",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "purple",
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  "&.Mui-focused": {
-                    color: "purple",
-                  },
-                },
-              }}
-              variant="outlined"
-              {...registerRol("nombre", {
-                required: "El rol necesita un nombre.",
-                validate: {
-                  isAlreadyInserted: (value) => {
-                    if (selectedRol?.id) {
+            {dialogProps.action === "delete" ? (
+              <DialogContentText>{`¿Deseas eliminar el rol "${dialogProps.row.nombre}" ?`}</DialogContentText>
+            ) : dialogProps.action === "seePermissions" ? (
+              <PermissionList permisos={dialogProps.row.Permisos} />
+            ) : (
+              <div>
+                <InputDash
+                  {...registerRol("nombre", {
+                    required: "El nombre es requerido",
+                    minLength: { value: 4, message: "¡Mínimo 4 caracteres!" },
+                    maxLength: { value: 69, message: "¡Máximo 70 caracteres!" },
+                    validate: {
+                      isAlreadyRegistered: (value) => {
+                        const dataToCheck =
+                          dialogProps.action === "edit"
+                            ? data.filter((rol) => rol.id != dialogProps.row.id)
+                            : data;
+                        return (
+                          !dataToCheck.some(
+                            (rol) =>
+                              rol.nombre.toLowerCase().trim() ===
+                              value.toLowerCase().trim()
+                          ) || "¡El rol ya se encuentra registrado!"
+                        );
+                      },
+                    },
+                  })}
+                  label={"Nombre"}
+                  type={"text"}
+                  description={
+                    errorsAddRol.nombre && errorsAddRol.nombre.message
+                  }
+                />
+                <section>
+                  <h3>Permisos</h3>
+                  <article className="permissions-grid">
+                    {permisos.map((permiso) => {
                       return (
-                        !data.some(
-                          (rol) =>
-                            rol.nombre.toUpperCase() == value.toUpperCase() &&
-                            rol.nombre.toUpperCase() !==
-                              rolToEditName.toUpperCase()
-                        ) || "El rol ya se encuentra registrado"
+                        <CheckboxCustom
+                          key={permiso.id}
+                          {...registerRol(`permisosId`, {
+                            required: "¡Debes elegir mínimo un permiso!",
+                          })}
+                          handlecheckbox={handleCheckboxChange}
+                          permisoName={`${permiso.nombre}`}
+                          checked={selectedPermisos.includes(permiso.id)}
+                          idPermiso={permiso.id}
+                        />
                       );
-                    }
-                    return (
-                      !data.some(
-                        (rol) => rol.nombre.toUpperCase() == value.toUpperCase()
-                      ) || "El rol ya se encuentra registrado"
-                    );
-                  },
-                },
-              })}
-              value={selectedRol?.nombre || ""}
-              onChange={handleInputChange}
-              FormHelperTextProps={{ sx: { color: "red" } }}
-              helperText={errorsAddRol?.nombre?.message}
-            />
+                    })}
+                  </article>
+                  <span className="errorPermisosId">
+                    {errorsAddRol.permisosId && errorsAddRol.permisosId.message}
+                  </span>
+                </section>
+              </div>
+            )}
+            {/* 
             <FormControl
               component="fieldset"
               sx={{
@@ -450,31 +260,6 @@ const Roles = () => {
                   container
                   spacing={2}
                 >
-                  {permisos.map((permiso, idx) => (
-                    <Grid item xs={6} key={permiso.id}>
-                      <FormControlLabel
-                        key={permiso.id}
-                        control={
-                          <Checkbox
-                            sx={{
-                              color: colors.grey[100],
-                              "&.Mui-checked": {
-                                color: colors.purple[300],
-                              },
-                            }}
-                            name="permisosId"
-                            {...registerRol(`permisosId`, {
-                              required: "¡Debes elegir mínimo un permiso!",
-                            })}
-                            defaultChecked={permisosId.includes(permiso.id)}
-                            onChange={handleInputChange}
-                            value={permiso.id}
-                          />
-                        }
-                        label={permiso.nombre}
-                      />
-                    </Grid>
-                  ))}
                 </Grid>
               </FormGroup>
               {errorsAddRol?.permisosId && (
@@ -482,111 +267,16 @@ const Roles = () => {
                   {errorsAddRol.permisosId.message}
                 </FormHelperText>
               )}
-            </FormControl>
+            </FormControl> */}
           </DialogContent>
-          <DialogActions>
-            <Button
-              sx={{ textTransform: "capitalize" }}
-              onClick={handleClose}
-              color="error"
-            >
-              Cancelar
-            </Button>
-            <Button
-              sx={{ textTransform: "capitalize" }}
-              type="submit"
-              color="success"
-            >
-              Guardar
-            </Button>
-          </DialogActions>
+          <CustomDialogActions
+            cancelButton
+            customCancelColor={dialogProps.action === "delete" && "inherit"}
+            saveButton={dialogProps.action !== "delete"}
+            deleteButton={dialogProps.action === "delete"}
+            handleClose={() => toggleState(setOpenModal)}
+          />
         </form>
-      </Dialog>
-
-      <Dialog
-        open={openPermisosModal}
-        keepMounted
-        TransitionComponent={Transition}
-        onClose={() => setOpenPermisosModal(false)}
-      >
-        <DialogTitle fontSize={"24px"} color={colors.grey[100]}>
-          Permisos
-        </DialogTitle>
-        <DialogContent>
-          <List sx={{ marginRight: "200px" }}>
-            {selectedRol?.permisosId?.map((permisoActivo, idx) => (
-              <ListItem key={idx}>
-                <ListItemText
-                  primary={
-                    permisos.find((permiso) => permiso.id === permisoActivo)
-                      ?.nombre
-                  }
-                ></ListItemText>
-              </ListItem>
-            ))}
-          </List>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            sx={{ textTransform: "capitalize" }}
-            onClick={() => setOpenPermisosModal(false)}
-            color="error"
-          >
-            cerrar
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog
-        open={openDeleteDialog}
-        keepMounted
-        TransitionComponent={Transition}
-        onClose={() => setOpenDeleteDialog(false)}
-      >
-        <DialogTitle color={colors.grey[100]}>
-          Confirmar Eliminación
-        </DialogTitle>
-        <DialogContent>
-          <Typography>
-            ¿Estás seguro de que deseas eliminar el rol "{rolToDelete?.nombre}"?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            sx={{ textTransform: "capitalize" }}
-            onClick={() => setOpenDeleteDialog(false)}
-            color="inherit"
-          >
-            Cancelar
-          </Button>
-          <Button
-            sx={{ textTransform: "capitalize" }}
-            onClick={confirmDelete}
-            color="error"
-          >
-            Eliminar
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog
-        keepMounted
-        TransitionComponent={Transition}
-        open={openErrorModal}
-        onClose={() => setOpenErrorModal(false)}
-      >
-        <DialogTitle color={colors.grey[100]}>Error</DialogTitle>
-        <DialogContent>
-          <Typography color={colors.grey[100]}>{errorMessage}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            sx={{ textTransform: "capitalize" }}
-            onClick={() => setOpenErrorModal(false)}
-            color="error"
-          >
-            Cerrar
-          </Button>
-        </DialogActions>
       </Dialog>
       <ToastContainer></ToastContainer>
     </>

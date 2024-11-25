@@ -1,42 +1,21 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Typography,
-  Switch,
-  MenuItem,
-} from "@mui/material";
-import { TrashColor, Edit } from "../../components/svg/Svg";
+import { Dialog, DialogContent, DialogContentText } from "@mui/material";
+import CustomDialogActions from "../../components/customDialogActions/CustomDialogActions";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
-import { tokens } from "../../theme";
 import Transition from "../../components/transition/Transition";
-import { useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { alpha } from "@mui/material";
+import SelectDash from "../../components/selectDash/SelectDash";
+import Header from "../../components/Header/Header";
+import ContainerDataGrid from "../../components/containerDatagrid/ContainerDataGrid";
+import LoadingTableData from "../../components/loadingTableData/LoadingTableData";
+import { toggleState } from "../../assets/constants.d";
+import DialogTitleCustom from "../../components/dialogTitle/DialogTitleCustom";
+import { toast, ToastContainer } from "react-toastify";
+import { ColumnsCategoriaInsumos } from "../../assets/columns";
+import InputDash from "../../components/inputDashboard/InputDash";
 import useCategoriaDataInsumo from "../../hooks/useCategoriaDataInsumo";
 
 const CategoriaInsumo = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
-  const {
-    handleSubmit: handleSaveCategoria,
-    formState: { errors: errorsAddCategoria },
-    register: registerCategoria,
-    reset,
-  } = useForm();
-  const [openModal, setOpenModal] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [selectedCategoria, setSelectedCategoria] = useState(null);
-  const [categoriaToEditName, setCategoriaToEditName] = useState(null);
-  const [categoriaToDelete, setCategoriaToDelete] = useState(null);
-  const [openErrorModal, setOpenErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [data, setData] = useState([]);
   const {
     fetchAllCategorias,
     loading,
@@ -45,265 +24,104 @@ const CategoriaInsumo = () => {
     deleteCategoria,
     initialFetchAllCategorias,
   } = useCategoriaDataInsumo();
+  const [openModal, setOpenModal] = useState(false);
+  const [dialogProps, setDialogProps] = useState({
+    action: "",
+    title: "",
+    row: null,
+  });
+  const [data, setData] = useState([]);
+  const {
+    handleSubmit: handleSaveCategoria,
+    formState: { errors: errorsAddCategoria },
+    register: registerCategoria,
+    reset,
+  } = useForm();
 
   useEffect(() => {
     const initialFetchCategorias = async () => {
       const respuesta = await initialFetchAllCategorias();
-      if (respuesta.status === 200 && respuesta.data) {
-        setData(respuesta.data);
-      } else {
-        setErrorMessage("Error al cargar las categorías.");
-        setOpenErrorModal(true);
-      }
+      if (respuesta.status === 200) setData(respuesta.data);
     };
     initialFetchCategorias();
   }, []);
-
-  const handleEdit = (id) => {
-    const categoriaToEdit = data.find((categoria) => categoria.id === id);
-    setSelectedCategoria(categoriaToEdit);
-    setCategoriaToEditName(categoriaToEdit.nombre);
-    reset(categoriaToEdit);
-    setOpenModal(true);
+  // Funciones para las modales
+  const handleDialog = (action, title, row = null) => {
+    setDialogProps({ action, row, title });
+    reset({
+      nombre: row?.nombre || "",
+      descripcion: row?.descripcion || "",
+      tipo: row?.tipo || "Controlado",
+    });
+    toggleState(setOpenModal);
   };
-
   const handleAdd = () => {
-    const initialCategoryBody = {
-      nombre: "",
-      tipo: "Controlado",
-      descripcion: "",
-    };
-    setSelectedCategoria(initialCategoryBody);
-    reset(initialCategoryBody);
-    setOpenModal(true);
+    handleDialog("add", "Añadir categoría");
+  };
+  const handleEdit = (row) => {
+    handleDialog("edit", "Editar categoría", row);
+  };
+  const handleDelete = (row) => {
+    handleDialog("delete", "Eliminar categoría", row);
+  };
+  const handleChangeState = async (e, row) => {
+    const newState = e.target.checked ? 1 : 2;
+    const respuesta = await updateCategoria(row.id, { estadoId: newState });
+    if (respuesta.status !== 200 && respuesta.status !== 201)
+      return toast.error("¨¡Error al actualizar el estado!", {
+        toastId: "error",
+        autoClose: 1300,
+      });
+    const updatedData = await fetchAllCategorias();
+    setData(updatedData.data);
   };
 
-  const handleClose = () => {
-    setOpenModal(false);
-    setSelectedCategoria(null);
-  };
-
-  const handleSave = async (formData) => {
-    try {
-      if (selectedCategoria?.id) {
-        const respuesta = await updateCategoria(selectedCategoria.id, {
-          nombre: formData.nombre,
-          tipo: formData.tipo,
-          descripcion: formData.descripcion,
-          estadoId: selectedCategoria.estadoId,
-        });
-
-        if (respuesta.status === 200 || respuesta.status === 201) {
-          const updatedData = await fetchAllCategorias();
-          setData(updatedData.data);
-        } else {
-          throw new Error("Error al editar la categoría.");
-        }
-      } else {
-        const respuesta = await createCategoria({
-          nombre: formData.nombre,
-          tipo: formData.tipo,
-          descripcion: formData.descripcion,
-          estadoId: 1,
-        });
-
-        if (respuesta.status === 201) {
-          const updatedData = await fetchAllCategorias();
-
-          if (updatedData.status === 200 && updatedData.data) {
-            setData(updatedData.data);
-          }
-        } else {
-          throw new Error("Error al crear la categoría.");
-        }
+  const handleSave = async (data) => {
+    let response;
+    if (dialogProps.action === "add")
+      response = await createCategoria({ ...data, estadoId: 1 });
+    if (dialogProps.action === "edit")
+      response = await updateCategoria(dialogProps.row.id, data);
+    if (dialogProps.action === "delete")
+      response = await deleteCategoria(dialogProps.row.id);
+    if (response.status !== 201 && response.status !== 200)
+      return toast.error(response.data.message, {
+        autoClose: 2000,
+        toastId: "error",
+      });
+    const updatedData = await fetchAllCategorias();
+    setData(updatedData.data);
+    toggleState(setOpenModal);
+    toast.success(
+      `¡Categoría ${
+        dialogProps.action === "add"
+          ? "agregada"
+          : dialogProps.action === "edit"
+          ? "editada"
+          : "eliminada"
+      } con éxito!`,
+      {
+        autoClose: 1800,
+        toastId: "crudAction",
       }
-    } catch (error) {
-      console.error("Error details:", error);
-      setErrorMessage(error.message || "Error al editar la categoría.");
-      setOpenErrorModal(true);
-    } finally {
-      handleClose();
-    }
+    );
   };
 
-  const handleDelete = (id) => {
-    const categoria = data.find((categoria) => categoria.id === id);
-    setCategoriaToDelete(categoria);
-    setOpenDeleteDialog(true);
-  };
-
-  const confirmDelete = async () => {
-    if (categoriaToDelete.estadoId !== 2) {
-      setErrorMessage("No se puede eliminar la categoría si está activa.");
-      setOpenErrorModal(true);
-      setOpenDeleteDialog(false);
-      return;
-    }
-
-    const respuesta = await deleteCategoria(categoriaToDelete.id);
-    if (respuesta.status === 201) {
-      setData(
-        data.filter((categoria) => categoria.id !== categoriaToDelete.id)
-      );
-      setOpenDeleteDialog(false);
-      setCategoriaToDelete(null);
-    } else {
-      setErrorMessage(respuesta.data.message);
-      setOpenErrorModal(true);
-      setOpenDeleteDialog(false);
-    }
-  };
-
-  const columns = [
-    { field: "nombre", headerName: "Nombre", flex: 1 },
-    {
-      field: "tipo",
-      headerName: "Tipo insumo",
-      flex: 1,
-    },
-    {
-      field: "descripcion",
-      headerName: "Descripción",
-      flex: 2,
-      valueGetter: (params) =>
-        params.row.descripcion ? params.row.descripcion : "Sin descripción",
-    },
-    {
-      field: "estadoId",
-      headerName: "Estado",
-      flex: 1,
-      renderCell: ({ row }) => (
-        <Switch
-          sx={{
-            "& .MuiSwitch-switchBase.Mui-checked": {
-              color: colors.purple[200],
-              "&:hover": {
-                backgroundColor: alpha(
-                  colors.purple[200],
-                  theme.palette.action.hoverOpacity
-                ),
-              },
-            },
-            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-              backgroundColor: colors.purple[200],
-            },
-          }}
-          color="warning"
-          checked={row.estadoId === 1}
-          onChange={async (e) => {
-            const newState = e.target.checked ? 1 : 2;
-            try {
-              const respuesta = await updateCategoria(row.id, {
-                ...row,
-                estadoId: newState,
-              });
-
-              if (respuesta.status === 200 || respuesta.status === 201) {
-                const updatedData = data.map((categoria) =>
-                  categoria.id === row.id
-                    ? { ...categoria, estadoId: newState }
-                    : categoria
-                );
-                setData(updatedData);
-              } else {
-                throw new Error("Error al actualizar el estado.");
-              }
-            } catch (error) {
-              console.error("Error details:", error);
-              setErrorMessage(
-                error.message || "Error al actualizar el estado."
-              );
-              setOpenErrorModal(true);
-            }
-          }}
-        />
-      ),
-    },
-    {
-      field: "acciones",
-      headerName: "Acciones",
-      flex: 1,
-      renderCell: ({ row }) => (
-        <Box>
-          <Button onClick={() => handleEdit(row.id)}>
-            <Edit size={20} color={colors.grey[100]} />
-          </Button>
-          <Button onClick={() => handleDelete(row.id)} sx={{ ml: 1 }}>
-            <TrashColor size={20} color={colors.grey[100]} />
-          </Button>
-        </Box>
-      ),
-    },
-  ];
-
+  const columns = ColumnsCategoriaInsumos({
+    onEdit: handleEdit,
+    onDelete: handleDelete,
+    changeState: handleChangeState,
+  });
   return (
     <>
-      <br />
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-      >
-        <Typography variant="h4" sx={{ ml: 4 }} fontSize={"30px"}>
-          Categorías de insumo
-        </Typography>
-        <Button
-          variant="contained"
-          onClick={handleAdd}
-          sx={{
-            backgroundColor: colors.purple[400],
-            "&:hover": {
-              backgroundColor: colors.purple[300],
-            },
-            color: "white",
-            mr: "10px",
-            textTransform: "capitalize",
-          }}
-        >
-          Agregar categoría
-        </Button>
-      </Box>
-      <br />
-      <Box
-        m="0px 20px"
-        p="0px 10px"
-        height="56vh"
-        width="98%"
-        sx={{
-          "& .MuiDataGrid-root": { border: "none" },
-          "& .MuiDataGrid-cell": { borderBottom: "none" },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.purple[500],
-            borderBottom: "none",
-            color: "white",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
-          },
-          "& .MuiDataGrid-footerContainer": {
-            borderTop: "none",
-            backgroundColor: colors.primary[200],
-          },
-          "& .MuiCheckbox-root": {
-            color: `${colors.purple[200]} !important`,
-          },
-          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-            color: `${colors.grey[100]} !important`,
-          },
-        }}
-      >
+      <Header
+        title={"Categorías de insumos"}
+        handleAdd={handleAdd}
+        buttonText={"Agregar categoría"}
+      />
+      <ContainerDataGrid>
         {loading ? (
-          <Box marginLeft={"175px"}>
-            <div class="wrapper">
-              <div class="circle"></div>
-              <div class="circle"></div>
-              <div class="circle"></div>
-              <div class="shadow"></div>
-              <div class="shadow"></div>
-              <div class="shadow"></div>
-            </div>
-          </Box>
+          <LoadingTableData />
         ) : (
           <DataGrid
             rows={data}
@@ -312,230 +130,97 @@ const CategoriaInsumo = () => {
             getRowId={(row) => row.id}
             initialState={{
               sorting: {
-                sortModel: [{ field: "id", sort: "asc" }],
+                sortModel: [{ field: "nombre", sort: "asc" }],
               },
             }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
           />
         )}
-      </Box>
-
+      </ContainerDataGrid>
       <Dialog
         keepMounted
         TransitionComponent={Transition}
         open={openModal}
-        onClose={handleClose}
+        onClose={() => toggleState(setOpenModal)}
       >
         <form onSubmit={handleSaveCategoria(handleSave)}>
-          <DialogTitle color={colors.grey[100]}>
-            {selectedCategoria?.id ? "Editar Categoría" : "Agregar Categoría"}
-          </DialogTitle>
+          <DialogTitleCustom>{dialogProps.title}</DialogTitleCustom>
           <DialogContent>
-            <TextField
-              margin="dense"
-              name="nombre"
-              label="Nombre"
-              type="text"
-              fullWidth
-              variant="outlined"
-              {...registerCategoria("nombre", {
-                required: "El nombre es requerido.",
-                minLength: {
-                  message:
-                    "¡La categoría debe tener por lo menos 4 caracteres!",
-                  value: 4,
-                },
-                maxLength: {
-                  message: "¡La categoría debe tener máximo 15 caracteres!",
-                  value: 15,
-                },
-                validate: {
-                  isAlreadyInserted: (value) => {
-                    if (selectedCategoria?.id) {
-                      return (
-                        !data.some(
-                          (cat) =>
-                            cat.nombre.toUpperCase() == value.toUpperCase() &&
-                            cat.nombre.toUpperCase() !==
-                              categoriaToEditName.toUpperCase()
-                        ) || "La categoría ya se encuentra registrada"
-                      );
-                    }
-                    return (
-                      !data.some(
-                        (cat) => cat.nombre.toUpperCase() == value.toUpperCase()
-                      ) || "La categoría ya se encuentra registrada"
-                    );
-                  },
-                },
-              })}
-              value={selectedCategoria?.nombre || ""}
-              onChange={(e) =>
-                setSelectedCategoria({
-                  ...selectedCategoria,
-                  nombre: e.target.value,
-                })
-              }
-              FormHelperTextProps={{ sx: { color: "red" } }}
-              helperText={errorsAddCategoria?.nombre?.message}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&:hover fieldset": {
-                    borderColor: "purple",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "purple",
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  "&.Mui-focused": {
-                    color: "purple",
-                  },
-                },
-              }}
-            />
-            <TextField
-              margin="dense"
-              name="tipo"
-              label="Tipo insumo"
-              fullWidth
-              select
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&:hover fieldset": {
-                    borderColor: "purple",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "purple",
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  "&.Mui-focused": {
-                    color: "purple",
-                  },
-                },
-              }}
-              variant="outlined"
-              {...registerCategoria("tipo", {
-                required: "¡Debes escoger el tipo del insumo!",
-              })}
-              value={selectedCategoria?.tipo || "controlado"}
-              onChange={(e) =>
-                setSelectedCategoria({
-                  ...selectedCategoria,
-                  tipo: e.target.value,
-                })
-              }
-              FormHelperTextProps={{ sx: { color: "red" } }}
-              helperText={errorsAddCategoria?.tipo?.message}
-            >
-              <MenuItem value={"Controlado"}>Controlado</MenuItem>
-              <MenuItem value={"No controlado"}>No controlado</MenuItem>
-            </TextField>
-            <TextField
-              margin="dense"
-              name="descripcion"
-              label="Descripción"
-              type="text"
-              fullWidth
-              variant="outlined"
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&:hover fieldset": {
-                    borderColor: "purple",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "purple",
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  "&.Mui-focused": {
-                    color: "purple",
-                  },
-                },
-              }}
-              {...registerCategoria("descripcion")}
-              value={selectedCategoria?.descripcion || ""}
-              onChange={(e) =>
-                setSelectedCategoria({
-                  ...selectedCategoria,
-                  descripcion: e.target.value,
-                })
-              }
-            />
+            {dialogProps.action === "delete" ? (
+              <DialogContentText>{`¿Estás seguro de que deseas eliminar la categoría "${dialogProps.row.nombre}" ?`}</DialogContentText>
+            ) : (
+              <div>
+                <InputDash
+                  {...registerCategoria("nombre", {
+                    required: "El nombre es requerido",
+                    minLength: { value: 4, message: "¡Mínimo 4 caracteres!" },
+                    maxLength: { value: 69, message: "¡Máximo 70 caracteres!" },
+                    validate: {
+                      isAlreadyRegistered: (value) => {
+                        const dataToCheck =
+                          dialogProps.action === "edit"
+                            ? data.filter(
+                                (categoria) =>
+                                  categoria.id != dialogProps.row.id
+                              )
+                            : data;
+                        return (
+                          !dataToCheck.some(
+                            (categoria) =>
+                              categoria.nombre.toLowerCase().trim() ===
+                              value.toLowerCase().trim()
+                          ) || "¡La categoría ya se encuentra registrada!"
+                        );
+                      },
+                    },
+                  })}
+                  label={"Nombre"}
+                  type={"text"}
+                  description={
+                    errorsAddCategoria.nombre &&
+                    errorsAddCategoria.nombre.message
+                  }
+                />
+                <InputDash
+                  {...registerCategoria("descripcion", {
+                    minLength: { value: 4, message: "¡Mínimo 4 caracteres!" },
+                    maxLength: {
+                      value: 255,
+                      message: "¡Máximo 255 caracteres!",
+                    },
+                  })}
+                  label={"Descripción"}
+                  type={"text"}
+                  description={
+                    errorsAddCategoria.descripcion &&
+                    errorsAddCategoria.descripcion.message
+                  }
+                />
+                <SelectDash
+                  {...registerCategoria("tipo", {
+                    required: "¡Debes escoger el tipo del insumo!",
+                  })}
+                  description={
+                    errorsAddCategoria.tipo && errorsAddCategoria.tipo.message
+                  }
+                  label={"Tipo"}
+                >
+                  <option value={"Controlado"}>Controlado</option>
+                  <option value={"No controlado"}>No controlado</option>
+                </SelectDash>
+              </div>
+            )}
           </DialogContent>
-          <DialogActions>
-            <Button
-              sx={{ textTransform: "capitalize" }}
-              onClick={handleClose}
-              color="error"
-            >
-              Cancelar
-            </Button>
-            <Button
-              sx={{ textTransform: "capitalize" }}
-              type="submit"
-              color="success"
-            >
-              Guardar
-            </Button>
-          </DialogActions>
+          <CustomDialogActions
+            cancelButton
+            customCancelColor={dialogProps.action === "delete" && "inherit"}
+            saveButton={dialogProps.action !== "delete"}
+            deleteButton={dialogProps.action === "delete"}
+            handleClose={() => toggleState(setOpenModal)}
+          />
         </form>
       </Dialog>
-
-      <Dialog
-        keepMounted
-        TransitionComponent={Transition}
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-      >
-        <DialogTitle color={colors.grey[100]}>
-          Confirmar Eliminación
-        </DialogTitle>
-        <DialogContent>
-          <Typography>
-            ¿Estás seguro de que deseas eliminar la categoría "
-            {categoriaToDelete?.nombre}"?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            sx={{ textTransform: "capitalize" }}
-            onClick={() => setOpenDeleteDialog(false)}
-            color="inherit"
-          >
-            Cancelar
-          </Button>
-          <Button
-            sx={{ textTransform: "capitalize" }}
-            onClick={confirmDelete}
-            color="error"
-          >
-            Eliminar
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog
-        keepMounted
-        TransitionComponent={Transition}
-        open={openErrorModal}
-        onClose={() => setOpenErrorModal(false)}
-      >
-        <DialogTitle color={colors.grey[100]}>Error</DialogTitle>
-        <DialogContent>
-          <Typography color={colors.grey[100]}>{errorMessage}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            sx={{ textTransform: "capitalize" }}
-            onClick={() => setOpenErrorModal(false)}
-            color="error"
-          >
-            Cerrar
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ToastContainer />
     </>
   );
 };
