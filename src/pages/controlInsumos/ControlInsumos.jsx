@@ -38,8 +38,8 @@ export default function ControlInsumos() {
     }
   }, [lastModifications, controlInsumosData]);
   useEffect(() => {
-    if(!inputDateFilter)return
-    setFilteredData(controlInsumosData.)
+    if (!inputDateFilter) return;
+    setFilteredData(controlInsumosData);
   }, [inputDateFilter]);
 
   return (
