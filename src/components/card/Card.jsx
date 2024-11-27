@@ -8,6 +8,7 @@ import { formatDateSpanish, formaTime } from "../../assets/constants.d";
 export default function Card({
   motivo,
   autor,
+  unidadMedida,
   correoAutor,
   fecha,
   cantidad,
@@ -17,8 +18,7 @@ export default function Card({
     <section className="card-control-insumo">
       <div className="header-card">
         <div className="header-insumo">
-          
-        <span className="tela">"{tela}"</span>
+          <span className="tela">"{tela}"</span>
           {cantidad < 0 ? (
             <TrendingDown
               sx={{ marginBottom: "5px" }}
@@ -40,7 +40,7 @@ export default function Card({
                   : "cantidad-insumo-success"
               }
             >
-              {Math.abs(cantidad)}
+              {`${Math.abs(cantidad)} ${unidadMedida}`}
             </span>{" "}
           </h4>
         </div>

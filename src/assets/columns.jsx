@@ -121,6 +121,58 @@ export const ColumnsCategoriaPrendas = ({ onEdit, onDelete, changeState }) => [
     },
   },
 ];
+export const ColumnsInsumos = ({
+  onEdit,
+  onDelete,
+  changeState,
+  getCategoriaNombre,
+  getUnidadMedida,
+}) => [
+  {
+    field: "nombre",
+    headerName: "Nombre",
+    flex: 1,
+  },
+  {
+    field: "cantidad",
+    headerName: "Cantidad",
+    flex: 1,
+    valueGetter: (params) =>
+      `${params.row.cantidad}  ${getUnidadMedida(params.row.unidadMedidaId)}`,
+  },
+  {
+    field: "categoriaInsumoId",
+    headerName: "Categoría",
+    flex: 1,
+    valueGetter: (params) => getCategoriaNombre(params.row.categoriaInsumoId),
+  },
+  {
+    field: "estadoId",
+    headerName: "Estado",
+    flex: 1,
+    renderCell: ({ row }) => (
+      <SwitchCustom row={row} changeState={changeState} />
+    ),
+  },
+  {
+    field: "acciones",
+    headerName: "Acciones",
+    flex: 1,
+    renderCell: ({ row }) => {
+      const theme = useTheme();
+      const colors = tokens(theme.palette.mode);
+
+      return (
+        <Actions
+          colors={colors}
+          row={row}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
+      );
+    },
+  },
+];
 export const ColumnsUsuarios = ({
   onEdit,
   onDelete,
@@ -304,13 +356,15 @@ export const ColumnsRoles = ({
       const theme = useTheme();
       const colors = tokens(theme.palette.mode);
 
-      return (
+      return row.id >= 5 ? (
         <Actions
           colors={colors}
           row={row}
           onEdit={onEdit}
           onDelete={onDelete}
         />
+      ) : (
+        <span style={{ paddingLeft: "25px" }}>Sin acciones</span>
       );
     },
   },

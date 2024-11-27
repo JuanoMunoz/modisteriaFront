@@ -1,6 +1,13 @@
 import { Typography, Box, Button, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
-const Header = ({ title, buttonText, handleAdd }) => {
+const Header = ({
+  title,
+  buttonText,
+  handleAdd,
+  secondButton,
+  secondButtonText,
+  handleSecondButtonFunction,
+}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   return (
@@ -13,21 +20,40 @@ const Header = ({ title, buttonText, handleAdd }) => {
       <Typography variant="h4" sx={{ ml: 4 }} fontSize={"40px"}>
         {title}
       </Typography>
-      <Button
-        variant="contained"
-        onClick={handleAdd}
-        sx={{
-          backgroundColor: colors.purple[400],
-          "&:hover": {
-            backgroundColor: colors.purple[300],
-          },
-          color: "white",
-          mr: "10px",
-          textTransform: "capitalize",
-        }}
-      >
-        {buttonText}
-      </Button>
+      <Box>
+        {secondButton && (
+          <Button
+            variant="contained"
+            onClick={handleSecondButtonFunction}
+            sx={{
+              backgroundColor: colors.purple[400],
+              "&:hover": {
+                backgroundColor: colors.purple[300],
+              },
+              color: "white",
+              mr: "10px",
+              textTransform: "capitalize",
+            }}
+          >
+            {secondButtonText}
+          </Button>
+        )}
+        <Button
+          variant="contained"
+          onClick={handleAdd}
+          sx={{
+            backgroundColor: colors.purple[400],
+            "&:hover": {
+              backgroundColor: colors.purple[300],
+            },
+            color: "white",
+            mr: "10px",
+            textTransform: "capitalize",
+          }}
+        >
+          {buttonText}
+        </Button>
+      </Box>
     </Box>
   );
 };
