@@ -1,15 +1,13 @@
 .selectDash {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
     max-width: 535px;
     height: 44px;
     background-color: #05060f0a;
     border-radius: .5rem;
     padding: 0 1rem;
     border: 2px solid transparent;
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: white;
+    font-family: "Comfortaa", sans-serif;
     transition: border-color .3s cubic-bezier(.25,.01,.25,1) 0s, color .3s cubic-bezier(.25,.01,.25,1) 0s,background .2s cubic-bezier(.25,.01,.25,1) 0s;
 }
 

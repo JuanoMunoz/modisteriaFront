@@ -15,6 +15,9 @@ import { toast, ToastContainer } from "react-toastify";
 import { ColumnsTallas } from "../../assets/columns";
 import InputDash from "../../components/inputDashboard/InputDash";
 import SelectDash from "../../components/selectDash/SelectDash";
+import {
+  StraightenOutlined
+} from "@mui/icons-material";
 const Tallas = () => {
   const [data, setData] = useState([]);
   const [openModal, setOpenModal] = useState(false);
@@ -95,7 +98,9 @@ const Tallas = () => {
         title={"Tallas"}
         handleAdd={handleAdd}
         buttonText={"Agregar Talla"}
+        icon={StraightenOutlined}
       ></Header>
+      <br />
       <ContainerDataGrid>
         {loading ? (
           <LoadingTableData />
@@ -111,6 +116,9 @@ const Tallas = () => {
               },
             }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+            sx={{
+              height: '70vh',
+            }}
           />
         )}
       </ContainerDataGrid>

@@ -1,12 +1,17 @@
 import { List, ListItem, ListItemText } from "@mui/material";
+import "./permissionList.css";
 export default function PermissionList({ permisos }) {
   return (
-    <List sx={{ marginRight: "200px" }}>
-      {permisos.map((permisoActivo) => (
-        <ListItem key={permisoActivo.id}>
-          <ListItemText primary={permisoActivo.nombre} />
-        </ListItem>
-      ))}
-    </List>
+    <>
+      <hr />
+      <div className="listaPermisos">
+        {permisos.map((permisoActivo) => (
+          <ListItem key={permisoActivo.id}>
+            <ListItemText primary={permisoActivo.nombre} />
+          </ListItem>
+        ))}
+      </div>
+    </>
+
   );
 }

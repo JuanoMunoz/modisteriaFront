@@ -14,6 +14,9 @@ import { toast, ToastContainer } from "react-toastify";
 import { ColumnsCategoriaInsumos } from "../../assets/columns";
 import InputDash from "../../components/inputDashboard/InputDash";
 import useCategoriaDataInsumo from "../../hooks/useCategoriaDataInsumo";
+import {
+  Inventory2Outlined,
+} from "@mui/icons-material";
 
 const CategoriaInsumo = () => {
   const {
@@ -115,10 +118,12 @@ const CategoriaInsumo = () => {
   return (
     <>
       <Header
-        title={"Categorías de insumos"}
+        title={"Categorías insumos"}
         handleAdd={handleAdd}
         buttonText={"Agregar categoría"}
+        icon={Inventory2Outlined}
       />
+      <br />
       <ContainerDataGrid>
         {loading ? (
           <LoadingTableData />
@@ -134,6 +139,9 @@ const CategoriaInsumo = () => {
               },
             }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+            sx={{
+              height: '70vh',
+            }}
           />
         )}
       </ContainerDataGrid>
