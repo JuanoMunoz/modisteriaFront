@@ -451,6 +451,9 @@ const CatalogoDashboard = () => {
               },
             }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+            sx={{
+              height: '70vh',
+            }}
           />
         )}
       </Box>

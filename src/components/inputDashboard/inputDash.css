@@ -5,9 +5,10 @@
     border-radius: .5rem;
     padding: 0 1rem;
     border: 2px solid transparent;
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: white;
     transition: border-color .3s cubic-bezier(.25,.01,.25,1) 0s, color .3s cubic-bezier(.25,.01,.25,1) 0s,background .2s cubic-bezier(.25,.01,.25,1) 0s;
+    font-family: "Comfortaa", sans-serif;
 }
 
 .labelDash {

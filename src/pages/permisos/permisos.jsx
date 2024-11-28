@@ -20,6 +20,23 @@ import { useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
 import Transition from "../../components/transition/Transition";
 import usePermisosData from "../../hooks/usePermisosData";
+import {
+  ShoppingCartOutlined,
+  ViewListOutlined,
+  AdminPanelSettingsOutlined,
+  LockOutlined,
+  Inventory2Outlined,
+  StyleOutlined,
+  CalendarTodayOutlined,
+  InventoryOutlined,
+  HelpOutlineOutlined,
+  StraightenOutlined,
+  HistoryOutlined,
+  Settings,
+  TableChart,
+  BarChart,
+  PointOfSale,
+} from "@mui/icons-material";
 const Permisos = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -141,6 +158,7 @@ const Permisos = () => {
         mb={2}
       >
         <Typography variant="h4" sx={{ ml: 4 }} fontSize={"40px"}>
+        <LockOutlined sx={{ color: colors.purple[400], fontSize: "40px", mr: 1 }} />
           Permisos
         </Typography>
       </Box>
@@ -191,6 +209,9 @@ const Permisos = () => {
             components={{ Toolbar: GridToolbar }}
             getRowId={(row) => row.id}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+            sx={{
+              height: '70vh',
+            }}
           />
         )}
       </Box>

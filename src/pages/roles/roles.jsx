@@ -18,6 +18,9 @@ import CustomDialogActions from "../../components/customDialogActions/CustomDial
 import { toggleState } from "../../assets/constants.d";
 import { ColumnsRoles } from "../../assets/columns";
 import CheckboxCustom from "../../components/checkbox/CheckBoxCustom";
+import {
+  AdminPanelSettingsOutlined,
+} from "@mui/icons-material";
 const Roles = () => {
   const {
     handleSubmit: handleSaveRol,
@@ -159,7 +162,9 @@ const Roles = () => {
         title={"Roles"}
         handleAdd={handleAdd}
         buttonText={"Agregar Rol"}
+        icon={AdminPanelSettingsOutlined}
       ></Header>
+      <br />
       <ContainerDataGrid>
         {loading || loadingpermisos ? (
           <LoadingTableData></LoadingTableData>
@@ -175,6 +180,9 @@ const Roles = () => {
               },
             }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+            sx={{
+              height: '70vh',
+            }}
           />
         )}
       </ContainerDataGrid>
@@ -221,7 +229,8 @@ const Roles = () => {
                   }
                 />
                 <section>
-                  <h3>Permisos</h3>
+                  <h2 className="tittleAñadir">Permisos</h2>
+                  <hr />
                   <article className="permissions-grid">
                     {permisos.map((permiso) => {
                       return (
@@ -269,13 +278,21 @@ const Roles = () => {
               )}
             </FormControl> */}
           </DialogContent>
-          <CustomDialogActions
-            cancelButton
-            customCancelColor={dialogProps.action === "delete" && "inherit"}
-            saveButton={dialogProps.action !== "delete"}
-            deleteButton={dialogProps.action === "delete"}
-            handleClose={() => toggleState(setOpenModal)}
-          />
+          {dialogProps.action === "seePermissions" ? (
+              <CustomDialogActions
+                handleClose={() => toggleState(setOpenModal)}
+                cancelButton
+            />
+          ): (
+              <CustomDialogActions
+                cancelButton
+                customCancelColor={dialogProps.action === "delete" && "inherit"}
+                saveButton={dialogProps.action !== "delete"}
+                deleteButton={dialogProps.action === "delete"}
+                handleClose={() => toggleState(setOpenModal)}
+              />
+          )}
+
         </form>
       </Dialog>
       <ToastContainer></ToastContainer>

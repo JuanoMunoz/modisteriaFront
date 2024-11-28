@@ -8,6 +8,23 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import useIsFirstRender from "../../hooks/useIsMount";
 import LoadingTableData from "../../components/loadingTableData/LoadingTableData";
+import {
+  ShoppingCartOutlined,
+  ViewListOutlined,
+  AdminPanelSettingsOutlined,
+  LockOutlined,
+  Inventory2Outlined,
+  StyleOutlined,
+  CalendarTodayOutlined,
+  InventoryOutlined,
+  HelpOutlineOutlined,
+  StraightenOutlined,
+  HistoryOutlined,
+  Settings,
+  TableChart,
+  BarChart,
+  PointOfSale,
+} from "@mui/icons-material";
 export default function ControlInsumos() {
   const [controlInsumosData, setControlInsumosData] = useState([]);
   const [lastModifications, setLastModifications] = useState(true);

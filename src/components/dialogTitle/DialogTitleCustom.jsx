@@ -7,8 +7,9 @@ export default function DialogTitleCustom({ children }) {
   return (
     <DialogTitle
       color={colors.grey[100]}
-      fontSize={"25px"}
+      fontSize={"28px"}
       textAlign={"center"}
+      marginTop={"13px"}
     >
       {children}
     </DialogTitle>

@@ -28,6 +28,23 @@ import SelectDash from "../../components/selectDash/SelectDash";
 import InputDash from "../../components/inputDashboard/InputDash";
 import { useJwt } from "../../context/JWTContext";
 import useDecodedJwt from "../../hooks/useJwt";
+import {
+  ShoppingCartOutlined,
+  ViewListOutlined,
+  AdminPanelSettingsOutlined,
+  LockOutlined,
+  Inventory2Outlined,
+  StyleOutlined,
+  CalendarTodayOutlined,
+  InventoryOutlined,
+  HelpOutlineOutlined,
+  StraightenOutlined,
+  HistoryOutlined,
+  Settings,
+  TableChart,
+  BarChart,
+  PointOfSale,
+} from "@mui/icons-material";
 const Insumos = () => {
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
@@ -238,7 +255,9 @@ const Insumos = () => {
         secondButtonText={"Reponer insumos"}
         handleSecondButtonFunction={handleRestock}
         buttonText={"Añadir Insumo"}
+        icon={InventoryOutlined}
       ></Header>
+      <br />
       <ContainerDataGrid>
         {loading || loadingCategoria || loadingUnidades ? (
           <LoadingTableData />
@@ -254,7 +273,11 @@ const Insumos = () => {
               },
             }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+            sx={{
+              height: '70vh',
+            }}
           />
+          
         )}
       </ContainerDataGrid>
       <Dialog

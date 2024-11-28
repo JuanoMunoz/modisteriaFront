@@ -13,6 +13,9 @@ import DialogTitleCustom from "../../components/dialogTitle/DialogTitleCustom";
 import { toast, ToastContainer } from "react-toastify";
 import { ColumnsCategoriaPrendas } from "../../assets/columns";
 import InputDash from "../../components/inputDashboard/InputDash";
+import {
+  StyleOutlined,
+} from "@mui/icons-material";
 
 const CategoriaPrenda = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -112,10 +115,12 @@ const CategoriaPrenda = () => {
   return (
     <>
       <Header
-        title={"Categorías de prenda"}
+        title={"Categorías prenda"}
         handleAdd={handleAdd}
         buttonText={"Agregar categoría"}
+        icon={StyleOutlined}
       />
+      <br />
       <ContainerDataGrid>
         {loading ? (
           <LoadingTableData />
@@ -131,6 +136,9 @@ const CategoriaPrenda = () => {
               },
             }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+            sx={{
+              height: '70vh',
+            }}
           />
         )}
       </ContainerDataGrid>
