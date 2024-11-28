@@ -1,6 +1,6 @@
 import "./compras.css";
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent } from "@mui/material";
+import { Button, Dialog, DialogContent } from "@mui/material";
 import { useForm } from "react-hook-form";
 import Transition from "../../components/transition/Transition";
 import useComprasData from "../../hooks/useCompraData";
@@ -15,6 +15,10 @@ import CustomDialogActions from "../../components/customDialogActions/CustomDial
 import SelectDash from "../../components/selectDash/SelectDash";
 import InputDash from "../../components/inputDashboard/InputDash";
 import CardCompras from "../../components/cardCompras/CardCompras.jsx";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import useIsFirstRender from "../../hooks/useIsMount.js";
 const Compras = () => {
   const {
     handleSubmit: handleSaveCompra,
@@ -90,6 +94,24 @@ const Compras = () => {
       toastId: "crudAction",
     });
   };
+  const [lastModifications, setLastModifications] = useState(true);
+  const isFirstRender = useIsFirstRender();
+  const [filteredData, setFilteredData] = useState([]);
+  const [inputDateFilter, setInputDateFilter] = useState();
+  const handleFilterDataDates = () => setLastModifications(!lastModifications);
+  const handleSpecificDate = (e) => setInputDateFilter(e.target.value);
+  useEffect(() => {
+    if (isFirstRender) return;
+    const initialComprasData = inputDateFilter
+      ? data.filter((compra) => compra.fecha.includes(inputDateFilter))
+      : data;
+    if (lastModifications) {
+      setFilteredData(initialComprasData);
+    } else {
+      const sortedData = [...initialComprasData].sort((a, b) => a.id - b.id);
+      setFilteredData(sortedData);
+    }
+  }, [lastModifications, data, inputDateFilter]);
   return (
     <>
       <Header
@@ -97,12 +119,39 @@ const Compras = () => {
         handleAdd={handleAdd}
         buttonText={"Añadir compra"}
       ></Header>
+      <div className="filtrosControl">
+        <div className="header-actions">
+          <Button
+            variant="contained"
+            onClick={handleFilterDataDates}
+            color="primary"
+            startIcon={<FilterListIcon />}
+            endIcon={
+              lastModifications ? (
+                <ArrowUpwardIcon />
+              ) : (
+                <ArrowDownwardIcon></ArrowDownwardIcon>
+              )
+            }
+          >
+            {lastModifications ? "Más recientes" : "Más viejas"}
+          </Button>
+        </div>
+        <div className="textInputWrapper">
+          <input
+            value={inputDateFilter}
+            onChange={handleSpecificDate}
+            type="date"
+            className="textInput"
+          />
+        </div>
+      </div>
       <div>
         {loading || loadingInsumos || loadingProveedor ? (
           <LoadingTableData />
-        ) : data.length ? (
+        ) : filteredData.length ? (
           <section className="compras-main">
-            {data.map((compra) => (
+            {filteredData.map((compra) => (
               <CardCompras compra={compra} />
             ))}
           </section>
