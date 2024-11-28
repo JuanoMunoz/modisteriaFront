@@ -186,20 +186,15 @@ export default function Layout() {
           <div className="box">
             <span className="nosotros">Sobre </span>
             <span className="nosotros purple">Nosotros</span>
-            <p>Jovenes emprendedores con objetivos claros y concretos.</p>
-            <p>
-              ¿Quieres saber mas sobre nosotros y como aportamos al sitio web?{" "}
-              <a href="">
-                <b>Ver mas...</b>
-              </a>
-            </p>
+            <p>“Modistería Doña Luz” es una empresa de confecciones; Cuya propietaria es Luz Esther Vidales Hernández,</p>
+            <p>¿Estas interesado?  <a href="">Ver más...</a></p>
           </div>
 
           <div className="box">
             <span className="contacto">Contáctanos</span>
-            <p>Dirección: Calle 123, N° 1234, Ciudad.</p>
-            <p>Email: modistadonaluz@gmail.com</p>
-            <p>Teléfono: 3123456789</p>
+            <p><b>Dirección:</b> Calle 43 #34 - 195 int 306 Copacabana Antioquia.</p>
+            <p><b>Email: </b> modistadonaluzz@gmail.com</p>
+            <p><b>Teléfono:</b> 3012349235</p>
           </div>
         </div>
         <div className="grupo-2">

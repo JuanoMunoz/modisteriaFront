@@ -1,7 +1,7 @@
 import "./modal.css";
 import { useEffect, useState } from "react";
 
-const Modal = ({ show, onClose, children, customWidth }) => {
+const Modal = ({ show, onClose, children, customWidth, customHeigh, zIndex}) => {
   const [isVisible, setIsVisible] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
@@ -29,6 +29,8 @@ const Modal = ({ show, onClose, children, customWidth }) => {
         className={`modal ${isVisible ? "show" : ""}`}
         style={{
           maxWidth: customWidth || "500px",
+          maxHeight: customHeigh || "auto",
+          zIndex: zIndex || "auto",
         }}
       >
         <button onClick={onClose} className="modal-close-button">
