@@ -11,6 +11,7 @@ import useFetch from "../../hooks/useFetch";
 import { useJwt } from "../../context/JWTContext";
 import { useEffect, useState } from "react";
 import './dashboard-index.css';
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -79,6 +80,7 @@ const Dashboard = () => {
         mb={2}
       >
         <Typography variant="h4" sx={{ ml: 4 }} fontSize={"40px"}>
+          <HomeOutlinedIcon sx={{ color: colors.purple[400], fontSize: "40px", mr: 1 }} />
           Dashboard
         </Typography>
       </Box><br />

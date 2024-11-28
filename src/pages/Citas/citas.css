@@ -39,15 +39,20 @@ h2 {
 }
 
 .asesor {
-  margin-top: 30px;
   padding: 50px;
-  height: 90vh;
+  height: 70vh;
   display: flex;
   flex-direction: column;
 }
 .chat {
   flex-grow: 1;
+  max-height: 280px;
+  width: 1000px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scrollbar-color: #bb0eca #d4cece;
 }
+
 @keyframes fadeOut {
   0% {
     opacity: 1;
@@ -165,7 +170,6 @@ h2 {
   background-color: #e0e0e0;
   padding: 15px;
   border-radius: 20px 20px 20px 0px;
-  margin-left: 150px;
 }
 
 .mensajeAsesor {
@@ -374,6 +378,8 @@ h2 {
   outline: none;
   border: none;
   padding-left: 10px;
+  font-family: "Comfortaa", sans-serif;
+
 }
 #messageInput:focus ~ #sendButton svg path,
 #messageInput:valid ~ #sendButton svg path {
@@ -566,4 +572,17 @@ h2 {
 .loaderAsesor {
   display: inline-block;
   margin: 0 16px;
+}
+
+.avatarBot{
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-top: auto;
+  margin-right: 5px;
+}
+
+.respuestaContainer{
+  display: flex;
+  margin-left: 85px;
 }
