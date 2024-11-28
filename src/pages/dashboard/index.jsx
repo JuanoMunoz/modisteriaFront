@@ -56,16 +56,6 @@ const Dashboard = () => {
         setUsuarios(usuariosResponse.data);
       }
 
-      const cotizacionesResponse = await triggerFetch(
-        "https://modisteria-back-production.up.railway.app/api/cotizaciones/getAllCotizaciones",
-        "GET",
-        null,
-        { "x-token": token }
-      );
-      if (cotizacionesResponse.status === 200) {
-        setCotizaciones(cotizacionesResponse.data);
-      }
-
       const insumosResponse = await triggerFetch(
         "https://modisteria-back-production.up.railway.app/api/insumos/getAllInsumos",
         "GET",
