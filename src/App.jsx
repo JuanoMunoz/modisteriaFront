@@ -19,12 +19,14 @@ import Ventas from "./pages/ventas/index";
 import Bar from "./pages/bar/index";
 import Line from "./pages/line/index";
 import Dashboard from "./pages/dashboard/index";
-import CatalogoDashboard from "./pages/catalogoDashboard/index"; 
+import CatalogoDashboard from "./pages/catalogoDashboard/index";
 import CategoriaInsumos from "./pages/categoriaInsumo/categoriaInsumo";
 import CategoriaPrenda from "./pages/categoriaPrenda/categoriaPrenda";
 import Tallas from "./pages/tallas/Talla";
 import ControlInsumos from "./pages/controlInsumos/ControlInsumos";
 import UnidadesInsumo from "./pages/unidadesMedida/UnidadesMedida";
+import Compras from "./pages/compras/Compras";
+import Proveedores from "./pages/proveedores/Proveedores";
 function App() {
   return (
     <>
@@ -42,6 +44,8 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="/dashboard/contacts" element={<Contacts />} />
           <Route path="/dashboard/catalogo" element={<CatalogoDashboard />} />
+          <Route path="/dashboard/compras" element={<Compras />} />
+          <Route path="/dashboard/proveedores" element={<Proveedores />} />
           <Route
             path="/dashboard/categoriaInsumos"
             element={<CategoriaInsumos />}
@@ -61,7 +65,10 @@ function App() {
           />
           <Route path="/dashboard/bar" element={<Bar />} />
           <Route path="/dashboard/line" element={<Line />} />
-          <Route path="/dashboard/unidades-medida" element={<UnidadesInsumo />} />
+          <Route
+            path="/dashboard/unidades-medida"
+            element={<UnidadesInsumo />}
+          />
           <Route path="/dashboard/tallas" element={<Tallas />} />
         </Route>
         <Route path="*" element={<Error404 />}></Route>

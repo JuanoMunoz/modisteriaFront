@@ -234,6 +234,43 @@ export const ColumnsUsuarios = ({
     },
   },
 ];
+export const ColumnsProveedores = ({ onEdit, onDelete, changeState }) => [
+  { field: "nombre", headerName: "Nombre", flex: 1 },
+  { field: "telefono", headerName: "Teléfono", flex: 1 },
+  {
+    field: "direccion",
+    headerName: "Dirección",
+    flex: 1,
+    valueGetter: (params) =>
+      params.row.direccion ? params.row.direccion : "Sin dirección agregada",
+  },
+
+  {
+    field: "estadoId",
+    headerName: "Estado",
+    flex: 1,
+    renderCell: ({ row }) => (
+      <SwitchCustom row={row} changeState={changeState} />
+    ),
+  },
+  {
+    field: "acciones",
+    headerName: "Acciones",
+    flex: 1,
+    renderCell: ({ row }) => {
+      const theme = useTheme();
+      const colors = tokens(theme.palette.mode);
+      return (
+        <Actions
+          colors={colors}
+          row={row}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
+      );
+    },
+  },
+];
 
 export const ColumnsCategoriaInsumos = ({ onEdit, onDelete, changeState }) => [
   { field: "nombre", headerName: "Nombre", flex: 1 },
@@ -284,7 +321,13 @@ export const ColumnsVentas = ({ onConfirm }) => [
     headerName: "Imagen",
     flex: 1,
     renderCell: (params) => (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         {params.value ? (
           <img
             src={params.value}
@@ -301,7 +344,8 @@ export const ColumnsVentas = ({ onConfirm }) => [
     field: "fecha",
     headerName: "Fecha",
     flex: 1,
-    renderCell: (params) => format(new Date(params.value), "dd/MM/yyyy HH:mm", { locale: es }),
+    renderCell: (params) =>
+      format(new Date(params.value), "dd/MM/yyyy HH:mm", { locale: es }),
   },
   { field: "nombrePersona", headerName: "Nombre Persona", flex: 1 },
   { field: "valorDomicilio", headerName: "Valor Domicilio", flex: 1 },
@@ -312,7 +356,9 @@ export const ColumnsVentas = ({ onConfirm }) => [
     headerName: "Método de Pago",
     flex: 1,
     renderCell: (params) => {
-      const metodoPago = params.value ? params.value.charAt(0).toUpperCase() + params.value.slice(1) : "Sin método de pago";
+      const metodoPago = params.value
+        ? params.value.charAt(0).toUpperCase() + params.value.slice(1)
+        : "Sin método de pago";
       return metodoPago;
     },
   },

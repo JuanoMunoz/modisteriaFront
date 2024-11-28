@@ -212,7 +212,7 @@ const Insumos = () => {
     if (dialogProps.action === "delete") {
       if (dialogProps.row.estadoId === 1)
         return toast.error(
-          "¡No se puede eliminar el usuario porque está activo!",
+          "¡No se puede eliminar el insumo porque está activo!",
           { autoClose: 1600, toastId: "activeError" }
         );
       response = await deleteInsumo(dialogProps.row.id);
@@ -274,10 +274,9 @@ const Insumos = () => {
             }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
             sx={{
-              height: '70vh',
+              height: "70vh",
             }}
           />
-          
         )}
       </ContainerDataGrid>
       <Dialog

@@ -1,0 +1,90 @@
+.compras-main {
+  box-sizing: border-box;
+  margin-top: 2rem;
+  padding: 1.5rem 2rem;
+  display: grid;
+  gap: 2rem;
+  justify-content: center;
+  align-items: start;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive */
+}
+
+.compra {
+  position: relative;
+  width: 280px;
+  padding: 1.5rem 1rem;
+  border-radius: 0.8rem;
+  background: radial-gradient(circle at center, #222222, #1a1a1a, #111111);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+  color: #fff;
+  transition: transform 0.3s ease;
+}
+
+.compra:hover {
+  transform: scale(1.05);
+}
+
+.icono-compra-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: rgb(187, 14, 202);
+  margin: 0 auto;
+  margin-bottom: 1rem;
+}
+
+.icono-compra {
+  color: #fff;
+  font-size: 2rem;
+}
+
+.card-header {
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  padding: 1rem;
+}
+
+.insumos,
+.proveedor {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.insumos span,
+.proveedor span {
+  margin-left: 0.5rem;
+}
+
+.icono-body {
+  color: rgb(187, 14, 202);
+  font-size: 1.2rem;
+}
+
+.action-text {
+  text-align: center;
+  font-size: 0.8rem;
+  margin: 0.5rem 0;
+  text-transform: uppercase;
+  color: #999;
+}
+
+.valor {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: rgb(187, 14, 202);
+}
