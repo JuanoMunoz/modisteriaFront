@@ -76,19 +76,29 @@ const CategoriaPrenda = () => {
     setData(updatedData.data);
   };
 
-  const handleSave = async (data) => {
+  const handleSave = async (formData) => {
+    const dataToSend = new FormData();
+    dataToSend.append("nombre", formData.nombre);
+    dataToSend.append("descripcion", formData.descripcion);
+    if (formData.molde && formData.molde[0]) {
+      dataToSend.append("molde", formData.molde[0]); // Agrega el archivo PDF
+    }
+  
+    console.log([...dataToSend.entries()]); // Imprime los campos que estás enviando
     let response;
     if (dialogProps.action === "add")
-      response = await createCategoria({ ...data, estadoId: 1 });
+      response = await createCategoria(dataToSend);
     if (dialogProps.action === "edit")
-      response = await updateCategoria(dialogProps.row.id, data);
+      response = await updateCategoria(dialogProps.row.id, dataToSend);
     if (dialogProps.action === "delete")
       response = await deleteCategoria(dialogProps.row.id);
+  
     if (response.status !== 201 && response.status !== 200)
       return toast.error(response.data.message, {
         autoClose: 2000,
         toastId: "error",
       });
+  
     const updatedData = await fetchAllCategorias();
     setData(updatedData.data);
     toggleState(setOpenModal);
@@ -106,7 +116,7 @@ const CategoriaPrenda = () => {
       }
     );
   };
-
+  
   const columns = ColumnsCategoriaPrendas({
     onEdit: handleEdit,
     onDelete: handleDelete,
@@ -160,30 +170,11 @@ const CategoriaPrenda = () => {
                     required: "El nombre es requerido",
                     minLength: { value: 4, message: "¡Mínimo 4 caracteres!" },
                     maxLength: { value: 69, message: "¡Máximo 70 caracteres!" },
-                    validate: {
-                      isAlreadyRegistered: (value) => {
-                        const dataToCheck =
-                          dialogProps.action === "edit"
-                            ? data.filter(
-                                (categoria) =>
-                                  categoria.id != dialogProps.row.id
-                              )
-                            : data;
-                        return (
-                          !dataToCheck.some(
-                            (categoria) =>
-                              categoria.nombre.toLowerCase().trim() ===
-                              value.toLowerCase().trim()
-                          ) || "¡La categoría ya se encuentra registrada!"
-                        );
-                      },
-                    },
                   })}
                   label={"Nombre"}
                   type={"text"}
                   description={
-                    errorsAddCategoria.nombre &&
-                    errorsAddCategoria.nombre.message
+                    errorsAddCategoria.nombre && errorsAddCategoria.nombre.message
                   }
                 />
                 <InputDash
@@ -201,7 +192,19 @@ const CategoriaPrenda = () => {
                     errorsAddCategoria.descripcion.message
                   }
                 />
+                {/* Nuevo campo para el archivo PDF */}
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  {...registerCategoria("molde", {
+                    required: dialogProps.action === "add" && "El archivo es requerido",
+                  })}
+                />
+                {errorsAddCategoria.molde && (
+                  <span>{errorsAddCategoria.molde.message}</span>
+                )}
               </div>
+
             )}
           </DialogContent>
           <CustomDialogActions

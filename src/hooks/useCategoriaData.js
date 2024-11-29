@@ -59,6 +59,7 @@ export default function useCategoriaData() {
     return respuesta;
   };
 
+
   return {
     initialFetchAllCategorias,
     fetchAllCategorias,

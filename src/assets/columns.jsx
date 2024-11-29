@@ -124,6 +124,7 @@ export const ColumnsCategoriaPrendas = ({ onEdit, onDelete, changeState }) => [
     },
   },
 ];
+
 export const ColumnsInsumos = ({
   onEdit,
   onDelete,
