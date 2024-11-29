@@ -36,6 +36,7 @@ export default function useVentas() {
     );
     return respuesta;
   };
+  
 
   return {
     fetchAllVentas,
