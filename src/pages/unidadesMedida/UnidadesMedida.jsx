@@ -14,6 +14,9 @@ import { toggleState } from "../../assets/constants.d";
 import { useForm } from "react-hook-form";
 import CustomDialogActions from "../../components/customDialogActions/CustomDialogActions";
 import { toast, ToastContainer } from "react-toastify";
+import {
+  HelpOutlineOutlined,
+} from "@mui/icons-material";
 export default function UnidadesMedida() {
   //Tenemos 3 useState, los datos, propiedades de la modal y abrir la modal.
   const [data, setData] = useState([]);
@@ -102,7 +105,9 @@ export default function UnidadesMedida() {
         title="Unidades de medida"
         handleAdd={handleAdd}
         buttonText="Agregar unidad"
+        icon={HelpOutlineOutlined}
       ></Header>
+      <br />
       <ContainerDataGrid>
         {loading ? (
           <LoadingTableData />
@@ -118,6 +123,9 @@ export default function UnidadesMedida() {
               },
             }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+            sx={{
+              height: '70vh',
+            }}
           />
         )}
       </ContainerDataGrid>

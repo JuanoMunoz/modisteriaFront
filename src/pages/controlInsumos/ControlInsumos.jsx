@@ -1,6 +1,6 @@
 import "./controlInsumos.css";
 import Card from "../../components/card/Card";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import useInsumosData from "../../hooks/useInsumosData";
 import { Box, Button } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -30,18 +30,18 @@ export default function ControlInsumos() {
   const handleSpecificDate = (e) => setInputDateFilter(e.target.value);
   useEffect(() => {
     if (isFirstRender) return;
+    const initialInsumosData = inputDateFilter
+      ? controlInsumosData.filter((cInsumo) =>
+          cInsumo.fecha.includes(inputDateFilter)
+        )
+      : controlInsumosData;
     if (lastModifications) {
-      setFilteredData(controlInsumosData);
+      setFilteredData(initialInsumosData);
     } else {
-      const sortedData = [...controlInsumosData].sort((a, b) => a.id - b.id);
+      const sortedData = [...initialInsumosData].sort((a, b) => a.id - b.id);
       setFilteredData(sortedData);
     }
-  }, [lastModifications, controlInsumosData]);
-  useEffect(() => {
-    if (!inputDateFilter) return;
-    setFilteredData(controlInsumosData);
-  }, [inputDateFilter]);
-
+  }, [lastModifications, controlInsumosData, inputDateFilter]);
   return (
     <>
       <header className="header">
@@ -79,7 +79,7 @@ export default function ControlInsumos() {
       <main className="main-control-insumo">
         {loadingInsumoHistorial ? (
           <LoadingTableData />
-        ) : (
+        ) : filteredData.length ? (
           <Box width={"1000px"} marginLeft={"10%"}>
             {filteredData &&
               filteredData.map((insumoHistory) => (
@@ -96,6 +96,8 @@ export default function ControlInsumos() {
               ))}
             <br />
           </Box>
+        ) : (
+          <div className="sin-insumos">¡Sin insumos repuestos!</div>
         )}
       </main>
     </>

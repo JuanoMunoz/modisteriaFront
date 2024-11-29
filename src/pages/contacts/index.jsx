@@ -17,6 +17,9 @@ import { toast, ToastContainer } from "react-toastify";
 import { ColumnsUsuarios } from "../../assets/columns";
 import InputDash from "../../components/inputDashboard/InputDash";
 import SelectDash from "../../components/selectDash/SelectDash";
+import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
+
+
 const Usuarios = () => {
   const {
     handleSubmit: handleSaveUsuario,
@@ -146,7 +149,9 @@ const Usuarios = () => {
         title={"Usuarios"}
         handleAdd={handleAdd}
         buttonText={"Agregar usuario"}
+        icon={ContactsOutlinedIcon}
       ></Header>
+      <br />
       <ContainerDataGrid>
         {loading || loadingRoles ? (
           <LoadingTableData />
@@ -174,7 +179,13 @@ const Usuarios = () => {
       >
         <form onSubmit={handleSaveUsuario(handleSave)}>
           <DialogTitleCustom>{dialogProps.title}</DialogTitleCustom>
-          <DialogContent>
+          <DialogContent
+            sx={{
+              maxHeight: "400px",
+              overflowY: "scroll",
+              scrollbarWidth: "none",
+            }}
+          >
             {dialogProps.action === "delete" ? (
               <DialogContentText>{`¿Deseas eliminar el usuario con correo "${dialogProps.row.email}" ?`}</DialogContentText>
             ) : (

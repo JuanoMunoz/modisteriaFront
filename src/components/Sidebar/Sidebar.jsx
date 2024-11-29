@@ -32,6 +32,8 @@ import {
   TableChart,
   BarChart,
   PointOfSale,
+  Business,
+  Paid,
 } from "@mui/icons-material";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
@@ -216,6 +218,13 @@ const Sidebar = ({ nombre }) => {
                   setSelected={setSelected}
                 />
                 <Item
+                  title="Compras"
+                  to="/dashboard/compras"
+                  icon={<Paid />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
                   title="Control Insumos"
                   to="/dashboard/controlInsumos"
                   icon={<HistoryOutlined />}
@@ -226,6 +235,13 @@ const Sidebar = ({ nombre }) => {
                   title="Categoria Insumos"
                   to="/dashboard/categoriaInsumos"
                   icon={<Inventory2Outlined />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Proveedores"
+                  to="/dashboard/proveedores"
+                  icon={<Business />}
                   selected={selected}
                   setSelected={setSelected}
                 />

@@ -4,6 +4,8 @@ import Header from "../../components/Header/Header";
 import BarChart from "../../components/BarChart/BarChart";
 import { useJwt } from "../../context/JWTContext";
 import useFetch from "../../hooks/useFetch";
+import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
+
 
 const Bar = () => {
     const { token } = useJwt();
@@ -34,7 +36,7 @@ const Bar = () => {
 
     return (
         <Box m="20px">
-            <Header title="Grafica" subtitle="Insumos" />
+            <Header title="Grafica Insumos" subtitle="Insumos" icon={BarChartOutlinedIcon}/>
             <Box height="75vh">
                 {loading ? (
                 <Box marginLeft={"160px"}>
