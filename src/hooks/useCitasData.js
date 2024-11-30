@@ -1,5 +1,6 @@
 import useFetch from "./useFetch";
 import { useJwt } from "../context/JWTContext";
+import { URL_BACK } from "../assets/constants.d";
 
 export default function useCitasData() {
   const { loading, triggerFetch } = useFetch();
@@ -11,7 +12,7 @@ export default function useCitasData() {
 
   const fetchAllCitas = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/citas/getAllCitas",
+      `${URL_BACK}/citas/getAllCitas`,
       "GET",
       null,
       { "x-token": token }
@@ -21,7 +22,7 @@ export default function useCitasData() {
 
   const initialFetchAllCitas = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/citas/getAllCitas",
+      `${URL_BACK}/citas/getAllCitas`,
       "GET",
       null,
       { "x-token": token }
@@ -31,7 +32,7 @@ export default function useCitasData() {
 
   const updateCita = async (id, infoUpdate) => {
     const respuesta = await updateFetch(
-      `https://modisteria-back-production.up.railway.app/api/citas/updateCita/${id}`,
+      `${URL_BACK}/citas/updateCita/${id}`,
       "PUT",
       infoUpdate,
       { "x-token": token }
@@ -41,7 +42,7 @@ export default function useCitasData() {
 
   const createCita = async (infoUpdate) => {
     const respuesta = await createFetch(
-      `https://modisteria-back-production.up.railway.app/api/citas/createCita`,
+      `${URL_BACK}/citas/createCita`,
       "POST",
       infoUpdate,
       { "x-token": token }
@@ -51,7 +52,7 @@ export default function useCitasData() {
 
   const deleteCita = async (id) => {
     const respuesta = await deleteFetch(
-      `https://modisteria-back-production.up.railway.app/api/citas/deleteCita/${id}`,
+      `${URL_BACK}/citas/deleteCita/${id}`,
       "DELETE",
       null,
       { "x-token": token }
@@ -61,7 +62,7 @@ export default function useCitasData() {
 
   const fetchAllUsuarios = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/usuarios/getAllUsers",
+      `${URL_BACK}/usuarios/getAllUsers`,
       "GET",
       null,
       { "x-token": token }
@@ -70,7 +71,7 @@ export default function useCitasData() {
   };
   const initialFetchAllUsuarios = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/usuarios/getAllUsers",
+      `${URL_BACK}/usuarios/getAllUsers`,
       "GET",
       null,
       { "x-token": token }

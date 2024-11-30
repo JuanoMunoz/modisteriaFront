@@ -1,5 +1,6 @@
 import useFetch from "./useFetch";
 import { useJwt } from "../context/JWTContext";
+import { URL_BACK } from "../assets/constants.d";
 
 export default function useUnidadesMedida() {
   const { loading, triggerFetch } = useFetch();
@@ -10,7 +11,7 @@ export default function useUnidadesMedida() {
   const { token } = useJwt();
   const fetchAllUnidades = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/unidadesDeMedida/getAllUnidadDeMedidas",
+      `${URL_BACK}/unidadesDeMedida/getAllUnidadDeMedidas`,
       "GET",
       null,
       { "x-token": token }
@@ -19,7 +20,7 @@ export default function useUnidadesMedida() {
   };
   const initialFetchAllUnidades = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/unidadesDeMedida/getAllUnidadDeMedidas",
+      `${URL_BACK}/unidadesDeMedida/getAllUnidadDeMedidas`,
       "GET",
       null,
       { "x-token": token }
@@ -28,7 +29,7 @@ export default function useUnidadesMedida() {
   };
   const updateUnidades = async (id, infoUpdate) => {
     const respuesta = await updateFetch(
-      `https://modisteria-back-production.up.railway.app/api/unidadesDeMedida/updateUnidadDeMedida/${id}`,
+      `${URL_BACK}/unidadesDeMedida/updateUnidadDeMedida/${id}`,
       "PUT",
       infoUpdate,
       { "x-token": token }
@@ -37,7 +38,7 @@ export default function useUnidadesMedida() {
   };
   const createUnidades = async (infoUpdate) => {
     const respuesta = await createFetch(
-      `https://modisteria-back-production.up.railway.app/api/unidadesDeMedida/createUnidadDeMedida`,
+      `${URL_BACK}/unidadesDeMedida/createUnidadDeMedida`,
       "POST",
       infoUpdate,
       { "x-token": token }
@@ -46,7 +47,7 @@ export default function useUnidadesMedida() {
   };
   const deleteUnidades = async (id) => {
     const respuesta = await deleteFetch(
-      `https://modisteria-back-production.up.railway.app/api/unidadesDeMedida/deleteUnidadDeMedida/${id}`,
+      `${URL_BACK}/unidadesDeMedida/deleteUnidadDeMedida/${id}`,
       "DELETE",
       null,
       { "x-token": token }

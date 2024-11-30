@@ -1,5 +1,6 @@
 import useFetch from "./useFetch";
 import { useJwt } from "../context/JWTContext";
+import { URL_BACK } from "../assets/constants.d";
 export default function useInsumosData() {
   const { loading, triggerFetch } = useFetch();
   const {
@@ -13,7 +14,7 @@ export default function useInsumosData() {
   const { token } = useJwt();
   const fetchAllInsumos = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/insumos/getAllInsumos",
+      `${URL_BACK}/insumos/getAllInsumos`,
       "GET",
       null,
       { "x-token": token }
@@ -22,7 +23,7 @@ export default function useInsumosData() {
   };
   const initialFetchAllInsumos = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/insumos/getAllInsumos",
+      `${URL_BACK}/insumos/getAllInsumos`,
       "GET",
       null,
       { "x-token": token }
@@ -31,7 +32,7 @@ export default function useInsumosData() {
   };
   const initialFetchAllInsumosHistory = async () => {
     const respuesta = await fetchInsumoHistorial(
-      "https://modisteria-back-production.up.railway.app/api/insumos/getInsumoHistorial",
+      `${URL_BACK}/insumos/getInsumoHistorial`,
       "GET",
       null,
       { "x-token": token }
@@ -40,7 +41,7 @@ export default function useInsumosData() {
   };
   const initialFetchAllInsumosControlled = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/insumos/getAllInsumos?tipo=controlado",
+      `${URL_BACK}/insumos/getAllInsumos?tipo=controlado`,
       "GET",
       null,
       { "x-token": token }
@@ -49,7 +50,7 @@ export default function useInsumosData() {
   };
   const updateInsumos = async (id, infoUpdate) => {
     const respuesta = await updateFetch(
-      `https://modisteria-back-production.up.railway.app/api/insumos/updateInsumo/${id}`,
+      `${URL_BACK}/insumos/updateInsumo/${id}`,
       "PUT",
       infoUpdate,
       { "x-token": token }
@@ -58,7 +59,7 @@ export default function useInsumosData() {
   };
   const updateCantidadInsumos = async (insumos) => {
     const respuesta = await updateFetch(
-      `https://modisteria-back-production.up.railway.app/api/insumos/cantidadInsumos`,
+      `${URL_BACK}/insumos/cantidadInsumos`,
       "PUT",
       insumos,
       { "x-token": token }
@@ -67,7 +68,7 @@ export default function useInsumosData() {
   };
   const createInsumo = async (infoUpdate) => {
     const respuesta = await createFetch(
-      `https://modisteria-back-production.up.railway.app/api/insumos/createInsumo`,
+      `${URL_BACK}/insumos/createInsumo`,
       "POST",
       infoUpdate,
       { "x-token": token }
@@ -76,7 +77,7 @@ export default function useInsumosData() {
   };
   const deleteInsumo = async (id) => {
     const respuesta = await deleteFetch(
-      `https://modisteria-back-production.up.railway.app/api/insumos/deleteInsumo/${id}`,
+      `${URL_BACK}/insumos/deleteInsumo/${id}`,
       "DELETE",
       null,
       { "x-token": token }

@@ -115,4 +115,6 @@ export const toggleState = (setState) => {
   setState((prev) => !prev);
 };
 
+export const URL_BACK = import.meta.env.VITE_URL_BACK_API;
+
 export default constants;

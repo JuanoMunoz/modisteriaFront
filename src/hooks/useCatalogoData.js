@@ -1,5 +1,6 @@
 import useFetch from "./useFetch";
 import { useJwt } from "../context/JWTContext";
+import { URL_BACK } from "../assets/constants.d";
 
 export default function useCatalogoData() {
   const { loading, triggerFetch } = useFetch();
@@ -10,7 +11,7 @@ export default function useCatalogoData() {
   const { token } = useJwt();
   const fetchAllCatalogos = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/catalogos/getAllCatalogoDash",
+      `${URL_BACK}/catalogos/getAllCatalogoDash`,
       "GET",
       null,
       { "x-token": token }
@@ -19,7 +20,7 @@ export default function useCatalogoData() {
   };
   const initialFetchAllCatalogos = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/catalogos/getAllCatalogoDash",
+      `${URL_BACK}/catalogos/getAllCatalogoDash`,
       "GET",
       null,
       { "x-token": token }
@@ -28,7 +29,7 @@ export default function useCatalogoData() {
   };
   const updateCatalogos = async (id, infoUpdate) => {
     const respuesta = await updateFetch(
-      `https://modisteria-back-production.up.railway.app/api/catalogos/updateCatalogo/${id}`,
+      `${URL_BACK}/catalogos/updateCatalogo/${id}`,
       "PUT",
       infoUpdate,
       { "x-token": token }
@@ -37,7 +38,7 @@ export default function useCatalogoData() {
   };
   const createCatalogo = async (infoUpdate) => {
     const respuesta = await createFetch(
-      `https://modisteria-back-production.up.railway.app/api/catalogos/createCatalogo`,
+      `${URL_BACK}/catalogos/createCatalogo`,
       "POST",
       infoUpdate,
       { "x-token": token }
@@ -46,7 +47,7 @@ export default function useCatalogoData() {
   };
   const createCatalogoInsumos = async (infoUpdate) => {
     const respuesta = await createFetch(
-      `https://modisteria-back-production.up.railway.app/api/catalogoinsumos/createCatIns`,
+      `${URL_BACK}/catalogoinsumos/createCatIns`,
       "POST",
       infoUpdate,
       { "x-token": token }
@@ -55,7 +56,7 @@ export default function useCatalogoData() {
   };
   const deleteCatalogo = async (id) => {
     const respuesta = await deleteFetch(
-      `https://modisteria-back-production.up.railway.app/api/catalogos/deleteCatalogo/${id}`,
+      `${URL_BACK}/catalogos/deleteCatalogo/${id}`,
       "DELETE",
       null,
       { "x-token": token }

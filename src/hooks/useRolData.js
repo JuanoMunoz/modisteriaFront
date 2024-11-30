@@ -1,5 +1,6 @@
 import useFetch from "./useFetch";
 import { useJwt } from "../context/JWTContext";
+import { URL_BACK } from "../assets/constants.d";
 export default function userolesData() {
   const { loading, triggerFetch } = useFetch();
   const { triggerFetch: updateFetch } = useFetch();
@@ -9,7 +10,7 @@ export default function userolesData() {
   const { token } = useJwt();
   const fetchAllroles = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/roles/getAllRoles",
+      `${URL_BACK}/roles/getAllRoles`,
       "GET",
       null,
       { "x-token": token }
@@ -18,7 +19,7 @@ export default function userolesData() {
   };
   const initialFetchAllroles = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/roles/getAllRoles",
+      `${URL_BACK}/roles/getAllRoles`,
       "GET",
       null,
       { "x-token": token }
@@ -27,7 +28,7 @@ export default function userolesData() {
   };
   const updaterol = async (id, infoUpdate) => {
     const respuesta = await updateFetch(
-      `https://modisteria-back-production.up.railway.app/api/roles/updateRol/${id}`,
+      `${URL_BACK}/roles/updateRol/${id}`,
       "PUT",
       infoUpdate,
       { "x-token": token }
@@ -36,7 +37,7 @@ export default function userolesData() {
   };
   const createrol = async (infoUpdate) => {
     const respuesta = await createFetch(
-      "https://modisteria-back-production.up.railway.app/api/roles/createRol",
+      `${URL_BACK}/roles/createRol`,
       "POST",
       infoUpdate,
       { "x-token": token }
@@ -45,7 +46,7 @@ export default function userolesData() {
   };
   const deleterol = async (id) => {
     const respuesta = await deleteFetch(
-      `https://modisteria-back-production.up.railway.app/api/roles/deleteRol/${id}`,
+      `${URL_BACK}/roles/deleteRol/${id}`,
       "DELETE",
       null,
       { "x-token": token }

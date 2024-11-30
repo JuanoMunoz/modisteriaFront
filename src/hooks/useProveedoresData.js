@@ -1,5 +1,6 @@
 import useFetch from "./useFetch";
 import { useJwt } from "../context/JWTContext";
+import { URL_BACK } from "../assets/constants.d";
 export default function useProveedoresData() {
   const { loading, triggerFetch } = useFetch();
   const { triggerFetch: updateFetch } = useFetch();
@@ -9,7 +10,7 @@ export default function useProveedoresData() {
   const { token } = useJwt();
   const fetchAllProveedores = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/proveedores/getAllProveedores",
+      `${URL_BACK}/proveedores/getAllProveedores`,
       "GET",
       null,
       { "x-token": token }
@@ -18,7 +19,7 @@ export default function useProveedoresData() {
   };
   const initialFetchAllProveedores = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/proveedores/getAllProveedores",
+      `${URL_BACK}/proveedores/getAllProveedores`,
       "GET",
       null,
       { "x-token": token }
@@ -27,7 +28,7 @@ export default function useProveedoresData() {
   };
   const updateProveedores = async (id, infoUpdate) => {
     const respuesta = await updateFetch(
-      `https://modisteria-back-production.up.railway.app/api/proveedores/updateProveedor/${id}`,
+      `${URL_BACK}/proveedores/updateProveedor/${id}`,
       "PUT",
       infoUpdate,
       { "x-token": token }
@@ -36,7 +37,7 @@ export default function useProveedoresData() {
   };
   const createProveedores = async (infoUpdate) => {
     const respuesta = await createFetch(
-      `https://modisteria-back-production.up.railway.app/api/proveedores/createProveedor`,
+      `${URL_BACK}/proveedores/createProveedor`,
       "POST",
       infoUpdate,
       { "x-token": token }
@@ -45,7 +46,7 @@ export default function useProveedoresData() {
   };
   const deleteProveedores = async (id) => {
     const respuesta = await deleteFetch(
-      `https://modisteria-back-production.up.railway.app/api/proveedores/deleteProveedor/${id}`,
+      `${URL_BACK}/proveedores/deleteProveedor/${id}`,
       "DELETE",
       null,
       { "x-token": token }

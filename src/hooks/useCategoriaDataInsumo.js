@@ -1,5 +1,6 @@
 import useFetch from "./useFetch";
 import { useJwt } from "../context/JWTContext";
+import { URL_BACK } from "../assets/constants.d";
 
 export default function useCategoriaDataInsumo() {
   const { loading, triggerFetch } = useFetch();
@@ -11,7 +12,7 @@ export default function useCategoriaDataInsumo() {
 
   const fetchAllCategorias = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/categoriainsumos/getAllCategoriaInsumos",
+      `${URL_BACK}/categoriainsumos/getAllCategoriaInsumos`,
       "GET",
       null,
       { "x-token": token }
@@ -21,7 +22,7 @@ export default function useCategoriaDataInsumo() {
 
   const initialFetchAllCategorias = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/categoriainsumos/getAllCategoriaInsumos",
+      `${URL_BACK}/categoriainsumos/getAllCategoriaInsumos`,
       "GET",
       null,
       { "x-token": token }
@@ -31,7 +32,7 @@ export default function useCategoriaDataInsumo() {
 
   const updateCategoria = async (id, infoUpdate) => {
     const respuesta = await updateFetch(
-      `https://modisteria-back-production.up.railway.app/api/categoriainsumos/updateCategoriaInsumo/${id}`,
+      `${URL_BACK}/categoriainsumos/updateCategoriaInsumo/${id}`,
       "PUT",
       infoUpdate,
       { "x-token": token }
@@ -41,7 +42,7 @@ export default function useCategoriaDataInsumo() {
 
   const createCategoria = async (infoUpdate) => {
     const respuesta = await createFetch(
-      `https://modisteria-back-production.up.railway.app/api/categoriainsumos/createCategoriaInsumo`,
+      `${URL_BACK}/categoriainsumos/createCategoriaInsumo`,
       "POST",
       infoUpdate,
       { "x-token": token }
@@ -51,7 +52,7 @@ export default function useCategoriaDataInsumo() {
 
   const deleteCategoria = async (id) => {
     const respuesta = await deleteFetch(
-      `https://modisteria-back-production.up.railway.app/api/categoriainsumos/deleteCategoriaInsumo/${id}`,
+      `${URL_BACK}/categoriainsumos/deleteCategoriaInsumo/${id}`,
       "DELETE",
       null,
       { "x-token": token }

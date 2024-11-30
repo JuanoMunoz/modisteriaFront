@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { URL_BACK } from "../assets/constants.d";
 export default function useActiveUserInfo(id,token) {
   const [userData, setUserData] = useState(null);
   useEffect(() => {
     axios
       .get(
-        `https://modisteria-back-production.up.railway.app/api/usuarios/getUserById/${id}`,{headers:{"x-token":token}}
+        `${URL_BACK}/usuarios/getUserById/${id}`,{headers:{"x-token":token}}
       )
       .then((res) => {
         setUserData(res.data);

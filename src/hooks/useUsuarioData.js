@@ -1,5 +1,6 @@
 import useFetch from "./useFetch";
 import { useJwt } from "../context/JWTContext";
+import { URL_BACK } from "../assets/constants.d";
 export default function useUsuariosData() {
   const { loading, triggerFetch } = useFetch();
   const { triggerFetch: updateFetch } = useFetch();
@@ -9,7 +10,7 @@ export default function useUsuariosData() {
   const { token } = useJwt();
   const fetchAllUsuarios = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/usuarios/getAllUsers",
+      `${URL_BACK}/usuarios/getAllUsers`,
       "GET",
       null,
       { "x-token": token }
@@ -18,7 +19,7 @@ export default function useUsuariosData() {
   };
   const initialFetchAllUsuarios = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/usuarios/getAllUsers",
+      `${URL_BACK}/usuarios/getAllUsers`,
       "GET",
       null,
       { "x-token": token }
@@ -27,7 +28,7 @@ export default function useUsuariosData() {
   };
   const updateUsuario = async (id, infoUpdate) => {
     const respuesta = await updateFetch(
-      `https://modisteria-back-production.up.railway.app/api/usuarios/updateUser/${id}`,
+      `${URL_BACK}/usuarios/updateUser/${id}`,
       "PUT",
       infoUpdate,
       { "x-token": token }
@@ -36,7 +37,7 @@ export default function useUsuariosData() {
   };
   const createUsuario = async (infoUpdate) => {
     const respuesta = await createFetch(
-      `https://modisteria-back-production.up.railway.app/api/usuarios/createUsuario`,
+      `${URL_BACK}/usuarios/createUsuario`,
       "POST",
       infoUpdate,
       { "x-token": token }
@@ -45,7 +46,7 @@ export default function useUsuariosData() {
   };
   const deleteUsuario = async (id) => {
     const respuesta = await deleteFetch(
-      `https://modisteria-back-production.up.railway.app/api/usuarios/deleteUser/${id}`,
+      `${URL_BACK}/usuarios/deleteUser/${id}`,
       "DELETE",
       null,
       { "x-token": token }

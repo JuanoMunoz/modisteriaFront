@@ -1,5 +1,6 @@
 import useFetch from "./useFetch";
 import { useJwt } from "../context/JWTContext";
+import { URL_BACK } from "../assets/constants.d";
 
 export default function useVentas() {
   const { loading, triggerFetch } = useFetch();
@@ -9,7 +10,7 @@ export default function useVentas() {
 
   const fetchAllVentas = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/ventas/getAllVentas",
+      `${URL_BACK}/ventas/getAllVentas`,
       "GET",
       null,
       { "x-token": token }
@@ -19,7 +20,7 @@ export default function useVentas() {
 
   const initialFetchAllVentas = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/ventas/getAllVentas",
+      `${URL_BACK}/ventas/getAllVentas`,
       "GET",
       null,
       { "x-token": token }
@@ -29,7 +30,7 @@ export default function useVentas() {
 
   const updateVentas = async (id, infoUpdate) => {
     const respuesta = await updateFetch(
-      `https://modisteria-back-production.up.railway.app/api/ventas/confirmarVenta/${id}`,
+      `${URL_BACK}/ventas/confirmarVenta/${id}`,
       "POST",
       infoUpdate,
       { "x-token": token }
