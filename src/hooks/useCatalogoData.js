@@ -10,7 +10,7 @@ export default function useCatalogoData() {
   const { token } = useJwt();
   const fetchAllCatalogos = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/catalogos/getAllCatalogo",
+      "https://modisteria-back-production.up.railway.app/api/catalogos/getAllCatalogoDash",
       "GET",
       null,
       { "x-token": token }
@@ -19,7 +19,7 @@ export default function useCatalogoData() {
   };
   const initialFetchAllCatalogos = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/catalogos/getAllCatalogo",
+      "https://modisteria-back-production.up.railway.app/api/catalogos/getAllCatalogoDash",
       "GET",
       null,
       { "x-token": token }

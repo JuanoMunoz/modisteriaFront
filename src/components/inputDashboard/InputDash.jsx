@@ -9,6 +9,7 @@ const InputDash = forwardRef(
       initialValue,
       type,
       width,
+      allowDecimal,
       descriptionColor,
       ...props
     },
@@ -21,6 +22,7 @@ const InputDash = forwardRef(
           <input
             autoComplete="off"
             className="inputDash"
+            step={allowDecimal && "0.01"}
             defaultValue={initialValue && initialValue}
             type={type}
             style={{ width: width || "535px" }}

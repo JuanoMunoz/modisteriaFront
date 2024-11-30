@@ -8,6 +8,13 @@
 .titles-insumos div {
   text-align: center;
 }
+.tallas-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 10px;
+  padding: 20px;
+}
 .titles-insumos {
   grid-template-columns: 1fr 1fr 1fr;
   justify-items: center;
@@ -16,7 +23,17 @@
   padding: 10px 0;
   margin-bottom: 10px;
 }
-
+.tallas-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.switch-tallas-father {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+}
 .body-insumos {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;

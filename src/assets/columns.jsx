@@ -4,10 +4,16 @@ import { useTheme } from "@mui/material";
 import { tokens } from "../theme";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { formToCop } from "./constants.d";
 
-function Actions({ colors, row, onEdit, onDelete }) {
+function Actions({ colors, row, onEdit, onDelete, eye, onPreview }) {
   return (
     <div>
+      {eye && (
+        <Button onClick={() => onPreview(row)}>
+          <Eye size={20} color={colors.grey[100]} />
+        </Button>
+      )}
       <Button onClick={() => onEdit(row)}>
         <Edit size={20} color={colors.grey[100]} />
       </Button>
@@ -439,7 +445,9 @@ export const ColumnsVentas = ({ onConfirm, onOpenDialog }) => [
       return (
         <>
           <button
-            onClick={() => onOpenDialog('verDetalles', 'Detalles de la Venta', row)}  // Abre el modal
+            onClick={() =>
+              onOpenDialog("verDetalles", "Detalles de la Venta", row)
+            } // Abre el modal
             style={{
               backgroundColor: "#7C0D84",
               color: "white",
@@ -454,7 +462,7 @@ export const ColumnsVentas = ({ onConfirm, onOpenDialog }) => [
         </>
       );
     },
-  }
+  },
 ];
 
 export const ColumnsRoles = ({
@@ -511,6 +519,56 @@ export const ColumnsRoles = ({
         />
       ) : (
         <span style={{ paddingLeft: "25px" }}>Sin acciones</span>
+      );
+    },
+  },
+];
+
+export const ColumnsCatalogo = ({
+  onEdit,
+  onDelete,
+  changeState,
+  getCategoriaNombre,
+  OnPreview,
+}) => [
+  { field: "producto", headerName: "Nombre", flex: 1 },
+  {
+    field: "precio",
+    headerName: "Precio",
+    flex: 1,
+    valueGetter: (params) => formToCop(params.row.precio),
+  },
+  {
+    field: "categoriaId",
+    headerName: "Categoría",
+    flex: 1,
+    valueGetter: (params) => getCategoriaNombre(params.row.categoriaId),
+  },
+  {
+    field: "estadoId",
+    headerName: "Estado",
+    flex: 1,
+    renderCell: ({ row }) => (
+      <SwitchCustom row={row} changeState={changeState} />
+    ),
+  },
+  {
+    field: "acciones",
+    headerName: "Acciones",
+    flex: 1.5,
+    renderCell: ({ row }) => {
+      const theme = useTheme();
+      const colors = tokens(theme.palette.mode);
+      row.tallas = row.Tallas.map((talla) => talla.id);
+      return (
+        <Actions
+          colors={colors}
+          row={row}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          eye
+          onPreview={OnPreview}
+        />
       );
     },
   },

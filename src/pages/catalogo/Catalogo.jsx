@@ -7,9 +7,9 @@ import Product from "../../components/producto/Producto";
 import { ArrowRight, ArrowLeft } from "../../components/svg/Svg";
 import useDebounce from "../../hooks/useDebounce";
 import { ToastContainer } from "react-toastify";
-import useFetch from "../../hooks/useFetch";
 import { formToCop } from "../../assets/constants.d";
 import { Alert } from "../../components/svg/Svg";
+import useCategoriaData from "../../hooks/useCategoriaData";
 export default function Catalogo() {
   const [page, setPage] = useState(1);
   const [catalogoData, setCatalogoData] = useState(null);
@@ -21,6 +21,7 @@ export default function Catalogo() {
     debouncedValue,
     categoria
   );
+  const { initialFetchAllCategorias } = useCategoriaData();
   const handlePreviousPage = () => {
     if (page == 1) return;
     setPage((prev) => prev - 1);
@@ -34,13 +35,9 @@ export default function Catalogo() {
     if (e.target.value > 250000 || e.target.value < 1) return;
     setFilterPrice(e.target.value);
   };
-
-  const { triggerFetch } = useFetch();
   useEffect(() => {
     const fetchData = async () => {
-      const response = await triggerFetch(
-        "https://modisteria-back-production.up.railway.app/api/categorias/getAllCategoriasPrendas"
-      );
+      const response = await initialFetchAllCategorias();
       setCatalogoData(response.data);
     };
     fetchData();

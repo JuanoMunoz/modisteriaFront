@@ -9,7 +9,7 @@ export default function useTallaData() {
   const { token } = useJwt();
   const fetchAllTallas = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/tallas/getAllTallas",
+      `https://modisteria-back-production.up.railway.app/api/tallas/getAllTallas`,
       "GET",
       null,
       { "x-token": token }
@@ -18,7 +18,7 @@ export default function useTallaData() {
   };
   const initialFetchAllTallas = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/tallas/getAllTallas",
+      `https://modisteria-back-production.up.railway.app/api/tallas/getAllTallas`,
       "GET",
       null,
       { "x-token": token }

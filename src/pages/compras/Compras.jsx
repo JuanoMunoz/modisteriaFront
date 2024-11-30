@@ -152,7 +152,7 @@ const Compras = () => {
         ) : filteredData.length ? (
           <section className="compras-main">
             {filteredData.map((compra) => (
-              <CardCompras compra={compra} />
+              <CardCompras key={compra.id} compra={compra} />
             ))}
           </section>
         ) : (

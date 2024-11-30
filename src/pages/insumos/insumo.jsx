@@ -28,23 +28,7 @@ import SelectDash from "../../components/selectDash/SelectDash";
 import InputDash from "../../components/inputDashboard/InputDash";
 import { useJwt } from "../../context/JWTContext";
 import useDecodedJwt from "../../hooks/useJwt";
-import {
-  ShoppingCartOutlined,
-  ViewListOutlined,
-  AdminPanelSettingsOutlined,
-  LockOutlined,
-  Inventory2Outlined,
-  StyleOutlined,
-  CalendarTodayOutlined,
-  InventoryOutlined,
-  HelpOutlineOutlined,
-  StraightenOutlined,
-  HistoryOutlined,
-  Settings,
-  TableChart,
-  BarChart,
-  PointOfSale,
-} from "@mui/icons-material";
+import { InventoryOutlined } from "@mui/icons-material";
 const Insumos = () => {
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
