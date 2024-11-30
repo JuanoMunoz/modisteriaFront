@@ -1,5 +1,6 @@
 import useFetch from "./useFetch";
 import { useJwt } from "../context/JWTContext";
+import { URL_BACK } from "../assets/constants.d";
 export default function useComprasData() {
   const { loading, triggerFetch } = useFetch();
   const { triggerFetch: updateFetch } = useFetch();
@@ -9,7 +10,7 @@ export default function useComprasData() {
   const { token } = useJwt();
   const fetchAllCompras = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/compras/getAllCompras",
+      `${URL_BACK}/compras/getAllCompras`,
       "GET",
       null,
       { "x-token": token }
@@ -18,7 +19,7 @@ export default function useComprasData() {
   };
   const initialFetchAllCompras = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/compras/getAllCompras",
+      `${URL_BACK}/compras/getAllCompras`,
       "GET",
       null,
       { "x-token": token }
@@ -27,7 +28,7 @@ export default function useComprasData() {
   };
   const updateCompra = async (id, infoUpdate) => {
     const respuesta = await updateFetch(
-      `https://modisteria-back-production.up.railway.app/api/compras/updateUser/${id}`,
+      `${URL_BACK}/compras/updateUser/${id}`,
       "PUT",
       infoUpdate,
       { "x-token": token }
@@ -36,7 +37,7 @@ export default function useComprasData() {
   };
   const createCompra = async (infoUpdate) => {
     const respuesta = await createFetch(
-      `https://modisteria-back-production.up.railway.app/api/compras/createCompra`,
+      `${URL_BACK}/compras/createCompra`,
       "POST",
       infoUpdate,
       { "x-token": token }
@@ -45,7 +46,7 @@ export default function useComprasData() {
   };
   const deleteCompra = async (id) => {
     const respuesta = await deleteFetch(
-      `https://modisteria-back-production.up.railway.app/api/compras/deleteUser/${id}`,
+      `${URL_BACK}/compras/deleteUser/${id}`,
       "DELETE",
       null,
       { "x-token": token }

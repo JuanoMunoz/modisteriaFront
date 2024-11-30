@@ -1,5 +1,6 @@
 import useFetch from "./useFetch";
 import { useJwt } from "../context/JWTContext";
+import { URL_BACK } from "../assets/constants.d";
 export default function useTallaData() {
   const { loading, triggerFetch } = useFetch();
   const { triggerFetch: updateFetch } = useFetch();
@@ -9,7 +10,7 @@ export default function useTallaData() {
   const { token } = useJwt();
   const fetchAllTallas = async () => {
     const respuesta = await getFetch(
-      `https://modisteria-back-production.up.railway.app/api/tallas/getAllTallas`,
+      `${URL_BACK}/tallas/getAllTallas`,
       "GET",
       null,
       { "x-token": token }
@@ -18,7 +19,7 @@ export default function useTallaData() {
   };
   const initialFetchAllTallas = async () => {
     const respuesta = await triggerFetch(
-      `https://modisteria-back-production.up.railway.app/api/tallas/getAllTallas`,
+      `${URL_BACK}/tallas/getAllTallas`,
       "GET",
       null,
       { "x-token": token }
@@ -27,7 +28,7 @@ export default function useTallaData() {
   };
   const updateTalla = async (id, infoUpdate) => {
     const respuesta = await updateFetch(
-      `https://modisteria-back-production.up.railway.app/api/tallas/updateTalla/${id}`,
+      `${URL_BACK}/tallas/updateTalla/${id}`,
       "PUT",
       infoUpdate,
       { "x-token": token }
@@ -36,7 +37,7 @@ export default function useTallaData() {
   };
   const createTalla = async (infoUpdate) => {
     const respuesta = await createFetch(
-      `https://modisteria-back-production.up.railway.app/api/tallas/createTalla`,
+      `${URL_BACK}/tallas/createTalla`,
       "POST",
       infoUpdate,
       { "x-token": token }
@@ -45,7 +46,7 @@ export default function useTallaData() {
   };
   const deleteTalla = async (id) => {
     const respuesta = await deleteFetch(
-      `https://modisteria-back-production.up.railway.app/api/tallas/deleteTalla/${id}`,
+      `${URL_BACK}/tallas/deleteTalla/${id}`,
       "DELETE",
       null,
       { "x-token": token }

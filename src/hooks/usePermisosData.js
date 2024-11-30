@@ -1,5 +1,6 @@
 import useFetch from "./useFetch";
 import { useJwt } from "../context/JWTContext";
+import { URL_BACK } from "../assets/constants.d";
 export default function usePermisosData() {
   const { loading, triggerFetch } = useFetch();
   const { triggerFetch: updateFetch } = useFetch();
@@ -9,7 +10,7 @@ export default function usePermisosData() {
   const { token } = useJwt();
   const fetchAllPermisos = async () => {
     const respuesta = await getFetch(
-      "https://modisteria-back-production.up.railway.app/api/permisos/getAllPermisos",
+      `${URL_BACK}/permisos/getAllPermisos`,
       "GET",
       null,
       { "x-token": token }
@@ -18,7 +19,7 @@ export default function usePermisosData() {
   };
   const initialFetchAllPermisos = async () => {
     const respuesta = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/permisos/getAllPermisos",
+      `${URL_BACK}/permisos/getAllPermisos`,
       "GET",
       null,
       { "x-token": token }
@@ -27,7 +28,7 @@ export default function usePermisosData() {
   };
   const updatePermisos = async (id, infoUpdate) => {
     const respuesta = await updateFetch(
-      `https://modisteria-back-production.up.railway.app/api/permisos/updatePermiso/${id}`,
+      `${URL_BACK}/permisos/updatePermiso/${id}`,
       "PUT",
       infoUpdate,
       { "x-token": token }
@@ -36,7 +37,7 @@ export default function usePermisosData() {
   };
   const deletePermisos = async (id) => {
     const respuesta = await deleteFetch(
-      `https://modisteria-back-production.up.railway.app/api/permisos/deletePermiso/${id}`,
+      `${URL_BACK}/permisos/deletePermiso/${id}`,
       "DELETE",
       null,
       { "x-token": token }

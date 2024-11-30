@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { URL_BACK } from "../assets/constants.d";
 export default function useModals(
   canSendCode,
   email,
@@ -31,7 +32,7 @@ export default function useModals(
 
     axios
       .post(
-        "https://modisteria-back-production.up.railway.app/api/usuarios/resetPassword",
+        `${URL_BACK}/usuarios/resetPassword`,
         { email, codigo: otpCode, newPassword: nuevaContraseña }
       )
       .then(() => {
@@ -53,7 +54,7 @@ export default function useModals(
     console.log("estás dentro");
     axios
       .post(
-        "https://modisteria-back-production.up.railway.app/api/usuarios/forgotPassword",
+        `${URL_BACK}/usuarios/forgotPassword`,
         { email }
       )
       .then(() => {})
@@ -70,7 +71,7 @@ export default function useModals(
   const handleVerifyCode = async () => {
     axios
       .post(
-        "https://modisteria-back-production.up.railway.app/api/usuarios/getCodePass",
+        `${URL_BACK}/usuarios/getCodePass`,
         { email }
       )
       .then((response) => {
