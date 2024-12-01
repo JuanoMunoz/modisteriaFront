@@ -1,12 +1,13 @@
 import { Button, Switch, alpha, Box } from "@mui/material";
-import { Edit, TrashColor, Eye } from "../components/svg/Svg";
+import { Edit, TrashColor, Eye  } from "../components/svg/Svg";
 import { useTheme } from "@mui/material";
 import { tokens } from "../theme";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { formToCop } from "./constants.d";
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
-function Actions({ colors, row, onEdit, onDelete, eye, onPreview }) {
+function Actions({ colors, row, onEdit, onDelete, pdf, onDownload, eye,  onPreview }) {
   return (
     <div>
       {eye && (
@@ -20,6 +21,11 @@ function Actions({ colors, row, onEdit, onDelete, eye, onPreview }) {
       <Button onClick={() => onDelete(row)}>
         <TrashColor size={20} color={colors.grey[100]} />
       </Button>
+      {pdf && (
+        <Button onClick={() => onDownload(row)}>
+        <PictureAsPdfIcon size={20} color={colors.grey[100]} />
+        </Button>
+      )}
     </div>
   );
 }
@@ -94,7 +100,7 @@ export const ColumnsUnidadesDeMedida = ({ onEdit, onDelete }) => [
   },
 ];
 
-export const ColumnsCategoriaPrendas = ({ onEdit, onDelete, changeState }) => [
+export const ColumnsCategoriaPrendas = ({ onEdit, onDelete, onDownload, changeState }) => [
   { field: "nombre", headerName: "Nombre", flex: 1 },
   {
     field: "descripcion",
@@ -118,14 +124,17 @@ export const ColumnsCategoriaPrendas = ({ onEdit, onDelete, changeState }) => [
     renderCell: ({ row }) => {
       const theme = useTheme();
       const colors = tokens(theme.palette.mode);
-
       return (
         <Actions
           colors={colors}
           row={row}
           onEdit={onEdit}
           onDelete={onDelete}
+          pdf
+          onDownload={onDownload}
         />
+        
+        
       );
     },
   },
@@ -320,101 +329,6 @@ export const ColumnsCategoriaInsumos = ({ onEdit, onDelete, changeState }) => [
     },
   },
 ];
-
-// export const ColumnsVentas = ({ onConfirm }) => [
-//   { field: "id", headerName: "ID", flex: 0.1 },
-//   {
-//     field: "imagen",
-//     headerName: "Imagen",
-//     flex: 1,
-//     renderCell: (params) => (
-//       <div
-//         style={{
-//           display: "flex",
-//           justifyContent: "center",
-//           alignItems: "center",
-//         }}
-//       >
-//         {params.value ? (
-//           <img
-//             src={params.value}
-//             alt="Imagen de venta"
-//             style={{ width: "100px", height: "auto", borderRadius: "8px" }} // Ajusta el tamaño de la imagen
-//           />
-//         ) : (
-//           <span>Sin imagen</span>
-//         )}
-//       </div>
-//     ),
-//   },
-//   {
-//     field: "fecha",
-//     headerName: "Fecha",
-//     flex: 1,
-//     renderCell: (params) =>
-//       format(new Date(params.value), "dd/MM/yyyy HH:mm", { locale: es }),
-//   },
-//   { field: "nombrePersona", headerName: "Nombre Persona", flex: 1 },
-//   { field: "valorDomicilio", headerName: "Valor Domicilio", flex: 1 },
-//   { field: "valorPrendas", headerName: "Valor Prendas", flex: 1 },
-//   { field: "valorFinal", headerName: "Valor Final", flex: 1 },
-//   {
-//     field: "metodoPago",
-//     headerName: "Método de Pago",
-//     flex: 1,
-//     renderCell: (params) => {
-//       const metodoPago = params.value
-//         ? params.value.charAt(0).toUpperCase() + params.value.slice(1)
-//         : "Sin método de pago";
-//       return metodoPago;
-//     },
-//   },
-//   {
-//     field: "estadoId",
-//     headerName: "Estado",
-//     flex: 1,
-//     renderCell: (params) => {
-//       const estados = {
-//         14: "Pagado",
-//         9: "Pendiente",
-//       };
-//       return estados[params.value] || "Desconocido";
-//     },
-//   },
-//   {
-//     field: "citaId",
-//     headerName: "Cita ID",
-//     flex: 1,
-//     renderCell: (params) => (params.value ? params.value : "Sin cita"),
-//   },
-//   {
-//     field: "acciones",
-//     headerName: "Acciones",
-//     flex: 1,
-//     renderCell: ({ row }) => {
-//       // Verificamos el estado para decidir qué mostrar
-//       if (row.estadoId === 14) {
-//         // Si el estado es '14', mostrar el texto "Venta Confirmada"
-//         return <span>Venta Confirmada</span>;
-//       }
-//       // Si el estado es '9' (Pendiente), mostrar el botón de Confirmar Venta
-//       return (
-//         <button
-//           onClick={() => onConfirm(row.id)}
-//           style={{
-//             backgroundColor: "#7C0D84",
-//             color: "white",
-//             border: "none",
-//             padding: "5px 10px",
-//             cursor: "pointer",
-//           }}
-//         >
-//           Confirmar Venta
-//         </button>
-//       );
-//     },
-//   },
-// ];
 
 export const ColumnsVentas = ({ onConfirm, onOpenDialog }) => [
   { field: "id", headerName: "ID", flex: 0.1 },
