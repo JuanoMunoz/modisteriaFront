@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogContentText } from "@mui/material";
+import { Button, Dialog, DialogContent, DialogContentText } from "@mui/material";
 import CustomDialogActions from "../../components/customDialogActions/CustomDialogActions";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import Transition from "../../components/transition/Transition";
@@ -14,7 +14,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { ColumnsCategoriaPrendas } from "../../assets/columns";
 import InputDash from "../../components/inputDashboard/InputDash";
 import {
-  StyleOutlined,
+  StyleOutlined
 } from "@mui/icons-material";
 
 const CategoriaPrenda = () => {
@@ -32,7 +32,7 @@ const CategoriaPrenda = () => {
     updateCategoria,
     createCategoria,
     deleteCategoria,
-    initialFetchAllCategorias,
+    initialFetchAllCategorias
   } = useCategoriaData();
 
   const {
@@ -41,6 +41,8 @@ const CategoriaPrenda = () => {
     register: registerCategoria,
     reset,
   } = useForm();
+
+  
 
   useEffect(() => {
     const initialFetchCategorias = async () => {
@@ -52,7 +54,7 @@ const CategoriaPrenda = () => {
   // Funciones para las modales
   const handleDialog = (action, title, row = null) => {
     setDialogProps({ action, row, title });
-    reset({ nombre: row?.nombre || "", descripcion: row?.descripcion || "" });
+    reset({ nombre: row?.nombre || "", descripcion: row?.descripcion || "", molde: row?.molde || "" });
     toggleState(setOpenModal);
   };
   const handleAdd = () => {
@@ -63,6 +65,9 @@ const CategoriaPrenda = () => {
   };
   const handleDelete = (row) => {
     handleDialog("delete", "Eliminar categoría", row);
+  };
+  const handleDownload = (row) => {
+    window.open(row.molde, '_blank')
   };
   const handleChangeState = async (e, row) => {
     const newState = e.target.checked ? 1 : 2;
@@ -81,9 +86,9 @@ const CategoriaPrenda = () => {
     dataToSend.append("nombre", formData.nombre);
     dataToSend.append("descripcion", formData.descripcion);
     if (formData.molde && formData.molde[0]) {
-      dataToSend.append("molde", formData.molde[0]); // Agrega el archivo PDF
+      dataToSend.append("molde", formData.molde[0]);
     }
-  
+
     console.log([...dataToSend.entries()]); // Imprime los campos que estás enviando
     let response;
     if (dialogProps.action === "add")
@@ -92,21 +97,20 @@ const CategoriaPrenda = () => {
       response = await updateCategoria(dialogProps.row.id, dataToSend);
     if (dialogProps.action === "delete")
       response = await deleteCategoria(dialogProps.row.id);
-  
+
     if (response.status !== 201 && response.status !== 200)
       return toast.error(response.data.message, {
         autoClose: 2000,
         toastId: "error",
       });
-  
+
     const updatedData = await fetchAllCategorias();
     setData(updatedData.data);
     toggleState(setOpenModal);
     toast.success(
-      `¡Categoría ${
-        dialogProps.action === "add"
-          ? "agregada"
-          : dialogProps.action === "edit"
+      `¡Categoría ${dialogProps.action === "add"
+        ? "agregada"
+        : dialogProps.action === "edit"
           ? "editada"
           : "eliminada"
       } con éxito!`,
@@ -116,10 +120,11 @@ const CategoriaPrenda = () => {
       }
     );
   };
-  
+
   const columns = ColumnsCategoriaPrendas({
     onEdit: handleEdit,
     onDelete: handleDelete,
+    onDownload: handleDownload,
     changeState: handleChangeState,
   });
   return (
@@ -205,7 +210,8 @@ const CategoriaPrenda = () => {
                 )}
               </div>
 
-            )}
+            )
+            }
           </DialogContent>
           <CustomDialogActions
             cancelButton
@@ -213,7 +219,7 @@ const CategoriaPrenda = () => {
             saveButton={dialogProps.action !== "delete"}
             deleteButton={dialogProps.action === "delete"}
             handleClose={() => toggleState(setOpenModal)}
-          />
+          />          
         </form>
       </Dialog>
       <ToastContainer />
