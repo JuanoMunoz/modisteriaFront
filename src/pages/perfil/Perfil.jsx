@@ -286,7 +286,7 @@ export default function Perfil() {
               </div>
             </div>
             {lastSale && (
-              <div class="ultimaVenta">
+              <div className="ultimaVenta">
                 <h1>
                   Última <span>Venta</span>
                 </h1>

@@ -13,6 +13,7 @@ import DialogTitleCustom from "../../components/dialogTitle/DialogTitleCustom";
 import { toast, ToastContainer } from "react-toastify";
 import { ColumnsProveedores } from "../../assets/columns";
 import InputDash from "../../components/inputDashboard/InputDash";
+import { Business } from "@mui/icons-material";
 
 const Proveedores = () => {
   const {
@@ -124,6 +125,7 @@ const Proveedores = () => {
         title={"Proveedores"}
         handleAdd={handleAdd}
         buttonText={"Agregar proveedor"}
+        icon={Business}
       ></Header>
       <ContainerDataGrid>
         {loading ? (

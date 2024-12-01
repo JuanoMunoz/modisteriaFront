@@ -8,8 +8,6 @@ import {
 } from "@mui/material";
 import "./insumoDashboard.css";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
-import { tokens } from "../../theme";
-import { useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
 import Transition from "../../components/transition/Transition";
 import useInsumosData from "../../hooks/useInsumosData";

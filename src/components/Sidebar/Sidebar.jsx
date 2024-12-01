@@ -327,6 +327,13 @@ const Sidebar = ({ nombre }) => {
                   setSelected={setSelected}
                 />
                 <Item
+                  title="prueba"
+                  to="/dashboard/prueba"
+                  icon={<StraightenOutlined />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
                   title="Unidades de medida"
                   to="/dashboard/unidades-medida"
                   icon={<HelpOutlineOutlined />}

@@ -19,6 +19,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import useIsFirstRender from "../../hooks/useIsMount.js";
+import { Paid } from "@mui/icons-material";
 const Compras = () => {
   const {
     handleSubmit: handleSaveCompra,
@@ -115,6 +116,7 @@ const Compras = () => {
   return (
     <>
       <Header
+        icon={Paid}
         title={"Compras"}
         handleAdd={handleAdd}
         buttonText={"Añadir compra"}

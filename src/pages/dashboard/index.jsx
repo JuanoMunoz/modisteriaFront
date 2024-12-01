@@ -10,8 +10,9 @@ import StatBox from "../../components/StatBox/StatBox";
 import useFetch from "../../hooks/useFetch";
 import { useJwt } from "../../context/JWTContext";
 import { useEffect, useState } from "react";
-import './dashboard-index.css';
+import "./dashboard-index.css";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import LoadingTableData from "../../components/loadingTableData/LoadingTableData";
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -80,10 +81,13 @@ const Dashboard = () => {
         mb={2}
       >
         <Typography variant="h4" sx={{ ml: 4 }} fontSize={"40px"}>
-          <HomeOutlinedIcon sx={{ color: colors.purple[400], fontSize: "40px", mr: 1 }} />
+          <HomeOutlinedIcon
+            sx={{ color: colors.purple[400], fontSize: "40px", mr: 1 }}
+          />
           Dashboard
         </Typography>
-      </Box><br />
+      </Box>
+      <br />
       <Box
         display="grid"
         gridTemplateColumns="repeat(12, 1fr)"
@@ -103,11 +107,7 @@ const Dashboard = () => {
             <Typography variant="h4" color={colors.grey[100]} fontWeight="bold">
               {pqrs.length}
             </Typography>
-            <Typography
-              variant="h6"
-              color={colors.white}
-              fontWeight="600"
-            >
+            <Typography variant="h6" color={colors.white} fontWeight="600">
               PQRs pendientes
             </Typography>
           </Box>
@@ -129,11 +129,7 @@ const Dashboard = () => {
             <Typography variant="h4" color={colors.grey[100]} fontWeight="bold">
               {ventas.length}
             </Typography>
-            <Typography
-              variant="h6"
-              color={colors.white}
-              fontWeight="600"
-            >
+            <Typography variant="h6" color={colors.white} fontWeight="600">
               Ventas realizadas
             </Typography>
           </Box>
@@ -155,11 +151,7 @@ const Dashboard = () => {
             <Typography variant="h4" color={colors.grey[100]} fontWeight="bold">
               {usuarios.length}
             </Typography>
-            <Typography
-              variant="h6"
-              color={colors.white}
-              fontWeight="600"
-            >
+            <Typography variant="h6" color={colors.white} fontWeight="600">
               Usuarios registrados
             </Typography>
           </Box>
@@ -173,17 +165,13 @@ const Dashboard = () => {
           justifyContent="center"
           borderRadius={"10px"}
         >
-          <Box display="flex" flexDirection="column" alignItems="center" >
+          <Box display="flex" flexDirection="column" alignItems="center">
             <TrafficIcon sx={{ color: colors.purple[500], fontSize: "32px" }} />
             <br />
             <Typography variant="h4" color={colors.grey[100]} fontWeight="bold">
               {cotizaciones.length}
             </Typography>
-            <Typography
-              variant="h6"
-              color={colors.white}
-              fontWeight="600"
-            >
+            <Typography variant="h6" color={colors.white} fontWeight="600">
               Cotizaciones pendientes
             </Typography>
           </Box>
@@ -205,7 +193,8 @@ const Dashboard = () => {
             alignItems="center"
           >
             <Box>
-              <br /><br />
+              <br />
+              <br />
               <Typography
                 variant="h5"
                 fontWeight="600"
@@ -219,16 +208,9 @@ const Dashboard = () => {
           <br />
           <Box height="450px" m="-20px 0 0 0">
             {loading ? (
-              <div class="wrapper">
-                <div class="circle"></div>
-                <div class="circle"></div>
-                <div class="circle"></div>
-                <div class="shadow"></div>
-                <div class="shadow"></div>
-                <div class="shadow"></div>
-              </div>
+              <LoadingTableData></LoadingTableData>
             ) : (
-              <BarChart data={insumos} isDashboard={true}/>
+              <BarChart data={insumos} isDashboard={true} />
             )}
           </Box>
         </Box>

@@ -6,6 +6,43 @@ const constants = {
   EMAIL_REGEX,
   PHONE_REGEX,
 };
+export const messagesCalendar = {
+  allDay: "Todo el día",
+  showMore: (total, remainingEvents, events) => `+${total} más`,
+  previous: "Anterior",
+  next: "Siguiente",
+  today: "Hoy",
+  month: "Mes",
+  week: "Semana",
+  day: "Día",
+  agenda: "Agenda",
+  date: "Fecha",
+  time: "Hora",
+  event: "Evento",
+  noEventsInRange: "Sin eventos",
+};
+export const estadoCitasColores = [
+  {
+    nombre: "Por aprobar",
+    color: "#F4D03F",
+  },
+  {
+    nombre: "Aprobada",
+    color: "#27AE60",
+  },
+  {
+    nombre: "Aceptada",
+    color: "#1D8F4B",
+  },
+  {
+    nombre: "Terminada",
+    color: "#3498DB",
+  },
+  {
+    nombre: "Cancelada",
+    color: "#E74C3C",
+  },
+];
 
 export const postSession = [
   {

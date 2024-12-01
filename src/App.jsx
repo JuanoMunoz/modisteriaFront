@@ -27,6 +27,7 @@ import ControlInsumos from "./pages/controlInsumos/ControlInsumos";
 import UnidadesInsumo from "./pages/unidadesMedida/UnidadesMedida";
 import Compras from "./pages/compras/Compras";
 import Proveedores from "./pages/proveedores/Proveedores";
+import Prueba from "./pages/prueba/Prueba";
 function App() {
   return (
     <>
@@ -69,6 +70,7 @@ function App() {
             path="/dashboard/unidades-medida"
             element={<UnidadesInsumo />}
           />
+          <Route path="/dashboard/prueba" element={<Prueba />} />
           <Route path="/dashboard/tallas" element={<Tallas />} />
         </Route>
         <Route path="*" element={<Error404 />}></Route>

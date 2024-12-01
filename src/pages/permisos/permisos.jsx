@@ -37,6 +37,7 @@ import {
   BarChart,
   PointOfSale,
 } from "@mui/icons-material";
+import LoadingTableData from "../../components/loadingTableData/LoadingTableData";
 const Permisos = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -150,7 +151,7 @@ const Permisos = () => {
 
   return (
     <>
-    <br />
+      <br />
       <Box
         display="flex"
         justifyContent="space-between"
@@ -158,7 +159,9 @@ const Permisos = () => {
         mb={2}
       >
         <Typography variant="h4" sx={{ ml: 4 }} fontSize={"40px"}>
-        <LockOutlined sx={{ color: colors.purple[400], fontSize: "40px", mr: 1 }} />
+          <LockOutlined
+            sx={{ color: colors.purple[400], fontSize: "40px", mr: 1 }}
+          />
           Permisos
         </Typography>
       </Box>
@@ -193,14 +196,7 @@ const Permisos = () => {
       >
         {loading ? (
           <Box marginLeft={"175px"}>
-            <div class="wrapper">
-              <div class="circle"></div>
-              <div class="circle"></div>
-              <div class="circle"></div>
-              <div class="shadow"></div>
-              <div class="shadow"></div>
-              <div class="shadow"></div>
-            </div>
+            <LoadingTableData></LoadingTableData>
           </Box>
         ) : (
           <DataGrid
@@ -210,7 +206,7 @@ const Permisos = () => {
             getRowId={(row) => row.id}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
             sx={{
-              height: '70vh',
+              height: "70vh",
             }}
           />
         )}

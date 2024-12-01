@@ -1,0 +1,119 @@
+.parent-calendar {
+  width: 90%;
+  height: 75vh;
+  margin: 0 auto;
+}
+.rbc-day-bg + .rbc-day-bg {
+  border-left: none;
+}
+div.rbc-event {
+  position: relative !important;
+  height: 30px;
+  border-radius: 0.7rem;
+}
+.cita-calendar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 0.3rem;
+  width: 100%;
+  height: 100%;
+}
+.rbc-button-link.rbc-show-more {
+  color: #fff;
+  margin-top: 5px;
+  transition: color 0.1s ease-in-out;
+  padding: 2px 5px;
+}
+.rbc-button-link.rbc-show-more:hover {
+  color: #b534e6;
+  background: #000;
+  margin-top: 5px;
+}
+.rbc-btn-group {
+  background-color: #222;
+  border-radius: 0.5rem;
+}
+.rbc-toolbar button {
+  color: #fff !important;
+}
+button.rbc-active {
+  color: #1e1e1e !important;
+}
+.rbc-toolbar-label {
+  text-transform: capitalize;
+}
+.rbc-day-bg {
+  background-color: #1e1e1e;
+  color: #fff;
+  border-radius: 0.15rem;
+}
+.rbc-day-bg.rbc-off-range-bg {
+  background-color: #2d2d2d;
+  color: #a9a9a9;
+  cursor: not-allowed;
+}
+.rbc-day-bg.rbc-today {
+  background-color: #b534e6;
+  color: #ffffff;
+  border: 2px solid #8a2bb8;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+.rbc-date-cell {
+  font-weight: bolder;
+  font-size: 0.9rem;
+}
+.rbc-header {
+  background-color: #873780;
+}
+.rbc-header span {
+  font-size: 1rem;
+}
+div.rbc-time-slot {
+  background-color: #222020 !important;
+}
+.rbc-header.rbc-today {
+  background-color: #b534e6;
+}
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin-top: 2rem;
+  align-items: center;
+}
+.info-section article {
+  display: flex;
+  width: 45%;
+  gap: 25px;
+  justify-content: start;
+}
+.color-estado {
+  width: 20px;
+  height: 20px;
+}
+.add-insumos {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+.textInputWrapper {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #fcfcfc36;
+  transition: color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
+  width: 100%;
+}
+
+.textInputWrapper:hover .textInputWrapper:focus {
+  color: white;
+}
+.error-fecha {
+  color: rgb(250, 24, 24);
+  margin-bottom: 1rem;
+  padding-left: 3px;
+}

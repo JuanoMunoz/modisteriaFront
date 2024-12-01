@@ -1,373 +1,556 @@
-import Metadata from "../../components/metadata/Metadata";
-import { useEffect, useRef, useState } from "react";
-import useLLM from "../../hooks/useLLM";
-import "./citas.css";
-import videoSource from "/citaVideo.mp4";
-import { useJwt } from "../../context/JWTContext";
-import Modal from "../../components/modal/Modal";
-import { Calendar } from "../../components/svg/Svg";
+import React, { useState, useEffect } from "react";
 import {
-  Asesor,
-  Right,
-  Send,
-  Report,
-  NewChat,
-  ArrowDown,
-} from "../../components/svg/Svg";
-import chatbot from "/chatbot.jpg"
-import citasImg from "/citas.jfif";
-import { toast, ToastContainer } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { imageExtensions } from "../../assets/constants.d";
-import useDecodedJwt from "../../hooks/useJwt";
-import useFetch from "../../hooks/useFetch";
-export default function Citas() {
-  const { token } = useJwt();
-  const payload = useDecodedJwt(token);
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { TrashColor, Edit } from "../../components/svg/Svg";
+import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
+import { tokens } from "../../theme";
+import { useTheme } from "@mui/material";
+import { useForm } from "react-hook-form";
+import useCitasData from "../../hooks/useCitasData";
+import { formatDateSpanish, formaTime } from "../../assets/constants.d";
+
+const CitasDashboard = () => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   const {
-    historial,
-    sendMessage,
-    isLoadingMessage,
-    generarReporte,
-    resetHistory,
-  } = useLLM();
-  const emptyChat = useRef();
-  const [imagen, setImagen] = useState();
-  const inputImagen = useRef();
-  const [inputValue, setInputValue] = useState("");
-  const [addCitaModal, setAddCitaModal] = useState(false);
-  const [lastResponse, setLastResponse] = useState("");
-  const [fechaCita, setFechaCita] = useState(null);
-  const [objetivo, setObjetivo] = useState(null);
-  const [sentMessage, setSentMessage] = useState("");
-  const [hasClassActive, setHasClassActive] = useState(false);
-  const { triggerFetch } = useFetch();
-  const inputRef = useRef();
-  const handleChangeInputImagen = () => {
-    const extension = inputImagen.current.files[0].name.split(".")[1];
-    if (!imageExtensions.includes(extension)) {
-      toast.error("Solo aceptamos Imágenes de referencia!", {
-        toastId: "imagenReferencia",
-        autoClose: 1300,
-      });
-      setImagen(null);
-      return;
-    }
+    handleSubmit: handleSaveCita,
+    formState: { errors: errorsEditCita },
+    register: registerCita,
+    reset,
+  } = useForm();
 
-    toast.success("Imagen agregada con éxito!", {
-      toastId: "imagenReferenciaSuccess",
-      autoClose: 1300,
-    });
-    setImagen(inputImagen.current.files[0]);
-  };
-  const toggleAddCita = () => {
-    setAddCitaModal(!addCitaModal);
-  };
-  const navigate = useNavigate();
-  const handleInput = (e) => {
-    setInputValue(e.target.value);
-  };
-  const handleReset = () => {
-    setHasClassActive(false);
-    setFechaCita(null);
-    setObjetivo(null);
-    resetHistory();
-  };
-  const handleGoToSesion = (e) => {
-    e.preventDefault();
-    toast.error("Debes iniciar sesión\npara agendar una cita!", {
-      autoClose: 2000,
-      onClose: () => {
-        navigate("/sesion");
-      },
-    });
-  };
-  const handleAddCita = async () => {
-    if (!fechaCita || !objetivo) {
-      toast.error("No puedes agregar una cita!\nTe falta información.", {
-        toastId: "errorInfoCita",
-        autoClose: 1500,
-      });
-      return;
-    }
-    const [day, month, year, time] = fechaCita.split(/[-:]/);
-    const dateObject = `${year}-${month}-${day} ${time}:00`;
-    const formData = new FormData();
-    formData.append("fecha", dateObject);
-    formData.append("objetivo", objetivo);
-    formData.append("usuarioId", payload?.id);
-    imagen && formData.append("file", imagen);
-    const response = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/citas/createCita",
-      "POST",
-      formData,
-      {
-        "x-token": token,
-        "Content-Type": "multipart/form-data",
-      }
-    );
-    console.log(response);
+  const [openModal, setOpenModal] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedCita, setSelectedCita] = useState(null);
+  const [citaToDelete, setCitaToDelete] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [data, setData] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
+  const [imagePreview, setImagePreview] = useState(null);
 
-    if (response.status === 201) {
-      toggleAddCita();
-      toast.success(`${response.data.msg}!`, {
-        toastId: "addCitaBien",
-        autoClose: 2000,
-        onClose: () => navigate("/perfil"),
-      });
-    } else if (response.status === 400) {
-      toast.error(`${response.data.msg}!`, {
-        toastId: "addCitaMal",
-        autoClose: 2000,
-      });
-    }
-  };
-  const submitQuestion = async (e) => {
-    e.preventDefault();
-    if (!hasClassActive) {
-      emptyChat.current.classList.add("active");
-      setHasClassActive(true);
-    }
-    if (inputRef.current.value == "") return;
-    const message = inputRef.current.value;
-
-    setSentMessage(message);
-
-    const response = await sendMessage(message);
-    setLastResponse(response);
-
-    setInputValue("");
-  };
-
-  const generateReport = async () => {
-    toggleAddCita();
-    const response = await generarReporte();
-    const dataCita = JSON.parse(response.trim());
-    setObjetivo(dataCita.objetivo);
-    setFechaCita(dataCita.fecha);
-  };
+  const {
+    loading,
+    updateCita,
+    deleteCita,
+    createCita,
+    initialFetchAllCitas,
+    initialFetchAllUsuarios,
+  } = useCitasData();
 
   useEffect(() => {
-    console.log(historial);
-  }, [historial]);
+    const initialFetchCitasAndUsuarios = async () => {
+      const respuestaCitas = await initialFetchAllCitas();
+      const respuestaUsuarios = await initialFetchAllUsuarios();
+      if (respuestaCitas.status === 200 && respuestaCitas.data) {
+        setData(respuestaCitas.data);
+      } else {
+        setErrorMessage("Error al cargar las citas.");
+      }
+      if (respuestaUsuarios.status === 200 && respuestaUsuarios.data) {
+        setUsuarios(respuestaUsuarios.data);
+      } else {
+        setErrorMessage("Error al cargar los usuarios.");
+      }
+    };
+    initialFetchCitasAndUsuarios();
+  }, []);
 
-  const asesorDiv = useRef(null);
-
-  const scrollToDiv = () => {
-    asesorDiv.current.scrollIntoView({ behavior: "smooth" });
+  const handleEdit = (id) => {
+    const citaToEdit = data.find((cita) => cita.id === id);
+    setSelectedCita(citaToEdit);
+    reset(citaToEdit);
+    setOpenModal(true);
   };
 
-  //Modal
-  const [showModal, setShowModal] = useState(false);
-
-  const toggleModal = () => {
-    setShowModal(!showModal);
+  const handleClose = () => {
+    setOpenModal(false);
+    setSelectedCita(null);
+    setImagePreview(null);
   };
+
+  const handleSave = async (formData) => {
+    const formDataAddImagen = new formData();
+    const fechaIso = new Date(formData.fecha).toISOString();
+
+    imagenes.forEach((imagen) => formDataAddImagen.append("file", imagen));
+    formDataAddImagen.append(
+      "formData",
+      JSON.stringify({ ...formData, fecha: fechaIso })
+    );
+
+    const maxId =
+      data.length > 0 ? Math.max(...data.map((cita) => cita.id)) : 0;
+    const newId = maxId + 1;
+
+    // const dataToSend = {
+    //   ...formData,
+    //   fecha: fechaIso,
+    //   id: newId,
+    //   referencia: imagePreview,
+    // };
+
+    // console.log("Datos enviados a la API:", dataToSend);
+
+    try {
+      const respuestaCitas = await (selectedCita
+        ? updateCita(selectedCita.id, formDataAddImagen)
+        : createCita(formDataAddImagen));
+
+      if (respuestaCitas.status === 200 || respuestaCitas.status === 201) {
+        const updatedData = selectedCita
+          ? data.map((cita) =>
+              cita.id === selectedCita.id ? { ...cita, ...formData } : cita
+            )
+          : [...data, { ...formData, id: Response.data.id }];
+
+        setData(updatedData);
+        await initialFetchAllUsuarios();
+        handleClose();
+      } else {
+        throw new Error(
+          respuestaCitas.data.message || "Error al guardar la cita."
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      setErrorMessage(error.message || "Error al guardar la cita.");
+    }
+  };
+
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const validImages = files.filter((file) => file.type.includes("image"));
+
+    if (validImages.length === 0) {
+      setErrorMessage("Selecciona solo imágenes válidas.");
+      return;
+    }
+
+    setImagenes([...imagenes, ...validImages]);
+  };
+
+  const handleDelete = (id) => {
+    const cita = data.find((cita) => cita.id === id);
+    setCitaToDelete(cita);
+    setOpenDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (
+      citaToDelete.estadoId !== 9 &&
+      citaToDelete.estadoId !== 10 &&
+      citaToDelete.estadoId !== 11
+    ) {
+      setErrorMessage("Solo se pueden eliminar citas inactivas o canceladas.");
+      setOpenDeleteDialog(false);
+      return;
+    }
+    const respuestaCitas = await deleteCita(citaToDelete.id);
+    if (respuestaCitas.status === 201) {
+      setData(data.filter((cita) => cita.id !== citaToDelete.id));
+      setOpenDeleteDialog(false);
+      setCitaToDelete(null);
+    } else {
+      setErrorMessage(respuestaCitas.data.message);
+      setOpenDeleteDialog(false);
+    }
+  };
+
+  const getUsuarioNombre = (usuarioId) => {
+    const usuario = usuarios.find((user) => user.id === usuarioId);
+    console.log("Usuario encontrado: ", usuario);
+    return usuario ? `${usuario.nombre}` : "Usuario desconocido";
+  };
+
+  const columns = [
+    { field: "id", headerName: "ID", flex: 0.5 },
+    {
+      field: "fecha",
+      headerName: "Fecha",
+      flex: 1,
+      renderCell: (params) => (
+        <div
+          style={{
+            whiteSpace: "normal",
+            wordWrap: "break-word",
+            textAlign: "left",
+          }}
+        >
+          {`${formatDateSpanish(params.value)} - ${formaTime(params.value)}`}
+        </div>
+      ),
+    },
+    {
+      field: "referencia",
+      headerName: "Referencia",
+      flex: 1,
+      renderCell: (params) => (
+        <div style={{ textAlign: "left" }}>
+          {Array.isArray(params.value) && params.value.length > 0
+            ? params.value.map((imgUrl, idx) => (
+                <img
+                  key={idx}
+                  src={imgUrl}
+                  alt={`Referencia ${idx}`}
+                  style={{
+                    maxWidth: "100px",
+                    maxHeight: "50px",
+                    marginRight: "8px",
+                  }}
+                />
+              ))
+            : "Sin imagen"}
+        </div>
+      ),
+    },
+    {
+      field: "objetivo",
+      headerName: "Objetivo",
+      flex: 1,
+      renderCell: (params) => (
+        <div
+          style={{
+            whiteSpace: "normal",
+            wordWrap: "break-word",
+            textAlign: "left",
+          }}
+        >
+          {params.value}
+        </div>
+      ),
+    },
+    {
+      field: "precio",
+      headerName: "Precio",
+      flex: 0.7,
+      renderCell: (params) => (
+        <div
+          style={{
+            whiteSpace: "normal",
+            wordWrap: "break-word",
+            textAlign: "left",
+          }}
+        >
+          {params.value || "Por establecer"}
+        </div>
+      ),
+    },
+    {
+      field: "usuarioId",
+      headerName: "Usuario",
+      flex: 0.7,
+      renderCell: (params) => {
+        const usuarioNombre = getUsuarioNombre(params.value);
+        return (
+          <div
+            style={{
+              whiteSpace: "normal",
+              wordWrap: "break-word",
+              textAlign: "left",
+            }}
+          >
+            {usuarioNombre}
+          </div>
+        );
+      },
+    },
+    {
+      field: "tiempo",
+      headerName: "Tiempo",
+      flex: 0.7,
+      renderCell: (params) => (
+        <div
+          style={{
+            whiteSpace: "normal",
+            wordWrap: "break-word",
+            textAlign: "left",
+          }}
+        >
+          {params.value || "Por establecer"}
+        </div>
+      ),
+    },
+    {
+      field: "estadoId",
+      headerName: "Estado",
+      flex: 1,
+      renderCell: ({ row }) => {
+        const estadoText =
+          {
+            9: "Por aprobar",
+            10: "Aprobada",
+            11: "Aceptada",
+            12: "Cancelada",
+            13: "Terminada",
+          }[row.estadoId] || "Desconocido";
+
+        return <Typography>{estadoText}</Typography>;
+      },
+    },
+    {
+      field: "acciones",
+      headerName: "Acciones",
+      flex: 0.8,
+      renderCell: ({ row }) => (
+        <Box display="flex" alignItems="left">
+          <Button
+            onClick={() => handleEdit(row.id)}
+            sx={{ p: 0.5, minWidth: "30px", height: "36px", mr: 1, ml: 1 }}
+          >
+            <Edit size={20} color={colors.grey[100]} />
+          </Button>
+          <Button
+            onClick={() => handleDelete(row.id)}
+            sx={{ p: 0.5, minWidth: "30px", height: "36px", ml: 0 }}
+          >
+            <TrashColor size={20} color={colors.grey[100]} />
+          </Button>
+        </Box>
+      ),
+    },
+  ];
+
   return (
     <>
-      <Metadata title={"Citas - Modistería Doña Luz"}></Metadata>
-      <div className="contenedorCitas">
-        <div className="video">
-          <video
-            src={videoSource}
-            autoPlay
-            loop
-            muted
-            className="video"
-          ></video>
-        </div>
-        <div className="citas">
-          <span>Citas</span>
-          <hr className="separacionCitas" />
-          <h2>¡Agenda tu cita ahora!</h2>
-          <p>
-            Contamos con un asesor especializado que estará completamente
-            dedicado a atender tus necesidades. No pierdas la oportunidad de
-            recibir una atención personalizada y profesional, diseñada
-            exclusivamente para ti.
-          </p>
-          <button className="btnAsesor" onClick={toggleModal}>
-            <span>
-              <Asesor color={"#fff"} size={"30px"}></Asesor>
-              <Right color={"#fff"} size={"30px"}></Right>
-            </span>
-          </button>
-        </div>
-      </div>
-
-      <Modal show={addCitaModal} onClose={()=>{toggleAddCita(); toggleModal();}}>
-        <Calendar color={"#fff"} size={"120"}></Calendar>
-        <h3>¿Agregar cita?</h3>
-        <div>
-          <h3>{fechaCita ? fechaCita : "¡No has añadido una fecha!"}</h3>
-          <h3>{objetivo ? objetivo : "¡No has añadido un objetivo!"}</h3>
-        </div>
-        <div className="logout">
-          <button onClick={()=>{toggleAddCita(); toggleModal();}} className="btn-cancelar">
-            <span>Cancelar</span>
-          </button>
-          <button onClick={handleAddCita} className="btn-accion">
-            <span>Agendar</span>
-          </button>
-        </div>
-      </Modal>
-
-      <Modal show={showModal} onClose={toggleModal} customWidth={'1050px'} className="modalAsesor">
-        <section ref={asesorDiv} className="asesor">
-          <div className="accionesTop">
-            <button className="btnAccionesTop" onClick={handleReset}>
-              {" "}
-              <span>
-                <NewChat></NewChat>
-              </span>
-            </button>
-
-            <button
-              title="agendarCita"
-              disabled={historial.length <= 8}
-              style={{
-                cursor: historial.length <= 8 ? "not-allowed" : "pointer",
-              }}
-              className="btnAccionesTop"
-              onClick={()=>{generateReport(); toggleModal();}}
-            >
-              {" "}
-              <span>
-                <Report></Report>
-              </span>
-            </button>
-
-
-          </div>
-          {historial.length <= 8 ? (
-            <div ref={emptyChat} className="empty-chat">
-              <img className="img-empty-chat" src={citasImg} alt="" />
-              <div className="bg-overlay"></div>
-              <div className="text-empty-chat">
-                <span>
-                  {token
-                    ? "¡Envía un mensaje para comenzar!"
-                    : "Inicia Sesión para enviar un mensaje"}
-                </span>
-                <div className="bouncing-arrow">
-                  <ArrowDown color={"#bb0eca"} size={40}></ArrowDown>
-                </div>
-              </div>
+      <br />
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
+        <Typography variant="h4" sx={{ ml: 4 }} fontSize={"40px"}>
+          Citas
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={() => {
+            setSelectedCita(null);
+            reset();
+            setOpenModal(true);
+          }}
+          sx={{
+            backgroundColor: colors.purple[400],
+            "&:hover": {
+              backgroundColor: colors.purple[300],
+            },
+            color: "white",
+          }}
+        >
+          Agregar Cita
+        </Button>
+      </Box>
+      <br />
+      <Box
+        m="0px 20px"
+        p="0px 10px"
+        height="56vh"
+        width="98%"
+        sx={{
+          "& .MuiDataGrid-root": { border: "none" },
+          "& .MuiDataGrid-cell": { borderBottom: "none" },
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: colors.purple[500],
+            borderBottom: "none",
+            color: "white",
+          },
+          "& .MuiDataGrid-virtualScroller": {
+            backgroundColor: colors.primary[400],
+          },
+          "& .MuiDataGrid-footerContainer": {
+            borderTop: "none",
+            backgroundColor: colors.primary[200],
+          },
+          "& .MuiCheckbox-root": {
+            color: "${colors.purple[200]} !important",
+          },
+          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+            color: "${colors.grey[100]} !important",
+          },
+        }}
+      >
+        {loading ? (
+          <Box marginLeft={"175px"}>
+            <div class="wrapper">
+              <div class="circle"></div>
+              <div class="circle"></div>
+              <div class="circle"></div>
+              <div class="shadow"></div>
+              <div class="shadow"></div>
+              <div class="shadow"></div>
             </div>
-          ) : (
-            <div className="chat">
-              <p
-                className="mensajeAsesor"
-                style={{
-                  display: sentMessage.length > 0 ? "inline-block" : "none",
-                }}
-              >
-                {sentMessage ? sentMessage : ""}
-              </p>
-              
-              <div className="respuestaContainer">
-                <img src={chatbot} className="avatarBot"/>
-                
-                  <p
-                    className="respuestaAsesor"
-                    style={{
-                      backgroundColor:
-                        lastResponse.length > 0 || isLoadingMessage
-                          ? "#e0e0e0"
-                          : "transparent",
-                    }}
-                  >
-                    {isLoadingMessage ? (
-                      <center>
-                        <div className="loader-containerAsesor">
-                          <div className="loaderAsesor">
-                            <svg viewBox="0 0 80 80">
-                              <circle r="32" cy="40" cx="40" id="test"></circle>
-                            </svg>
-                          </div>
+          </Box>
+        ) : (
+          <DataGrid
+            rows={data}
+            columns={columns}
+            components={{ Toolbar: GridToolbar }}
+            localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+            getRowId={(row) => row.id}
+          />
+        )}
+      </Box>
 
-                          <div className="loaderAsesor triangleAsesor">
-                            <svg viewBox="0 0 86 80">
-                              <polygon points="43 8 79 72 7 72"></polygon>
-                            </svg>
-                          </div>
-
-                          <div className="loaderAsesor">
-                            <svg viewBox="0 0 80 80">
-                              <rect height="64" width="64" y="8" x="8"></rect>
-                            </svg>
-                          </div>
-                        </div>
-                      </center>
-                    ) : (
-                      lastResponse
-                    )}
-                  </p>
-              </div>
-            </div>
-          )}
-
-          <div className="accionesAsesor">
-            <form
-              onSubmit={token ? submitQuestion : handleGoToSesion}
-              className="messageBox"
-            >
-              <div className="fileUploadWrapper">
-                <label htmlFor="file">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 337 337"
-                  >
-                    <circle
-                      strokeWidth="20"
-                      stroke="#6c6c6c"
-                      fill="none"
-                      r="158.5"
-                      cy="168.5"
-                      cx="168.5"
-                    ></circle>
-                    <path
-                      strokeLinecap="round"
-                      strokeWidth="25"
-                      stroke="#6c6c6c"
-                      d="M167.759 79V259"
-                    ></path>
-                    <path
-                      strokeLinecap="round"
-                      strokeWidth="25"
-                      stroke="#6c6c6c"
-                      d="M79 167.138H259"
-                    ></path>
-                  </svg>
-                  <span className="tooltip">Agregar Imagen</span>
-                </label>
-                <input
-                  type="file"
-                  ref={inputImagen}
-                  onChange={token ? handleChangeInputImagen : handleGoToSesion}
-                  id="file"
-                  accept="image/*"
-                  name="file"
+      <Dialog
+        open={openModal}
+        onClose={handleClose}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
+        <form onSubmit={handleSaveCita(handleSave)}>
+          <DialogTitle id="modal-title" color={colors.grey[100]}>
+            {selectedCita?.id ? "Editar Cita" : "Agregar Cita"}
+          </DialogTitle>
+          <DialogContent>
+            {selectedCita ? (
+              <>
+                <TextField
+                  label="Tiempo"
+                  fullWidth
+                  variant="outlined"
+                  {...registerCita("tiempo", { required: true })}
+                  error={!!errorsEditCita.tiempo}
+                  helperText={errorsEditCita.tiempo ? "Campo requerido" : ""}
                 />
-              </div>
-              <input
-                required
-                placeholder="Mensaje..."
-                type="text"
-                id="messageInput"
-                ref={inputRef}
-                value={inputValue}
-                onChange={handleInput}
+                <TextField
+                  label="Precio"
+                  type="number"
+                  fullWidth
+                  variant="outlined"
+                  {...registerCita("precio", { required: true })}
+                  error={!!errorsEditCita.precio}
+                  helperText={errorsEditCita.precio ? "Campo requerido" : ""}
+                />
+                <TextField
+                  label="Estado"
+                  fullWidth
+                  select
+                  {...registerCita("estadoId", { required: true })}
+                  error={!!errorsEditCita.estadoId}
+                  helperText={errorsEditCita.estadoId ? "Campo requerido" : ""}
+                  SelectProps={{
+                    native: true,
+                  }}
+                >
+                  <option value="9">Por aprobar</option>
+                  <option value="10">Aprobada</option>
+                  <option value="11">Aceptada</option>
+                  <option value="12">Cancelada</option>
+                  <option value="13">Terminada</option>
+                </TextField>
+              </>
+            ) : (
+              <>
+                <TextField
+                  label="Fecha"
+                  type="datetime-local"
+                  fullWidth
+                  variant="outlined"
+                  {...registerCita("fecha", { required: true })}
+                  error={!!errorsEditCita.fecha}
+                  helperText={errorsEditCita.fecha ? "Campo requerido" : ""}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+
+                <TextField
+                  label="Referencia"
+                  fullWidth
+                  variant="outlined"
+                  type="file"
+                  onChange={handleImageUpload}
+                />
+                <TextField
+                  label="Objetivo"
+                  fullWidth
+                  variant="outlined"
+                  {...registerCita("objetivo", { required: true })}
+                  error={!!errorsEditCita.objetivo}
+                  helperText={errorsEditCita.objetivo ? "Campo requerido" : ""}
+                />
+                <TextField
+                  label="Usuario"
+                  select
+                  fullWidth
+                  variant="outlined"
+                  {...registerCita("usuarioId", { required: true })}
+                  error={!!errorsEditCita.usuarioId}
+                  helperText={errorsEditCita.usuarioId ? "Campo requerido" : ""}
+                  SelectProps={{
+                    native: true,
+                  }}
+                >
+                  <option value=""></option>
+                  {usuarios.map((usuario) => (
+                    <option key={usuario.id} value={usuario.id}>
+                      {usuario.nombre}
+                    </option>
+                  ))}
+                </TextField>
+                <TextField
+                  label="Estado"
+                  fullWidth
+                  select
+                  {...registerCita("estadoId", { required: true })}
+                  error={!!errorsEditCita.estadoId}
+                  helperText={errorsEditCita.estadoId ? "Campo requerido" : ""}
+                  SelectProps={{
+                    native: true,
+                  }}
+                >
+                  <option value="9">Por aprobar</option>
+                </TextField>
+              </>
+            )}
+            {errorMessage && (
+              <Typography color="error">{errorMessage}</Typography>
+            )}
+            {imagePreview && (
+              <img
+                src={imagePreview}
+                alt="Vista previa"
+                style={{ maxWidth: "100px", maxHeight: "50px" }}
               />
-              <button id="sendButton" type="submit">
-                <Send></Send>
-              </button>
-            </form>
-          </div>
-        </section>
-      </Modal>
-      <ToastContainer></ToastContainer>
+            )}
+            <br />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancelar</Button>
+            <Button type="submit" color="primary">
+              Guardar
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+      >
+        <DialogTitle>Confirmar Eliminación</DialogTitle>
+        <DialogContent>
+          <Typography>
+            ¿Estás seguro de que deseas eliminar esta cita?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)}>Cancelar</Button>
+          <Button onClick={confirmDelete} color="error">
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
-}
+};
+
+export default CitasDashboard;
