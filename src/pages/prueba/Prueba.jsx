@@ -71,6 +71,14 @@ export default function Prueba() {
   const [users, setUsers] = useState();
   const [insumos, setInsumos] = useState();
   const [numberOfInsumos, setNumberOfInsumos] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showOptions, setShowOptions] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const handleSelectEvent = (event, e) => {
+    setSelectedEvent(event);
+    setPosition({ x: e.clientX, y: e.clientY });
+    setShowOptions(true);
+  };
   useEffect(() => {
     const initialFetchInsumos = async () => {
       const respuesta = await initialFetchAllCitas();
@@ -148,12 +156,32 @@ export default function Prueba() {
         <Calendar
           events={events}
           localizer={localizer}
+          onSelectEvent={handleSelectEvent}
           messages={messagesCalendar}
           min={new Date(0, 0, 0, 8, 0, 0)}
           max={new Date(0, 0, 0, 21, 0, 0)}
           views={["month", "week", "day"]}
           components={components}
         ></Calendar>
+      )}
+      {showOptions && selectedEvent && (
+        <div
+          onMouseLeave={() => setShowOptions(false)}
+          className="event-options"
+          style={{
+            position: "absolute",
+            top: `${position.y}px`,
+            left: `${position.x}px`,
+          }}
+        >
+          <div>
+            <span>Info</span>
+          </div>
+          <button>Editar Cita</button>
+          <button>Cotizar cita</button>
+          <button>Cancelar cita</button>
+          <h4>Info</h4>
+        </div>
       )}
       <Dialog
         keepMounted

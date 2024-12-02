@@ -109,6 +109,15 @@ div.rbc-time-slot {
   width: 100%;
 }
 
+.event-options {
+  width: 200px;
+  padding: 1.5rem 1rem;
+  border-radius: 0.8rem;
+  background: radial-gradient(circle at center, #222222, #1a1a1a, #111111);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+  color: #fff;
+  z-index: 1000;
+}
 .textInputWrapper:hover .textInputWrapper:focus {
   color: white;
 }
