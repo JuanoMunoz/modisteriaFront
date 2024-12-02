@@ -17,23 +17,6 @@ import { useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
 import useCitasData from "../../hooks/useCitasData";
 import { formatDateSpanish, formaTime } from "../../assets/constants.d";
-import {
-  ShoppingCartOutlined,
-  ViewListOutlined,
-  AdminPanelSettingsOutlined,
-  LockOutlined,
-  Inventory2Outlined,
-  StyleOutlined,
-  CalendarTodayOutlined,
-  InventoryOutlined,
-  HelpOutlineOutlined,
-  StraightenOutlined,
-  HistoryOutlined,
-  Settings,
-  TableChart,
-  BarChart,
-  PointOfSale,
-} from "@mui/icons-material";
 
 const CitasDashboard = () => {
   const theme = useTheme();
@@ -52,6 +35,7 @@ const CitasDashboard = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [data, setData] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const {
     loading,
@@ -90,34 +74,43 @@ const CitasDashboard = () => {
   const handleClose = () => {
     setOpenModal(false);
     setSelectedCita(null);
+    setImagePreview(null);
   };
 
   const handleSave = async (formData) => {
+    const formDataAddImagen = new formData();
     const fechaIso = new Date(formData.fecha).toISOString();
+
+    imagenes.forEach((imagen) => formDataAddImagen.append("file", imagen));
+    formDataAddImagen.append(
+      "formData",
+      JSON.stringify({ ...formData, fecha: fechaIso })
+    );
 
     const maxId =
       data.length > 0 ? Math.max(...data.map((cita) => cita.id)) : 0;
     const newId = maxId + 1;
 
-    const dataToSend = {
-      ...formData,
-      fecha: fechaIso,
-      id: newId,
-    };
+    // const dataToSend = {
+    //   ...formData,
+    //   fecha: fechaIso,
+    //   id: newId,
+    //   referencia: imagePreview,
+    // };
 
-    console.log("Datos enviados a la API:", dataToSend);
+    // console.log("Datos enviados a la API:", dataToSend);
 
     try {
       const respuestaCitas = await (selectedCita
-        ? updateCita(selectedCita.id, dataToSend)
-        : createCita(dataToSend));
+        ? updateCita(selectedCita.id, formDataAddImagen)
+        : createCita(formDataAddImagen));
 
       if (respuestaCitas.status === 200 || respuestaCitas.status === 201) {
         const updatedData = selectedCita
           ? data.map((cita) =>
-              cita.id === selectedCita.id ? { ...cita, ...dataToSend } : cita
+              cita.id === selectedCita.id ? { ...cita, ...formData } : cita
             )
-          : [...data, dataToSend];
+          : [...data, { ...formData, id: Response.data.id }];
 
         setData(updatedData);
         await initialFetchAllUsuarios();
@@ -131,6 +124,18 @@ const CitasDashboard = () => {
       console.log(error);
       setErrorMessage(error.message || "Error al guardar la cita.");
     }
+  };
+
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const validImages = files.filter((file) => file.type.includes("image"));
+
+    if (validImages.length === 0) {
+      setErrorMessage("Selecciona solo imágenes válidas.");
+      return;
+    }
+
+    setImagenes([...imagenes, ...validImages]);
   };
 
   const handleDelete = (id) => {
@@ -162,6 +167,7 @@ const CitasDashboard = () => {
 
   const getUsuarioNombre = (usuarioId) => {
     const usuario = usuarios.find((user) => user.id === usuarioId);
+    console.log("Usuario encontrado: ", usuario);
     return usuario ? `${usuario.nombre}` : "Usuario desconocido";
   };
 
@@ -188,14 +194,21 @@ const CitasDashboard = () => {
       headerName: "Referencia",
       flex: 1,
       renderCell: (params) => (
-        <div
-          style={{
-            whiteSpace: "normal",
-            wordWrap: "break-word",
-            textAlign: "left",
-          }}
-        >
-          {params.value || "Sin imagen"}
+        <div style={{ textAlign: "left" }}>
+          {Array.isArray(params.value) && params.value.length > 0
+            ? params.value.map((imgUrl, idx) => (
+                <img
+                  key={idx}
+                  src={imgUrl}
+                  alt={`Referencia ${idx}`}
+                  style={{
+                    maxWidth: "100px",
+                    maxHeight: "50px",
+                    marginRight: "8px",
+                  }}
+                />
+              ))
+            : "Sin imagen"}
         </div>
       ),
     },
@@ -308,7 +321,7 @@ const CitasDashboard = () => {
 
   return (
     <>
-    <br />
+      <br />
       <Box
         display="flex"
         justifyContent="space-between"
@@ -316,7 +329,6 @@ const CitasDashboard = () => {
         mb={2}
       >
         <Typography variant="h4" sx={{ ml: 4 }} fontSize={"40px"}>
-          <CalendarTodayOutlined sx={{ color: colors.purple[400], fontSize: "40px", mr: 1 }}/>
           Citas
         </Typography>
         <Button
@@ -384,9 +396,6 @@ const CitasDashboard = () => {
             components={{ Toolbar: GridToolbar }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
             getRowId={(row) => row.id}
-            sx={{
-              height: '70vh',
-            }}
           />
         )}
       </Box>
@@ -458,11 +467,8 @@ const CitasDashboard = () => {
                   label="Referencia"
                   fullWidth
                   variant="outlined"
-                  {...registerCita("referencia", { required: true })}
-                  error={!!errorsEditCita.referencia}
-                  helperText={
-                    errorsEditCita.referencia ? "Campo requerido" : ""
-                  }
+                  type="file"
+                  onChange={handleImageUpload}
                 />
                 <TextField
                   label="Objetivo"
@@ -509,6 +515,14 @@ const CitasDashboard = () => {
             {errorMessage && (
               <Typography color="error">{errorMessage}</Typography>
             )}
+            {imagePreview && (
+              <img
+                src={imagePreview}
+                alt="Vista previa"
+                style={{ maxWidth: "100px", maxHeight: "50px" }}
+              />
+            )}
+            <br />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancelar</Button>

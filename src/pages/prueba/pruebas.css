@@ -110,13 +110,46 @@ div.rbc-time-slot {
 }
 
 .event-options {
-  width: 200px;
-  padding: 1.5rem 1rem;
+  width: 250px;
+  padding: 1rem 0;
   border-radius: 0.8rem;
   background: radial-gradient(circle at center, #222222, #1a1a1a, #111111);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
-  color: #fff;
+  color: #b7b7b7;
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+.event-options div {
+  display: flex;
+  font-size: 0.9rem;
+  font-weight: 700;
+  justify-content: start;
+  padding: 0 60px;
+  padding-top: 4px;
+  gap: 5px;
+  align-items: start;
+  width: 100%;
+  height: 40px;
+  cursor: pointer;
+
+  transition: all 0.5s ease;
+}
+.event-options div:hover {
+  color: #fff;
+  scale: 1.1;
+}
+.event-options div:hover .info {
+  color: #3498db;
+}
+.event-options div:hover .error {
+  color: #e74c3c;
+}
+.event-options div:hover .edit {
+  color: #a13cd3;
+}
+.event-options div:hover .cotizar {
+  color: #27ae60;
 }
 .textInputWrapper:hover .textInputWrapper:focus {
   color: white;

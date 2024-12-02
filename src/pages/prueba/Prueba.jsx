@@ -9,7 +9,13 @@ import {
 } from "../../assets/constants.d";
 import "dayjs/locale/es";
 import Header from "../../components/Header/Header";
-import { CalendarTodayOutlined } from "@mui/icons-material";
+import {
+  CalculateOutlined,
+  CalendarTodayOutlined,
+  Cancel,
+  Edit,
+  HelpOutline,
+} from "@mui/icons-material";
 import useCitasData from "../../hooks/useCitasData";
 import LoadingTableData from "../../components/loadingTableData/LoadingTableData";
 import { useState, useEffect } from "react";
@@ -75,6 +81,8 @@ export default function Prueba() {
   const [showOptions, setShowOptions] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const handleSelectEvent = (event, e) => {
+    console.log(event);
+
     setSelectedEvent(event);
     setPosition({ x: e.clientX, y: e.clientY });
     setShowOptions(true);
@@ -174,13 +182,38 @@ export default function Prueba() {
             left: `${position.x}px`,
           }}
         >
-          <div>
+          <div onClick={handleInfo}>
+            <span className="info">
+              <HelpOutline />
+            </span>{" "}
             <span>Info</span>
           </div>
-          <button>Editar Cita</button>
-          <button>Cotizar cita</button>
-          <button>Cancelar cita</button>
-          <h4>Info</h4>
+          {selectedEvent.data.estadoId !== 13 &&
+            selectedEvent.data.estadoId !== 12 && (
+              <div onClick={handleEdit}>
+                <span className="edit">
+                  <Edit />
+                </span>
+                <span>Editar Cita</span>
+              </div>
+            )}
+          {selectedEvent.data.estadoId === 9 && (
+            <div>
+              <span className="cotizar">
+                <CalculateOutlined />
+              </span>
+              <span>Cotizar cita</span>
+            </div>
+          )}
+          {(selectedEvent.data.estadoId == 9 ||
+            selectedEvent.data.estadoId == 10) && (
+            <div onClick={handleCancel}>
+              <span className="error">
+                <Cancel />
+              </span>
+              <span>Cancelar cita</span>
+            </div>
+          )}
         </div>
       )}
       <Dialog
@@ -453,10 +486,10 @@ const CalendarEvent = ({ props }) => {
   useEffect(() => {
     switch (props.event.data.estadoId) {
       case 9:
-        setBgColor({ bg: estadoCitasColores[0].color, color: "#333333" });
+        setBgColor({ bg: estadoCitasColores[0].color, color: "#6A0DAD" });
         break;
       case 10:
-        setBgColor({ bg: estadoCitasColores[1].color, color: "#333333" });
+        setBgColor({ bg: estadoCitasColores[1].color, color: "#fff" });
         break;
       case 11:
         setBgColor({ bg: estadoCitasColores[2].color, color: "#fff" });
