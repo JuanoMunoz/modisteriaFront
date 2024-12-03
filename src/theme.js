@@ -143,6 +143,17 @@ export const tokens = (mode) => ({
 export const themeSettings = (mode) => {
   const colors = tokens(mode);
   return {
+    components: {
+      MuiDialog: {
+        styleOverrides: {
+          paper: {
+            background:
+              "radial-gradient(circle at center, #222222, #1a1a1a, #111111)",
+            color: colors.grey[100],
+          },
+        },
+      },
+    },
     palette: {
       mode: mode,
       ...(mode === "dark"

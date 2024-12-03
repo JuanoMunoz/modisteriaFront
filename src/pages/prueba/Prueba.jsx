@@ -19,7 +19,12 @@ import {
 import useCitasData from "../../hooks/useCitasData";
 import LoadingTableData from "../../components/loadingTableData/LoadingTableData";
 import { useState, useEffect } from "react";
-import { Button, Dialog, DialogContent } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+} from "@mui/material";
 import DialogTitleCustom from "../../components/dialogTitle/DialogTitleCustom";
 import CustomDialogActions from "../../components/customDialogActions/CustomDialogActions";
 import Transition from "../../components/transition/Transition";
@@ -56,21 +61,27 @@ export default function Prueba() {
       insumo?.cantidad
     )} ${insumo?.unidades_de_medida.nombre?.toLowerCase()}`;
   };
-  const handleDialog = (action, title, row) => {
-    setDialogProps({ action, title, row });
+  const handleDialog = (action, title) => {
+    setDialogProps({ action, title });
     toggleState(setOpenModal);
   };
   const handleAdd = () => {
     handleDialog("add", "Añadir Cita");
   };
-  const handleEdit = (row) => {
-    handleDialog("edit", "Editar Cita", row);
+  const handleEstimation = () => {
+    handleDialog("estimation", "Cotización Cita");
   };
-  const handleCancel = (row) => {
-    handleDialog("cancel", "Cancelar Cita", row);
+  const handleEdit = () => {
+    handleDialog("edit", "Editar Cita");
+  };
+  const handleCancel = () => {
+    handleDialog("cancel", "Cancelar Cita");
   };
   const handleInfo = () => {
     handleDialog("info", "Información Estados Citas");
+  };
+  const handlePreview = () => {
+    handleDialog("preview", "Cita");
   };
   const [data, setData] = useState();
   const [events, setEvents] = useState();
@@ -182,7 +193,7 @@ export default function Prueba() {
             left: `${position.x}px`,
           }}
         >
-          <div onClick={handleInfo}>
+          <div onClick={handlePreview}>
             <span className="info">
               <HelpOutline />
             </span>{" "}
@@ -198,7 +209,7 @@ export default function Prueba() {
               </div>
             )}
           {selectedEvent.data.estadoId === 9 && (
-            <div>
+            <div onClick={handleEstimation}>
               <span className="cotizar">
                 <CalculateOutlined />
               </span>
@@ -237,234 +248,286 @@ export default function Prueba() {
                   </article>
                 ))}
               </section>
-            ) : (
-              <div>
-                <div className="textInputWrapper">
-                  <h4>
-                    Fecha{" "}
-                    {watch("fecha") &&
-                      `${dayjs(watch("fecha")).format(
-                        "dddd, D [de] MMMM [de] YYYY, h:mm A"
-                      )}`}
-                  </h4>
-                  <input
-                    {...register("fecha", {
-                      required: "¡La fecha es requerida!",
-                      min: {
-                        value: dayjs().format("YYYY-MM-DD"),
-                        message: "¡La fecha no puede ser anterior a hoy!",
-                      },
-                      max: {
-                        value: dayjs().add(2, "months").format("YYYY-MM-DD"),
-                        message: "¡La fecha no puede superar los dos meses!",
-                      },
-                    })}
-                    type="datetime-local"
-                    className="textInput"
+            ) : dialogProps.action === "preview" ? (
+              <div class="cita-card">
+                <div class="cita-imagen">
+                  <img
+                    src="https://via.placeholder.com/700x300"
+                    alt="Imagen de la cita"
                   />
                 </div>
-                {errors.fecha && (
-                  <div className="error-fecha">{errors.fecha.message}</div>
-                )}
-                <InputDash
-                  {...register("objetivo", {
-                    required: "¡El objetivo es obligatorio!",
-                    minLength: { value: 4, message: "Mínimo  4 caracteres" },
-                    maxLength: {
-                      value: 255,
-                      message: "Mínimo  255 caracteres",
-                    },
-                  })}
-                  label="Objetivo"
-                  description={errors.objetivo && errors.objetivo.message}
-                  type="text"
-                />
-                <SelectDash
-                  {...register("usuarioId", {
-                    required: "Debes escoger un usuario!",
-                  })}
-                  label="Usuario"
-                  description={errors.usuarioId && errors.usuarioId.message}
-                >
-                  {users?.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.nombre}
-                    </option>
-                  ))}
-                </SelectDash>
-                <div>
-                  <InputDash
-                    {...register("precio", {
-                      required:
-                        "La cantidad es requerida en pesos Colombianos (COP)",
-                      pattern: {
-                        value: /^\d+$/,
-                        message: "Solo se permiten números",
-                      },
-                      min: {
-                        message: "¡Mínimo de compra 2000 pesos colombianos!",
-                        value: 2000,
-                      },
-                      onChange: (e) => {
-                        let { value } = e.target;
-                        value = value.replace(/\D/g, "");
-                        e.target.value = value;
-                      },
-                    })}
-                    label="Precio"
-                    type="text"
-                    description={errors.precio && errors.precio.message}
-                  />
-                  <div className="">
-                    <h4>Tiempo aproximado</h4>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-around",
-                      }}
-                    >
-                      <div>
-                        <InputDash
-                          {...register("horas", {
-                            required: "¡mínimo 0 horas!",
-                            min: {
-                              value: 0,
-                              message: "¡mínimo 0 horas!",
-                            },
-                            onChange: (e) => {
-                              let { value } = e.target;
-                              value = value.replace(/\D/g, "");
-                              e.target.value = value;
-                            },
-                            max: {
-                              value: 8,
-                              message: "¡8 horas permitidas por cita",
-                            },
-                          })}
-                          width="250px"
-                          label={"Horas"}
-                          initialValue={1}
-                        ></InputDash>
-                        {errors.horas && (
-                          <div className="error-fecha">
-                            {errors.horas.message}
-                          </div>
-                        )}
-                      </div>
-                      <div>
-                        <InputDash
-                          {...register("minutos", {
-                            required: "¡mínimo 0 minutos!",
-                            onChange: (e) => {
-                              let { value } = e.target;
-                              value = value.replace(/\D/g, "");
-                              e.target.value = value;
-                            },
-                            min: {
-                              value: watch("horas") == 0 ? 10 : 0,
-                              message: `¡mínimo ${
-                                watch("horas") == 0 ? "10" : "0"
-                              } minutos! `,
-                            },
-                            max: {
-                              value: 59,
-                              message:
-                                "¡59 es el máximo de minutos permitidos!",
-                            },
-                          })}
-                          width="250px"
-                          label={"Minutos"}
-                          initialValue={0}
-                        ></InputDash>
-                        {errors.minutos && (
-                          <div className="error-fecha">
-                            {errors.minutos.message}
-                          </div>
-                        )}
-                      </div>
+                <div class="cita-info">
+                  <div class="campo">
+                    <label>Fecha:</label>
+                    <span>dd/mm/aaaa --:--</span>
+                  </div>
+                  <div class="campo">
+                    <label>Objetivo:</label>
+                    <span>Descripción del objetivo</span>
+                  </div>
+                  <div class="campo">
+                    <label>Usuario:</label>
+                    <span>Nombre del usuario</span>
+                  </div>
+                  <div class="campo">
+                    <label>Teléfono:</label>
+                    <span>+57 300 000 0000</span>
+                  </div>
+                  <div class="campo">
+                    <label>Correo:</label>
+                    <span>usuario@ejemplo.com</span>
+                  </div>
+                </div>
+              </div>
+            ) : dialogProps.action === "cancel" ? (
+              <DialogContentText>{`¿Estás seguro de querer cancelar la cita de ${
+                selectedEvent.data.usuario.nombre
+              } para el ${dayjs(selectedEvent.start).format(
+                "dddd, D [de] MMMM [de] YYYY"
+              )}`}</DialogContentText>
+            ) : (
+              <div>
+                {dialogProps.action !== "estimation" && (
+                  <div>
+                    <div className="textInputWrapper">
+                      <h4>
+                        Fecha{" "}
+                        {watch("fecha") &&
+                          `${dayjs(watch("fecha")).format(
+                            "dddd, D [de] MMMM [de] YYYY, h:mm A"
+                          )}`}
+                      </h4>
+                      <input
+                        {...register("fecha", {
+                          required: "¡La fecha es requerida!",
+                          min: {
+                            value: dayjs().format("YYYY-MM-DD"),
+                            message: "¡La fecha no puede ser anterior a hoy!",
+                          },
+                          max: {
+                            value: dayjs()
+                              .add(2, "months")
+                              .format("YYYY-MM-DD"),
+                            message:
+                              "¡La fecha no puede superar los dos meses!",
+                          },
+                        })}
+                        type="datetime-local"
+                        className="textInput"
+                      />
                     </div>
-                  </div>
-                  <div className="add-insumos">
-                    <span>
-                      {insumos?.length > 0
-                        ? "Añadir insumos"
-                        : "¡No tienes insumos registrados en el aplicativo!"}
-                    </span>{" "}
-                    {numberOfInsumos?.length < insumos?.length && (
-                      <Button onClick={handleAddInsumo}>
-                        <AddRounded size={24} color={"#fff"}></AddRounded>
-                      </Button>
+                    {errors.fecha && (
+                      <div className="error-fecha">{errors.fecha.message}</div>
                     )}
+                    <InputDash
+                      {...register("objetivo", {
+                        required: "¡El objetivo es obligatorio!",
+                        minLength: {
+                          value: 4,
+                          message: "Mínimo  4 caracteres",
+                        },
+                        maxLength: {
+                          value: 255,
+                          message: "Mínimo  255 caracteres",
+                        },
+                      })}
+                      label="Objetivo"
+                      description={errors.objetivo && errors.objetivo.message}
+                      type="text"
+                    />
+                    <SelectDash
+                      {...register("usuarioId", {
+                        required: "Debes escoger un usuario!",
+                      })}
+                      label="Usuario"
+                      description={errors.usuarioId && errors.usuarioId.message}
+                    >
+                      {users?.map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.nombre}
+                        </option>
+                      ))}
+                    </SelectDash>
                   </div>
-                  {numberOfInsumos?.length >= 1 ? (
-                    numberOfInsumos.map((_, idx) => (
+                )}
+                {(dialogProps.action === "add" ||
+                  (dialogProps.action === "edit" &&
+                    selectedEvent.data.estadoId != 9) ||
+                  dialogProps.action === "estimation") && (
+                  <div>
+                    <InputDash
+                      {...register("precio", {
+                        required:
+                          "La cantidad es requerida en pesos Colombianos (COP)",
+                        pattern: {
+                          value: /^\d+$/,
+                          message: "Solo se permiten números",
+                        },
+                        min: {
+                          message: "¡Mínimo de compra 2000 pesos colombianos!",
+                          value: 2000,
+                        },
+                        onChange: (e) => {
+                          let { value } = e.target;
+                          value = value.replace(/\D/g, "");
+                          e.target.value = value;
+                        },
+                      })}
+                      label="Precio"
+                      type="text"
+                      description={errors.precio && errors.precio.message}
+                    />
+                    <div className="">
+                      <h4>Tiempo aproximado</h4>
                       <div
-                        style={{ marginTop: "10px" }}
-                        key={idx}
-                        className="add-insumo-section"
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-around",
+                        }}
                       >
                         <div>
-                          <SelectDash
-                            label="Insumo"
-                            width="170px"
-                            {...register(`insumo[${idx}]`, {
-                              required: "Debes escoger un insumo!",
-                              onChange: (e) =>
-                                setValue(`insumo[${idx}]`, e.target.value),
+                          <InputDash
+                            {...register("horas", {
+                              required: "¡mínimo 0 horas!",
+                              min: {
+                                value: 0,
+                                message: "¡mínimo 0 horas!",
+                              },
+                              onChange: (e) => {
+                                let { value } = e.target;
+                                value = value.replace(/\D/g, "");
+                                e.target.value = value;
+                              },
+                              max: {
+                                value: 8,
+                                message: "¡8 horas permitidas por cita",
+                              },
                             })}
-                            description={errors?.insumo?.[idx]?.message}
-                          >
-                            {insumos.map((ins) => (
-                              <option key={ins.id} value={ins.id}>
-                                {ins.nombre}
-                              </option>
-                            ))}
-                          </SelectDash>
+                            width="250px"
+                            label={"Horas"}
+                            initialValue={1}
+                          ></InputDash>
+                          {errors.horas && (
+                            <div className="error-fecha">
+                              {errors.horas.message}
+                            </div>
+                          )}
                         </div>
                         <div>
                           <InputDash
-                            width="350px"
-                            allowDecimal
-                            label={`Cantidad usada (Máximo ${findMaxQuantityInsumo(
-                              parseFloat(getValues(`insumo[${idx}]`))
-                            )})`}
-                            type="number"
-                            {...register(`cantidad_utilizada[${idx}]`, {
-                              required: "¡La cantidad usada es requerida!",
-                              pattern: {
-                                value: /^\d+(.\d+)?$/,
-                                message: "Solo se permiten números",
+                            {...register("minutos", {
+                              required: "¡mínimo 0 minutos!",
+                              onChange: (e) => {
+                                let { value } = e.target;
+                                value = value.replace(/\D/g, "");
+                                e.target.value = value;
                               },
                               min: {
-                                value: 1,
-                                message: "¡La cantidad mínima es de 1!",
+                                value: watch("horas") == 0 ? 10 : 0,
+                                message: `¡mínimo ${
+                                  watch("horas") == 0 ? "10" : "0"
+                                } minutos! `,
                               },
                               max: {
-                                value: findMaxQuantityInsumo(
-                                  parseFloat(watch(`insumo[${idx}]`))
-                                ),
-                                message: `¡La cantidad máxima es de ${findMaxQuantityInsumo(
-                                  parseFloat(watch(`insumo[${idx}]`))
-                                )}!`,
+                                value: 59,
+                                message:
+                                  "¡59 es el máximo de minutos permitidos!",
                               },
                             })}
-                            onChange={(e) =>
-                              setValue(
-                                `cantidad_utilizada[${idx}]`,
-                                e.target.value
-                              )
-                            }
-                            description={
-                              errors?.cantidad_utilizada?.[idx]?.message
-                            }
-                          />
+                            width="250px"
+                            label={"Minutos"}
+                            initialValue={0}
+                          ></InputDash>
+                          {errors.minutos && (
+                            <div className="error-fecha">
+                              {errors.minutos.message}
+                            </div>
+                          )}
                         </div>
                       </div>
-                    ))
-                  ) : (
-                    <div>Dale click a agregar un insumo!</div>
-                  )}
-                </div>
+                    </div>
+                    <div className="add-insumos">
+                      <span>
+                        {insumos?.length > 0
+                          ? "Añadir insumos"
+                          : "¡No tienes insumos registrados en el aplicativo!"}
+                      </span>{" "}
+                      {numberOfInsumos?.length < insumos?.length && (
+                        <Button onClick={handleAddInsumo}>
+                          <AddRounded size={24} color={"#fff"}></AddRounded>
+                        </Button>
+                      )}
+                    </div>
+                    {numberOfInsumos?.length >= 1 ? (
+                      numberOfInsumos.map((_, idx) => (
+                        <div
+                          style={{ marginTop: "10px" }}
+                          key={idx}
+                          className="add-insumo-section"
+                        >
+                          <div>
+                            <SelectDash
+                              label="Insumo"
+                              width="170px"
+                              {...register(`insumo[${idx}]`, {
+                                required: "Debes escoger un insumo!",
+                                onChange: (e) =>
+                                  setValue(`insumo[${idx}]`, e.target.value),
+                              })}
+                              description={errors?.insumo?.[idx]?.message}
+                            >
+                              {insumos.map((ins) => (
+                                <option key={ins.id} value={ins.id}>
+                                  {ins.nombre}
+                                </option>
+                              ))}
+                            </SelectDash>
+                          </div>
+                          <div>
+                            <InputDash
+                              width="350px"
+                              allowDecimal
+                              label={`Cantidad usada (Máximo ${findMaxQuantityInsumo(
+                                parseFloat(getValues(`insumo[${idx}]`))
+                              )})`}
+                              type="number"
+                              {...register(`cantidad_utilizada[${idx}]`, {
+                                required: "¡La cantidad usada es requerida!",
+                                pattern: {
+                                  value: /^\d+(.\d+)?$/,
+                                  message: "Solo se permiten números",
+                                },
+                                min: {
+                                  value: 1,
+                                  message: "¡La cantidad mínima es de 1!",
+                                },
+                                max: {
+                                  value: findMaxQuantityInsumo(
+                                    parseFloat(watch(`insumo[${idx}]`))
+                                  ),
+                                  message: `¡La cantidad máxima es de ${findMaxQuantityInsumo(
+                                    parseFloat(watch(`insumo[${idx}]`))
+                                  )}!`,
+                                },
+                              })}
+                              onChange={(e) =>
+                                setValue(
+                                  `cantidad_utilizada[${idx}]`,
+                                  e.target.value
+                                )
+                              }
+                              description={
+                                errors?.cantidad_utilizada?.[idx]?.message
+                              }
+                            />
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div>Dale click a agregar un insumo!</div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </DialogContent>
