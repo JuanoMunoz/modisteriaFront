@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 export default function LoadingTableData() {
   return (
-    <Box marginLeft={"175px"}>
+    <Box marginTop={"50px"}>
       <div className="wrapper">
         <div className="circle"></div>
         <div className="circle"></div>

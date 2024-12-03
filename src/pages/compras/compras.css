@@ -7,7 +7,6 @@
 }
 .compras-main {
   box-sizing: border-box;
-  margin-top: 2rem;
   padding: 1.5rem 2rem;
   display: grid;
   gap: 2rem;
@@ -94,4 +93,9 @@
   font-size: 1.2rem;
   font-weight: bold;
   color: rgb(187, 14, 202);
+}
+
+.header-actions{
+  margin-right: 300px;
+  margin-top: 20px;
 }

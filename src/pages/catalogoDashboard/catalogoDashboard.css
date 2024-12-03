@@ -75,3 +75,139 @@
   opacity: 1;
   background-color: rgba(0, 0, 0, 0.7);
 }
+
+/*CARD INFO PRODUCT*/
+.catalagoCard {
+  margin: 2rem auto;
+  overflow: hidden;
+  color: #fff;
+  display: flex;
+  justify-content: space-around;
+  transition: transform 0.3s ease;
+}
+
+.catalogo-card:hover {
+  transform: scale(1.02);
+}
+
+.catalogo-imagen img {
+  width: 80%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 20px;
+  border-bottom: 5px solid rgba(187, 14, 202, 0.6);
+  margin-left: 60px; /* Detalle visual */
+}
+
+.catalogo-info {
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.campo {
+  background: #1a1a1a;
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  display: flex;
+  gap: 10px;
+  width: 500px;
+  justify-content: start;
+  align-items: center;
+}
+
+.campoInsumo {
+  background: #1a1a1a;
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  display: flex;
+  gap: 10px;
+  width: 300px;
+  height: 50px;
+  justify-content: start;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-left: 50px;
+  margin-top: 25px;
+}
+
+.campoObjetivo{
+  background: #1a1a1a;
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  width: 500px;
+  align-items: center;
+}
+
+.campo label {
+  color: #999;
+
+  font-size: 1rem;
+}
+
+.campoInsumo label {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.campoObjetivo label {
+  color: #999;
+
+  font-size: 1rem;
+}
+
+.campo span {
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.campoInsumo span {
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.campoObjetivo span {
+  color: #fff;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Mejoras visuales */
+.campo:hover {
+  background-color: #282828;
+}
+
+.campoInsumo:hover {
+  background-color: #282828;
+}
+
+.campoObjetivo:hover {
+  background-color: #282828;
+}
+
+.campo label::before {
+  content: "• ";
+  color: rgba(187, 14, 202, 0.6);
+}
+
+.campoInsumo label::before {
+  content: "• ";
+  color: rgba(187, 14, 202, 0.6);
+}
+
+.campoObjetivo label::before {
+  content: "• ";
+  color: rgba(187, 14, 202, 0.6);
+}
+
+.objetivo-text {
+  overflow-wrap: break-word;
+  text-align: justify;
+  line-height: 1.6;
+}

@@ -127,6 +127,7 @@ const Proveedores = () => {
         buttonText={"Agregar proveedor"}
         icon={Business}
       ></Header>
+      <br />
       <ContainerDataGrid>
         {loading ? (
           <LoadingTableData />

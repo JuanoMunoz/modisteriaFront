@@ -175,10 +175,12 @@ div.rbc-time-slot {
 }
 
 .cita-imagen img {
-  width: 100%;
+  width: 80%;
   height: 300px;
   object-fit: cover;
-  border-bottom: 5px solid rgba(187, 14, 202, 0.6); /* Detalle visual */
+  border-radius: 20px;
+  border-bottom: 5px solid rgba(187, 14, 202, 0.6);
+  margin-left: 60px; /* Detalle visual */
 }
 
 .cita-info {

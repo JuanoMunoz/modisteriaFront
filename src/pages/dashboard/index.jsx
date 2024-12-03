@@ -206,7 +206,7 @@ const Dashboard = () => {
             </Box>
           </Box>
           <br />
-          <Box height="450px" m="-20px 0 0 0">
+          <Box height="450px">
             {loading ? (
               <LoadingTableData></LoadingTableData>
             ) : (

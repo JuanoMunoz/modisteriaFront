@@ -121,6 +121,8 @@ const Compras = () => {
         handleAdd={handleAdd}
         buttonText={"Añadir compra"}
       ></Header>
+      <br />
+
       <div className="filtrosControl">
         <div className="header-actions">
           <Button
@@ -136,9 +138,10 @@ const Compras = () => {
               )
             }
           >
-            {lastModifications ? "Más recientes" : "Más viejas"}
+            {lastModifications ? "Recientes" : "Viejas"}
           </Button>
         </div>
+        
         <div className="textInputWrapper">
           <input
             value={inputDateFilter}

@@ -63,7 +63,7 @@ export default function ControlInsumos() {
               )
             }
           >
-            {lastModifications ? "Más recientes" : "Más viejas"}
+            {lastModifications ? "Recientes" : "Viejas"}
           </Button>
         </div>
         <div className="textInputWrapper">
