@@ -170,6 +170,7 @@ export default function Prueba() {
   };
   return (
     <div className="parent-calendar">
+      <br />
       <Header
         icon={CalendarTodayOutlined}
         title={"Citas"}
@@ -179,6 +180,8 @@ export default function Prueba() {
         handleSecondButtonFunction={handleInfo}
         buttonText={"Agregar cita"}
       />
+
+      <br />
 
       {loading || loadingUsuarios || loadingInsumos ? (
         <LoadingTableData />
@@ -262,6 +265,7 @@ export default function Prueba() {
                 ))}
               </section>
             ) : dialogProps.action === "preview" ? (
+              
               <div class="cita-card">
                 {selectedEvent.data.referencia && (
                   <div class="cita-imagen">
@@ -552,6 +556,13 @@ export default function Prueba() {
               </div>
             )}
           </DialogContent>
+
+          {dialogProps.action === "preview" || dialogProps.action === "info"  ? (
+            <CustomDialogActions
+              cancelButton
+              handleClose={() => toggleState(setOpenModal)}
+            />
+          ):(
           <CustomDialogActions
             cancelButton
             //customCancelColor={dialogProps.action === "delete" && "inherit"}
@@ -559,6 +570,7 @@ export default function Prueba() {
             //deleteButton={dialogProps.action === "delete"}
             handleClose={() => toggleState(setOpenModal)}
           />
+          )}
         </form>
       </Dialog>
     </div>

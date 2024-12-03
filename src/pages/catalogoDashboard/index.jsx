@@ -38,7 +38,6 @@ import useCatalogoData from "../../hooks/useCatalogoData";
 import Transition from "../../components/transition/Transition";
 import useTallaData from "../../hooks/useTallaData";
 import useInsumosData from "../../hooks/useInsumosData";
-
 import { toast, ToastContainer } from "react-toastify";
 import { ColumnsCatalogo } from "../../assets/columns";
 import DialogTitleCustom from "../../components/dialogTitle/DialogTitleCustom";
@@ -48,6 +47,9 @@ import CustomDialogActions from "../../components/customDialogActions/CustomDial
 import { toggleState } from "../../assets/constants.d";
 import CheckboxCustom from "../../components/checkbox/CheckBoxCustom";
 import { TrashColor } from "../../components/svg/Svg";
+import {
+  ViewListOutlined,
+} from "@mui/icons-material";
 const CatalogoDashboard = () => {
   const sliderSettings = {
     infinite: true,
@@ -331,7 +333,9 @@ const CatalogoDashboard = () => {
         title={"Catálogo"}
         handleAdd={handleAdd}
         buttonText={"Agregar al catálogo"}
+        icon={ViewListOutlined}
       />
+      <br />
       <ContainerDataGrid>
         {loading || loadingCategoria || loadingInsumos || loadingTallas ? (
           <LoadingTableData />
@@ -359,6 +363,12 @@ const CatalogoDashboard = () => {
         TransitionComponent={Transition}
         open={openModal}
         onClose={() => toggleState(setOpenModal)}
+        sx={{
+          "& .MuiDialog-paper": {
+            width: "80%", // Ancho deseado (puedes ajustarlo)
+            maxWidth: "none", // Evita que el ancho se limite
+          },
+        }}
       >
         <form onSubmit={handleSaveCatalogo(handleSave)}>
           <DialogTitleCustom>{dialogProps.title}</DialogTitleCustom>
@@ -366,7 +376,69 @@ const CatalogoDashboard = () => {
             {dialogProps.action === "delete" ? (
               <DialogContentText>{`¿Estás seguro de que deseas eliminar el profucto del catálogo con nombre "${dialogProps.row.producto}" ?`}</DialogContentText>
             ) : dialogProps.action === "preview" ? (
-              <div>hola</div>
+
+              <div className="catalagoCard">
+                <div class="catalogo-imagen">
+                  <img
+                    src='https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabellaCO/132811350_01/w=800,h=800,fit=pad'
+                    alt="Imagen del producto"
+                  />
+
+                  <div className="insumosCatalogo">
+
+                    <div className="campoInsumo">
+                      <label>Tela Roja:</label>
+                      <span>
+                        23 Metros
+                      </span>
+                    </div>
+
+                    <div className="campoInsumo">
+                      <label>Tela Blanca:</label>
+                      <span>
+                        23 Metros
+                      </span>
+                    </div>
+
+                    <div className="campoInsumo">
+                      <label>Tela Gris:</label>
+                      <span>
+                        23 Metros
+                      </span>
+                    </div>
+                </div>
+
+                </div>
+
+                <div class="catalogo-info">
+                  <div class="campo">
+                    <label>Nombre:</label>
+                    <span>
+                      Vestido Negro
+                    </span>
+                  </div>
+
+                  <div class="campoObjetivo">
+                    <label>Descripcion:</label><br /><br />
+                    <span className="objetivo-text">
+                      El vestido que es mas negro que el propio deymar
+                    </span>
+                  </div>
+                  <div class="campo">
+                    <label>Precio:</label>
+                    <span>5.000</span>
+                  </div>
+                  <div class="campo">
+                    <label>Categoría:</label>
+                    <span>No sé</span>
+                  </div>
+                  <div class="campo">
+                    <label>Linea:</label>
+                    <span>Casual</span>
+                  </div>
+                </div>
+              </div>
+
             ) : (
               <div>
                 <InputDash
@@ -695,13 +767,22 @@ const CatalogoDashboard = () => {
               </div>
             )}
           </DialogContent>
-          <CustomDialogActions
+
+
+          {dialogProps.action === "preview" ? (
+            <CustomDialogActions
+            cancelButton
+            handleClose={() => toggleState(setOpenModal)}
+            />
+          ):(
+            <CustomDialogActions
             cancelButton
             customCancelColor={dialogProps.action === "delete" && "inherit"}
             saveButton={dialogProps.action !== "delete"}
             deleteButton={dialogProps.action === "delete"}
             handleClose={() => toggleState(setOpenModal)}
           />
+          )}
         </form>
       </Dialog>
       {/* 
