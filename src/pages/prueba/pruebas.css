@@ -1,6 +1,6 @@
 .parent-calendar {
   width: 90%;
-  height: 73vh;
+  height: 79vh;
   margin: 0 auto;
 }
 .rbc-day-bg + .rbc-day-bg {
@@ -161,9 +161,6 @@ div.rbc-time-slot {
 }
 
 .cita-card {
-  background: radial-gradient(circle at center, #222222, #1a1a1a, #111111);
-  border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
   max-width: 700px; /* Ancho amplio para mayor espacio */
   margin: 2rem auto;
   overflow: hidden;
@@ -197,12 +194,15 @@ div.rbc-time-slot {
   border-radius: 0.8rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   display: flex;
-  justify-content: space-between;
+  gap: 10px;
+  width: 500px;
+  justify-content: start;
   align-items: center;
 }
 
 .campo label {
   color: #999;
+
   font-size: 1rem;
 }
 
@@ -219,5 +219,11 @@ div.rbc-time-slot {
 
 .campo label::before {
   content: "• ";
-  color: rgba(187, 14, 202, 0.6); /* Detalle decorativo */
+  color: rgba(187, 14, 202, 0.6);
+}
+
+.objetivo-text {
+  overflow-wrap: break-word;
+  text-align: justify;
+  line-height: 1.6;
 }

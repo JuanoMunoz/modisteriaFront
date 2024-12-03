@@ -63,6 +63,21 @@ export default function Prueba() {
   };
   const handleDialog = (action, title) => {
     setDialogProps({ action, title });
+    reset({
+      fecha: action === "add" ? "" : selectedEvent?.data?.fecha,
+      objetivo: action === "add" ? "" : selectedEvent?.data?.objetivo,
+      usuarioId:
+        action === "add" ? users[0]?.id : selectedEvent?.data?.usuarioId,
+      precio: action === "add" ? "" : selectedEvent?.data?.precio,
+      horas:
+        action === "add"
+          ? 1
+          : parseInt(selectedEvent?.data?.tiempo?.split(":")[0]) || 1,
+      minutos:
+        action === "add"
+          ? ""
+          : parseInt(selectedEvent?.data?.tiempo?.split(":")[1]) || 0,
+    });
     toggleState(setOpenModal);
   };
   const handleAdd = () => {
@@ -81,7 +96,7 @@ export default function Prueba() {
     handleDialog("info", "Información Estados Citas");
   };
   const handlePreview = () => {
-    handleDialog("preview", "Cita");
+    handleDialog("preview", "Detalles de la Cita");
   };
   const [data, setData] = useState();
   const [events, setEvents] = useState();
@@ -109,11 +124,7 @@ export default function Prueba() {
         insumos.status === 200
       ) {
         setData(respuesta.data);
-        setUsers(
-          usuarios.data.filter(
-            (user) => user.estadoId == 1 && user.roleId !== 2
-          )
-        );
+        setUsers(usuarios.data);
         setInsumos(insumos.data);
 
         const events = respuesta.data.map((cita) => {
@@ -185,7 +196,9 @@ export default function Prueba() {
       )}
       {showOptions && selectedEvent && (
         <div
-          onMouseLeave={() => setShowOptions(false)}
+          onMouseLeave={() => {
+            setShowOptions(false);
+          }}
           className="event-options"
           style={{
             position: "absolute",
@@ -250,32 +263,40 @@ export default function Prueba() {
               </section>
             ) : dialogProps.action === "preview" ? (
               <div class="cita-card">
-                <div class="cita-imagen">
-                  <img
-                    src="https://via.placeholder.com/700x300"
-                    alt="Imagen de la cita"
-                  />
-                </div>
+                {selectedEvent.data.referencia && (
+                  <div class="cita-imagen">
+                    <img
+                      src={selectedEvent.data.referencia}
+                      alt="Imagen de la cita"
+                    />
+                  </div>
+                )}
                 <div class="cita-info">
                   <div class="campo">
                     <label>Fecha:</label>
-                    <span>dd/mm/aaaa --:--</span>
+                    <span>
+                      {dayjs(selectedEvent.start).format(
+                        "DD [de] MMMM [del] YYYY"
+                      )}
+                    </span>
                   </div>
                   <div class="campo">
                     <label>Objetivo:</label>
-                    <span>Descripción del objetivo</span>
+                    <span className="objetivo-text">
+                      {selectedEvent.data.objetivo}
+                    </span>
                   </div>
                   <div class="campo">
                     <label>Usuario:</label>
-                    <span>Nombre del usuario</span>
+                    <span>{selectedEvent.data.usuario.nombre}</span>
                   </div>
                   <div class="campo">
                     <label>Teléfono:</label>
-                    <span>+57 300 000 0000</span>
+                    <span>+57 {selectedEvent.data.usuario.telefono}</span>
                   </div>
                   <div class="campo">
                     <label>Correo:</label>
-                    <span>usuario@ejemplo.com</span>
+                    <span>{selectedEvent.data.usuario.email}</span>
                   </div>
                 </div>
               </div>

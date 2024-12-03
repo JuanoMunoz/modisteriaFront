@@ -365,8 +365,8 @@ const CatalogoDashboard = () => {
           <DialogContent>
             {dialogProps.action === "delete" ? (
               <DialogContentText>{`¿Estás seguro de que deseas eliminar el profucto del catálogo con nombre "${dialogProps.row.producto}" ?`}</DialogContentText>
-            ) : dialogProps.action === "restock" ? (
-              <div></div>
+            ) : dialogProps.action === "preview" ? (
+              <div>hola</div>
             ) : (
               <div>
                 <InputDash
