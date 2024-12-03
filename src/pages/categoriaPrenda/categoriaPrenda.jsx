@@ -47,10 +47,14 @@ const CategoriaPrenda = () => {
   useEffect(() => {
     const initialFetchCategorias = async () => {
       const respuesta = await initialFetchAllCategorias();
-      if (respuesta.status === 200) setData(respuesta.data);
+      if (respuesta.status === 200) {
+        console.log(respuesta.data); // Verifica si el campo 'molde' está presente y tiene valores
+        setData(respuesta.data);
+      }
     };
     initialFetchCategorias();
   }, []);
+  
   // Funciones para las modales
   const handleDialog = (action, title, row = null) => {
     setDialogProps({ action, row, title });
@@ -67,8 +71,13 @@ const CategoriaPrenda = () => {
     handleDialog("delete", "Eliminar categoría", row);
   };
   const handleDownload = (row) => {
-    window.open(row.molde, '_blank')
-  };
+    if (!row.molde) {
+      toast.error("Molde no disponible");
+      return;
+    }
+    window.open(row.molde, "_blank");
+  };  
+  
   const handleChangeState = async (e, row) => {
     const newState = e.target.checked ? 1 : 2;
     const respuesta = await updateCategoria(row.id, { estadoId: newState });

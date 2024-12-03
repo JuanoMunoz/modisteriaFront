@@ -7,7 +7,7 @@ import { es } from "date-fns/locale";
 import { formToCop } from "./constants.d";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
-function Actions({ colors, row, onEdit, onDelete, pdf, onDownload, eye,  onPreview }) {
+function Actions({ colors, row, onEdit, onDelete, eye,  onPreview }) {
   return (
     <div>
       {eye && (
@@ -21,11 +21,6 @@ function Actions({ colors, row, onEdit, onDelete, pdf, onDownload, eye,  onPrevi
       <Button onClick={() => onDelete(row)}>
         <TrashColor size={20} color={colors.grey[100]} />
       </Button>
-      {pdf && (
-        <Button onClick={() => onDownload(row)}>
-        <PictureAsPdfIcon size={20} color={colors.grey[100]} />
-        </Button>
-      )}
     </div>
   );
 }
@@ -110,6 +105,22 @@ export const ColumnsCategoriaPrendas = ({ onEdit, onDelete, onDownload, changeSt
       params.row.descripcion ? params.row.descripcion : "Sin descripción",
   },
   {
+    field: "molde",
+    headerName: "Molde",
+    flex: 1,
+    renderCell: ({ row }) => {
+      const theme = useTheme();
+      const colors = tokens(theme.palette.mode);
+      return (
+        row.molde && (
+          <Button onClick={() => onDownload(row)}>
+            <PictureAsPdfIcon size={20} sx={{ color: "#fff" }} />
+          </Button>
+        )
+      );
+    },
+  },
+  {
     field: "estadoId",
     headerName: "Estado",
     flex: 1,
@@ -130,15 +141,12 @@ export const ColumnsCategoriaPrendas = ({ onEdit, onDelete, onDownload, changeSt
           row={row}
           onEdit={onEdit}
           onDelete={onDelete}
-          pdf
-          onDownload={onDownload}
         />
-        
-        
       );
     },
   },
 ];
+
 
 export const ColumnsInsumos = ({
   onEdit,
