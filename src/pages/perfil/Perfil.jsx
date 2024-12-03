@@ -21,7 +21,7 @@ import { toast, ToastContainer } from "react-toastify";
 import useIsFirstRender from "../../hooks/useIsMount";
 import constants, {
   formatDateSpanish,
-  urlBase,
+  URL_BACK,
 } from "../../assets/constants.d";
 import Loading from "../../components/loading/Loading";
 import CitaComponente from "../../components/CitaComponente/CitaComponente";
@@ -56,7 +56,7 @@ export default function Perfil() {
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchYourAppointments(
-        `${urlBase}citas/getCitaByUserId/${payload?.id}${
+        `${URL_BACK}/citas/getCitaByUserId/${payload?.id}${
           typeAppointment !== null
             ? `?estadoId=${typeAppointment}`
             : "?estadoId=9"
@@ -72,7 +72,7 @@ export default function Perfil() {
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchYourLastSale(
-        `${urlBase}ventas/getVentaByUsuarioId/${payload?.id}`,
+        `${URL_BACK}/ventas/getVentaByUsuarioId/${payload?.id}`,
         "GET",
         null,
         { "x-token": token }
@@ -85,7 +85,7 @@ export default function Perfil() {
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchYourAppointments(
-        `${urlBase}citas/getCitaByUserId/${payload?.id}${
+        `${URL_BACK}/citas/getCitaByUserId/${payload?.id}${
           typeAppointment !== null
             ? `?estadoId=${typeAppointment}`
             : "?estadoId=9"
