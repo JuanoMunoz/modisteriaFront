@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   formatDateSpanish,
   formaTime,
-  urlBase,
+  URL_BACK,
 } from "../../assets/constants.d";
 import { Cancel, Alert } from "../svg/Svg";
 import Modal from "../modal/Modal";
@@ -15,16 +15,16 @@ export default function CitaComponente({ value, typeAppointment, token }) {
     setShowModal2(!showModal2);
   };
   const navigate = useNavigate();
-  const { triggerFetch: deleteCita } = useFetch();
+  const { triggerFetch: cancelarCita } = useFetch();
   const [showModal3, setShowModal3] = useState(false);
   const toggleModal3 = () => {
     setShowModal3(!showModal3);
   };
 
   const handleCancelarCita = async () => {
-    const response = await deleteCita(
-      `${urlBase}citas/deleteCita/${value.id}`,
-      "DELETE",
+    const response = await cancelarCita(
+      `${URL_BACK}/citas/cancelarCita/${value.id}`,
+      "PUT",
       null,
       { "x-token": token }
     );
@@ -99,7 +99,7 @@ export default function CitaComponente({ value, typeAppointment, token }) {
             <Cancel color={"rgb(187, 25, 25)"} size={"150px"}></Cancel>
             <br />
             <span>
-              Deseas cancelar la Cita del {formatDateSpanish(value.fecha)}?
+              Deseas cancelar la cita del {formatDateSpanish(value.fecha)}?
             </span>
             <button
               className="btnCancelarCita"
@@ -119,7 +119,7 @@ export default function CitaComponente({ value, typeAppointment, token }) {
         <Modal show={showModal3} onClose={toggleModal3}>
           <div className="modalConfirmar">
             <Alert size={"150px"} color={"rgb(187, 25, 25)"}></Alert> <br />
-            <span>Estas seguro de cancelar tu Cita con la modista?</span>
+            <span>Estas seguro de cancelar tu cita con la modista?</span>
             <br />
             <span>Aún no se ha realizado la cotización</span>
             <div>
@@ -142,9 +142,9 @@ export default function CitaComponente({ value, typeAppointment, token }) {
         <Modal show={showModal2} onClose={toggleModal2}>
           <div className="modalConfirmar">
             <Alert size={"150px"} color={"rgb(187, 25, 25)"}></Alert> <br />
-            <span>Información sobre cita</span>
-            <span>Tiempo estimado: 4 horas</span>
-            <span>Precio cita: $40000</span>
+            <span>Información sobre cita</span><br />
+            <span>Tiempo estimado: 4 horas</span><br />
+            <span>Precio cita: $40000</span><br />
             <button className="btnCancelarCita">
               <span>Confirmar</span>
             </button>
