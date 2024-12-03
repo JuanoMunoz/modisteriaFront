@@ -13,6 +13,7 @@ import {
   CalculateOutlined,
   CalendarTodayOutlined,
   Cancel,
+  CheckBoxOutlined,
   Edit,
   HelpOutline,
 } from "@mui/icons-material";
@@ -44,7 +45,10 @@ export default function Prueba() {
     fetchAllCitas,
     createCita,
     updateCita,
+    createVenta,
     deleteCita,
+    updateSTP,
+    createEstimation,
   } = useCitasData();
   const { initialFetchAllUsuarios, loading: loadingUsuarios } =
     useUsuariosData();
@@ -121,6 +125,9 @@ export default function Prueba() {
   const handlePreview = () => {
     handleDialog("preview", "Detalles de la Cita");
   };
+  const handleTerminarCita = () => {
+    handleDialog("finish", "Terminar Cita");
+  };
   const [data, setData] = useState();
   const [referencia, setReferencia] = useState();
   const [events, setEvents] = useState();
@@ -196,16 +203,6 @@ export default function Prueba() {
     setNumberOfInsumos((prev) => (!prev ? [1] : [...prev, prev.length + 1]));
   };
   const handleSave = async (data) => {
-    if (numberOfInsumos.length <= 0 && dialogProps.action === "add")
-      return toast.error("¡Debes añadir mínimo un insumo!", {
-        toastId: "errorNoInsumosAdded",
-        autoClose: 2000,
-      });
-    if (!referencia && data.imagenes.referencia && dialogProps.action === "add")
-      return toast.error("¡Debes añadir mínimo una imagen!", {
-        toastId: "errorNoImageAdded",
-        autoClose: 2000,
-      });
     let response;
     if (dialogProps.action === "cancel") {
       response = await deleteCita(selectedEvent.data.id);
@@ -214,7 +211,31 @@ export default function Prueba() {
           autoClose: 2000,
           toastId: "error",
         });
+    } else if (dialogProps.action === "finish") {
+      response = await createVenta({ citaId: selectedEvent.data.id });
+      if (response.status !== 201 && response.status !== 200)
+        return toast.error(response.data, {
+          autoClose: 2000,
+          toastId: "error",
+        });
     } else {
+      if (
+        numberOfInsumos.length <= 0 &&
+        (dialogProps.action === "add" || dialogProps.action === "estimation")
+      )
+        return toast.error("¡Debes añadir mínimo un insumo!", {
+          toastId: "errorNoInsumosAdded",
+          autoClose: 2000,
+        });
+      if (
+        !referencia &&
+        data.imagenes.referencia &&
+        dialogProps.action === "add"
+      )
+        return toast.error("¡Debes añadir mínimo una imagen!", {
+          toastId: "errorNoImageAdded",
+          autoClose: 2000,
+        });
       const formDataAddCita = new FormData();
       const tiempoParsed = `${
         parseInt(data.horas) < 10 ? `0${data.horas}` : data.horas
@@ -226,16 +247,33 @@ export default function Prueba() {
           cantidad_utilizada: parseFloat(data.cantidad_utilizada[idx]),
         })
       );
-
-      formDataAddCita.append("fecha", data.fecha);
-      formDataAddCita.append("objetivo", data.objetivo);
-      formDataAddCita.append("usuarioId", data.usuarioId);
+      if (dialogProps.action !== "estimation") {
+        formDataAddCita.append("fecha", data.fecha);
+        formDataAddCita.append("objetivo", data.objetivo);
+        formDataAddCita.append("usuarioId", data.usuarioId);
+        formDataAddCita.append("estadoId", 11);
+        formDataAddCita.append("file", referencia);
+      }
       formDataAddCita.append("precio", data.precio);
       formDataAddCita.append("tiempo", tiempoParsed);
       formDataAddCita.append("datosInsumos", datosInsumos);
-      formDataAddCita.append("estadoId", 11);
-      formDataAddCita.append("file", referencia);
-      response = await createCita(formDataAddCita);
+      if (dialogProps.action === "add") {
+        response = await createCita(formDataAddCita);
+      }
+      if (dialogProps.action === "edit") {
+        response = await updateCita(formDataAddCita);
+      }
+      if (dialogProps.action === "estimation") {
+        response = await updateSTP(selectedEvent.data.id, {
+          estadoId: 10,
+          tiempo: tiempoParsed,
+          precio: data.precio,
+        });
+        const insumoCita = await createEstimation({
+          citaId: selectedEvent.data.id,
+          datosInsumos,
+        });
+      }
     }
     const updatedData = await fetchAllCitas();
     const events = updatedData.data.map((cita) => {
@@ -260,6 +298,10 @@ export default function Prueba() {
           ? "agregada"
           : dialogProps.action === "edit"
           ? "editada"
+          : dialogProps.action === "finish"
+          ? "Terminada"
+          : dialogProps.action === "estimation"
+          ? "cotizada"
           : "cancelada"
       } con éxito!`,
       {
@@ -325,6 +367,14 @@ export default function Prueba() {
               </span>{" "}
               <span>Info</span>
             </div>
+            {selectedEvent.data.estadoId === 11 && (
+              <div onClick={handleTerminarCita}>
+                <span className="info">
+                  <CheckBoxOutlined />
+                </span>{" "}
+                <span>Terminar Cita</span>
+              </div>
+            )}
             {selectedEvent.data.estadoId !== 13 &&
               selectedEvent.data.estadoId !== 12 && (
                 <div onClick={handleEdit}>
@@ -411,6 +461,19 @@ export default function Prueba() {
                       <label>Correo:</label>
                       <span>{selectedEvent.data.usuario.email}</span>
                     </div>
+                    {selectedEvent.data.Insumos.length > 0 &&
+                      selectedEvent.data.Insumos.map((insumo) => (
+                        <div className="insumo-container">
+                          <div class="insumo-nombre">
+                            <label>Insumo Asociado:</label>
+                            <span>{insumo.nombre}</span>
+                          </div>
+                          <div class="insumo-cantidad">
+                            <label>Cantidad Usada:</label>
+                            <span>{insumo.CitaInsumo.cantidad_utilizada}</span>
+                          </div>
+                        </div>
+                      ))}
                   </div>
                 </div>
               ) : dialogProps.action === "cancel" ? (
@@ -419,6 +482,8 @@ export default function Prueba() {
                 } para el ${dayjs(selectedEvent.start).format(
                   "dddd, D [de] MMMM [de] YYYY"
                 )}`}</DialogContentText>
+              ) : dialogProps.action === "finish" ? (
+                <DialogContentText>{`¿Cita con ${selectedEvent.data.usuario.nombre} terminada? ¡Esto creará una venta!`}</DialogContentText>
               ) : (
                 <div>
                   {dialogProps.action !== "estimation" && (
@@ -667,19 +732,22 @@ export default function Prueba() {
                       )}
                     </div>
                   )}
-                  <div className="select-imagenes">
-                    <h4>Imágenes</h4>
-                    <div className="inputs-container">
-                      <div>
-                        <input
-                          type="checkbox"
-                          id="referencia"
-                          {...register("imagenes.referencia")}
-                        />
-                        <label htmlFor="referencia">Referencia</label>
+                  {(dialogProps.action === "add" || dialogProps === "edit") && (
+                    <div className="select-imagenes">
+                      <h4>Imágenes</h4>
+                      <div className="inputs-container">
+                        <div>
+                          <input
+                            type="checkbox"
+                            id="referencia"
+                            {...register("imagenes.referencia")}
+                          />
+                          <label htmlFor="referencia">Referencia</label>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
+
                   {watch("imagenes")?.referencia && (
                     <div>
                       <h4>Imagen de referencia</h4>

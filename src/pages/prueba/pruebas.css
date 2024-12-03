@@ -289,3 +289,36 @@ div.rbc-time-slot {
   opacity: 1;
   background-color: rgba(0, 0, 0, 0.7);
 }
+
+.insumo-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.insumo-nombre,
+.insumo-cantidad {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: radial-gradient(circle at center, #222222, #1a1a1a, #111111);
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+  color: #fff;
+}
+
+.insumo-nombre label,
+.insumo-cantidad label {
+  font-size: 0.9rem;
+  color: #bb0eca; /* Color del texto decorativo */
+}
+
+.insumo-nombre span,
+.insumo-cantidad span {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  margin-top: 0.5rem;
+}
