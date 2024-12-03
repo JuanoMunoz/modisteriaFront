@@ -14,7 +14,7 @@ import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
-import snoopi from "/snoopi.jpeg";
+import maquinaCoser from "/maquina-coser.webp";
 
 import {
   ShoppingCartOutlined,
@@ -117,7 +117,7 @@ const Sidebar = ({ nombre }) => {
                   alt="profile-user"
                   width="100px"
                   height="100px"
-                  src={snoopi}
+                  src={maquinaCoser}
                   style={{ cursor: "pointer", borderRadius: "50%" }}
                 />
               </Box>

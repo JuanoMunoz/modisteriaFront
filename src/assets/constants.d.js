@@ -87,7 +87,7 @@ export const postsNoSession = [
   },
   {
     title:
-      "Si ya habias ingresado a Modistería Doña Luz, puedes Iniciar Sesión y hacer uso de nuestros servicios",
+      "Si ya habías ingresado a Modistería Doña Luz, puedes Iniciar Sesión y hacer uso de nuestros servicios",
     img: "https://i.pinimg.com/1200x/19/af/0c/19af0cc06f7dc0cebbbafbf649f4cda4.jpg",
     tag: "Inicia Sesión",
     published: "Modistería D.L",

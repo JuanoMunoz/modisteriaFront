@@ -152,7 +152,7 @@ export default function InicioSesion() {
           <hr className="separacionForgot" />
           
           <button className="btnForgot" onClick={toggleModal}>
-            ¿Olvidaste tu Contraseña?
+            ¿Olvidaste tu contraseña?
           </button>
         </div>
 
