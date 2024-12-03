@@ -303,7 +303,7 @@ const CatalogoDashboard = () => {
   const handleDelete = (row) => {
     handleDialog("delete", "Eliminar del Catálogo", row);
   };
-  const handlePreview = () => {
+  const handlePreview = (row) => {
     handleDialog("preview", "Vista previa", row);
   };
   const handleChangeState = async (e, row) => {
