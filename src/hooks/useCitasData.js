@@ -42,7 +42,7 @@ export default function useCitasData() {
 
   const createCita = async (infoUpdate) => {
     const respuesta = await createFetch(
-      `${URL_BACK}/citas/createCita`,
+      `${URL_BACK}/citas/crearCita`,
       "POST",
       infoUpdate,
       { "x-token": token }
@@ -52,8 +52,8 @@ export default function useCitasData() {
 
   const deleteCita = async (id) => {
     const respuesta = await deleteFetch(
-      `${URL_BACK}/citas/deleteCita/${id}`,
-      "DELETE",
+      `${URL_BACK}/citas/cancelarCita/${id}`,
+      "PUT",
       null,
       { "x-token": token }
     );

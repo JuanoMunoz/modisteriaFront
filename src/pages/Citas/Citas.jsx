@@ -153,10 +153,6 @@ export default function Citas() {
 
   const asesorDiv = useRef(null);
 
-  const scrollToDiv = () => {
-    asesorDiv.current.scrollIntoView({ behavior: "smooth" });
-  };
-
   //Modal
   const [showModal, setShowModal] = useState(false);
 
