@@ -74,7 +74,7 @@ export default function InicioSesion() {
         }
       )
       .then((response) => {
-        toast.success("sesión iniciada correctamente!", {
+        toast.success("Sesión iniciada correctamente!", {
           toastId: "success-toast-fetch-api",
           autoClose: 1000,
           onClose: () => {

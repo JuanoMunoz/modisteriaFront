@@ -43,7 +43,7 @@ export default function Layout() {
   };
   const logout = () => {
     toogleModal();
-    toast.success("sesión cerrada con éxito!", {
+    toast.success("Sesión cerrada con éxito!", {
       toastId: "closeSession",
       autoClose: 400,
       onClose: () => {
