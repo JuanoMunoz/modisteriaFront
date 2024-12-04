@@ -93,7 +93,9 @@ export default function Citas() {
     }
     const [day, month, year, time] = fechaCita.split(/[-:]/);
 
-    const dateObject = `${year}-${month}-${day}T${time}:00:00`;
+    const dateObject = `${
+      year.length == 2 ? `20${year}` : year
+    }-${month}-${day}T${time}:00:00`;
     console.log(dateObject);
     const formData = new FormData();
     formData.append("fecha", dateObject);

@@ -23,7 +23,7 @@ export default function CitaComponente({ value, typeAppointment, token }) {
 
   const handleCancelarCita = async () => {
     const response = await cancelarCita(
-      `${URL_BACK}/citas/cancelarCita/${value.id}`,
+      `${URL_BACK}/citas/cancelCita/${value.id}`,
       "PUT",
       null,
       { "x-token": token }
@@ -142,9 +142,12 @@ export default function CitaComponente({ value, typeAppointment, token }) {
         <Modal show={showModal2} onClose={toggleModal2}>
           <div className="modalConfirmar">
             <Alert size={"150px"} color={"rgb(187, 25, 25)"}></Alert> <br />
-            <span>Información sobre cita</span><br />
-            <span>Tiempo estimado: 4 horas</span><br />
-            <span>Precio cita: $40000</span><br />
+            <span>Información sobre cita</span>
+            <br />
+            <span>Tiempo estimado: 4 horas</span>
+            <br />
+            <span>Precio cita: $40000</span>
+            <br />
             <button className="btnCancelarCita">
               <span>Confirmar</span>
             </button>

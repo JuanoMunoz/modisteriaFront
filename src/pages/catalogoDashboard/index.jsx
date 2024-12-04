@@ -372,7 +372,9 @@ const CatalogoDashboard = () => {
           <DialogTitleCustom>{dialogProps.title}</DialogTitleCustom>
           <DialogContent>
             {dialogProps.action === "delete" ? (
-              <DialogContentText sx={{textAlign:"center"}}>{`¿Estás seguro de que deseas eliminar el profucto del catálogo con nombre "${dialogProps.row.producto}" ?`}</DialogContentText>
+              <DialogContentText
+                sx={{ textAlign: "center" }}
+              >{`¿Estás seguro de que deseas eliminar el profucto del catálogo con nombre "${dialogProps.row.producto}" ?`}</DialogContentText>
             ) : dialogProps.action === "preview" ? (
               <div className="catalagoCard">
                 <div class="catalogo-imagen">
@@ -433,7 +435,8 @@ const CatalogoDashboard = () => {
                   <div className="inputProduct">
                     <InputDash
                       {...registerCatalogo("producto", {
-                        required: "El producto del catálogo necesita un nombre.",
+                        required:
+                          "El producto del catálogo necesita un nombre.",
                         minLength: {
                           message:
                             "¡El nombre del producto debe tener mínimo 4 caracteres!",
@@ -464,7 +467,6 @@ const CatalogoDashboard = () => {
                           message: "¡Máximo permitido 255 caracteres!",
                           value: 255,
                         },
-
                       })}
                       description={
                         errorsAddCatalogo.descripcion &&
@@ -472,25 +474,6 @@ const CatalogoDashboard = () => {
                       }
                       type="text"
                       label="Descripción"
-                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
-                          {
-                            backgroundColor: colors.purple[200],
-                          },
-                      }}
-                      onChange={(e) => {
-                        if (e.target.checked)
-                          return setKindOfTallas(
-                            tallas.filter(
-                              (talla) => talla.tipo === "Alfanumérica"
-                            )
-                          );
-                        return setKindOfTallas(
-                          tallas.filter((talla) => talla.tipo === "Numérica")
-                        );
-                      }}
-                      defaultChecked
-                      size="small"
-
                     />
                     <InputDash
                       {...registerCatalogo("precio", {
@@ -513,10 +496,11 @@ const CatalogoDashboard = () => {
                       label="Precio"
                       type="text"
                       description={
-                        errorsAddCatalogo.precio && errorsAddCatalogo.precio.message
+                        errorsAddCatalogo.precio &&
+                        errorsAddCatalogo.precio.message
                       }
                     />
-                                      
+
                     <SelectDash
                       {...registerCatalogo("categoriaId", {
                         required: "Debes escoger una categoría!",
@@ -539,7 +523,8 @@ const CatalogoDashboard = () => {
                       })}
                       label="Línea"
                       description={
-                        errorsAddCatalogo.linea && errorsAddCatalogo.linea.message
+                        errorsAddCatalogo.linea &&
+                        errorsAddCatalogo.linea.message
                       }
                     >
                       <option value="premium">Premium</option>
@@ -584,7 +569,9 @@ const CatalogoDashboard = () => {
                                 )
                               );
                             return setKindOfTallas(
-                              tallas.filter((talla) => talla.tipo === "numérica")
+                              tallas.filter(
+                                (talla) => talla.tipo === "numérica"
+                              )
                             );
                           }}
                           defaultChecked
@@ -616,7 +603,7 @@ const CatalogoDashboard = () => {
                     )}
                   </div>
                 </div>
-                
+
                 <h4>Imagen de referencia</h4>
                 <div style={{ width: "100%" }}>
                   <label className="subir-img">
@@ -712,7 +699,6 @@ const CatalogoDashboard = () => {
                 </DialogTitle>
                 {numberOfInsumos.length >= 1 ? (
                   numberOfInsumos.map((_, idx) => (
-                    
                     <div className="gridInsumoSection">
                       <div
                         style={{ marginTop: "10px" }}
@@ -782,10 +768,11 @@ const CatalogoDashboard = () => {
                     </div>
                   ))
                 ) : (
-                    <div className="clickInsumo">Dale click a agregar un insumo! ▲</div>
+                  <div className="clickInsumo">
+                    Dale click a agregar un insumo! ▲
+                  </div>
                 )}
               </div>
-              
             )}
           </DialogContent>
 

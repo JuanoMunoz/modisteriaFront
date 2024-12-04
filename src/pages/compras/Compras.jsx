@@ -9,7 +9,7 @@ import { toast, ToastContainer } from "react-toastify";
 import Header from "../../components/Header/Header";
 import LoadingTableData from "../../components/loadingTableData/LoadingTableData";
 import useInsumosData from "../../hooks/useInsumosData.js";
-import { toggleState } from "../../assets/constants.d";
+import { formToCop, toggleState } from "../../assets/constants.d";
 import DialogTitleCustom from "../../components/dialogTitle/DialogTitleCustom";
 import CustomDialogActions from "../../components/customDialogActions/CustomDialogActions";
 import SelectDash from "../../components/selectDash/SelectDash";
@@ -186,11 +186,13 @@ const Compras = () => {
               }
               label="Insumo"
             >
-              {insumos.map((insumo) => (
-                <option key={insumo.id} value={insumo.id}>
-                  {insumo.nombre}
-                </option>
-              ))}
+              {insumos
+                .filter((proveedor) => proveedor.estadoId === 1)
+                .map((insumo) => (
+                  <option key={insumo.id} value={insumo.id}>
+                    {insumo.nombre}
+                  </option>
+                ))}
             </SelectDash>
             <InputDash
               {...registerCompra("cantidad", {
@@ -232,11 +234,13 @@ const Compras = () => {
               }
               label="Proveedor"
             >
-              {proveedores.map((proveedor) => (
-                <option key={proveedor.id} value={proveedor.id}>
-                  {proveedor.nombre}
-                </option>
-              ))}
+              {proveedores
+                .filter((proveedor) => proveedor.estadoId === 1)
+                .map((proveedor) => (
+                  <option key={proveedor.id} value={proveedor.id}>
+                    {proveedor.nombre}
+                  </option>
+                ))}
             </SelectDash>
             <InputDash
               {...registerCompra("valorTotal", {
@@ -261,6 +265,10 @@ const Compras = () => {
                 errorsAddCompra.valorTotal && errorsAddCompra.valorTotal.message
               }
             />
+            <section className="total-section">
+              <span>Total:</span>
+              <span>{formToCop(10000)}</span>
+            </section>
           </DialogContent>
           <CustomDialogActions
             cancelButton

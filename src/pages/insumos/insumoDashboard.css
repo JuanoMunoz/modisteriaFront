@@ -16,7 +16,7 @@
   padding: 20px;
 }
 .titles-insumos {
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   justify-items: center;
   align-items: center;
   text-align: center;
@@ -36,7 +36,7 @@
 }
 .body-insumos {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   justify-items: center;
   align-items: start;
   padding: 10px 0;

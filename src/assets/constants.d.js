@@ -27,12 +27,12 @@ export const estadoCitasColores = [
     color: "#F4D03F",
   },
   {
-    nombre: "Aprobada",
-    color: "#27AE60",
+    nombre: "Aprobada (Modista)",
+    color: "#E67E22",
   },
   {
-    nombre: "Aceptada",
-    color: "#145A32",
+    nombre: "Aceptada (Cliente)",
+    color: "#27AE60",
   },
   {
     nombre: "Terminada",

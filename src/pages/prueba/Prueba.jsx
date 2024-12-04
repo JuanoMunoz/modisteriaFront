@@ -261,7 +261,7 @@ export default function Prueba() {
         response = await createCita(formDataAddCita);
       }
       if (dialogProps.action === "edit") {
-        response = await updateCita(formDataAddCita);
+        response = await updateCita(selectedEvent.data.id, formDataAddCita);
       }
       if (dialogProps.action === "estimation") {
         response = await updateSTP(selectedEvent.data.id, {
@@ -728,7 +728,9 @@ export default function Prueba() {
                           </div>
                         ))
                       ) : (
-                        <div className="clickInsumo">Dale click a agregar un insumo! ▲</div>
+                        <div className="clickInsumo">
+                          Dale click a agregar un insumo! ▲
+                        </div>
                       )}
                     </div>
                   )}
@@ -736,20 +738,22 @@ export default function Prueba() {
                     <div className="select-imagenes">
                       <h4>Imágenes</h4>
                       <div className="inputs-container">
-
                         <div class="customCheckBoxHolder">
-                            <input 
-                              type="checkbox" 
-                              id="referencia" 
-                              className="customCheckBoxInput"
-                              {...register("imagenes.referencia")}
-                            />
+                          <input
+                            type="checkbox"
+                            id="referencia"
+                            className="customCheckBoxInput"
+                            {...register("imagenes.referencia")}
+                          />
 
-                            <label for="referencia" className="customCheckBoxWrapper">
-                                <div className="customCheckBox">
-                                    <div className="inner">Referencia</div>
-                                </div>
-                            </label>
+                          <label
+                            for="referencia"
+                            className="customCheckBoxWrapper"
+                          >
+                            <div className="customCheckBox">
+                              <div className="inner">Referencia</div>
+                            </div>
+                          </label>
                         </div>
                       </div>
                     </div>

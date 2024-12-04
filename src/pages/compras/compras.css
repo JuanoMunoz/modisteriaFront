@@ -32,6 +32,10 @@
   transform: scale(1.05);
 }
 
+.total-section {
+  font-weight: 800;
+  font-size: 1.3rem;
+}
 .icono-compra-container {
   display: flex;
   justify-content: center;
@@ -98,7 +102,7 @@
   margin-top: 20px;
 }
 
-.header-actions{
+.header-actions {
   margin-right: 300px;
   margin-top: 20px;
 }

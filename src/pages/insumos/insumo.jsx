@@ -53,6 +53,8 @@ const Insumos = () => {
     title: "",
     row: null,
   });
+  console.log(data);
+
   const insumoToAdd = useRef();
   const {
     initialFetchAllInsumos,
@@ -150,17 +152,14 @@ const Insumos = () => {
     handleDialog("delete", "Eliminar Insumo", row);
   };
   const handleRestock = () => {
-    handleDialog("restock", "Reponer Insumos");
+    handleDialog("restock", "Restar Insumos no Controlados");
   };
   const saveControlInsumos = async (data) => {
     const insumos = [];
     data.cantidadInsumo.forEach((cantidad, idx) => {
       insumos.push({
         id: controlInsumos[idx].id,
-        cantidad:
-          data.accionInsumo[idx] === "sumar"
-            ? parseFloat(cantidad)
-            : parseFloat(cantidad) * -1,
+        cantidad: parseFloat(cantidad) * -1,
         motivo: data.motivo[idx],
       });
     });
@@ -179,7 +178,7 @@ const Insumos = () => {
       setData(updatedData.data);
       setControlInsumos([]);
       toggleState(setOpenModal);
-      toast.success("¡Insumos repuestos exitosamente!", {
+      toast.success("¡Insumos restados exitosamente!", {
         autoClose: 2000,
         toastId: "restock-successfully",
       });
@@ -234,7 +233,7 @@ const Insumos = () => {
         title={"Insumos"}
         handleAdd={handleAdd}
         secondButton={data.length >= 1}
-        secondButtonText={"Reponer insumos"}
+        secondButtonText={"Restar insumos"}
         handleSecondButtonFunction={handleRestock}
         buttonText={"Añadir Insumo"}
         icon={InventoryOutlined}
@@ -286,11 +285,16 @@ const Insumos = () => {
                     label="Seleccionar insumo"
                     ref={insumoToAdd}
                   >
-                    {data.map((insumo) => (
-                      <option key={insumo.id} value={insumo.id}>
-                        {insumo.nombre}
-                      </option>
-                    ))}
+                    {data
+                      .filter(
+                        (wildInsumo) =>
+                          wildInsumo.categoria_insumos.tipo === "No controlado"
+                      )
+                      .map((insumo) => (
+                        <option key={insumo.id} value={insumo.id}>
+                          {insumo.nombre}
+                        </option>
+                      ))}
                   </SelectDash>
                   <Button sx={{ mt: "20px" }} onClick={addInsumo}>
                     <AddRounded size={24} color={"#fff"}></AddRounded>
@@ -305,10 +309,7 @@ const Insumos = () => {
                       <h4>Insumo</h4>
                     </div>
                     <div>
-                      <h4>Acción</h4>
-                    </div>
-                    <div>
-                      <h4>{`Cantidad`}</h4>
+                      <h4>{`Cantidad a Restar`}</h4>
                     </div>
                   </div>
                   {controlInsumos &&
@@ -316,17 +317,7 @@ const Insumos = () => {
                       <div key={insumo.id} style={{ marginTop: "6px" }}>
                         <div className="body-insumos">
                           <div>
-                            <h4>{insumo.nombre}</h4>
-                          </div>
-                          <div>
-                            <SelectDash
-                              defaultValue={"sumar"}
-                              {...registerControlInsumo(`accionInsumo[${idx}]`)}
-                              width={"85px"}
-                            >
-                              <option value={"sumar"}>Sumar</option>
-                              <option value={"restar"}>Restar</option>
-                            </SelectDash>
+                            <h4>{`${insumo.nombre} (Cantidad en: ${insumo.unidades_de_medida.nombre})`}</h4>
                           </div>
                           <div className="acciones">
                             <span
@@ -376,12 +367,7 @@ const Insumos = () => {
                           {...registerControlInsumo(`motivo[${idx}]`, {
                             required: `La justificación de "${insumo.nombre}" es requerida`,
                           })}
-                          label={`Motivo para ${
-                            watchControlInsumo(`accionInsumo[${idx}]`) ===
-                            "restar"
-                              ? "disminuir"
-                              : "agregar"
-                          } "${insumo.nombre}"`}
+                          label={`Motivo para disminuir "${insumo.nombre}"`}
                           type="text"
                         />
                       </div>
@@ -426,25 +412,30 @@ const Insumos = () => {
                     errorsAddInsumo.nombre && errorsAddInsumo.nombre.message
                   }
                 />
-                <InputDash
-                  {...registerInsumo("cantidad", {
-                    required: "La cantidad es requerida",
-                    pattern: {
-                      value: /^\d+(.\d+)?$/, // Expresión regular para números
-                      message: "Solo se permiten números",
-                    },
-                    min: {
-                      message: "¡Debes ingresar una cantidad mayor a cero!",
-                      value: 1,
-                    },
-                    max: { message: "¡Límite máximo de 250!", value: 250 },
-                  })}
-                  label="Cantidad"
-                  type="text"
-                  description={
-                    errorsAddInsumo.cantidad && errorsAddInsumo.cantidad.message
-                  }
-                />
+                {dialogProps.action === "add" && (
+                  <InputDash
+                    {...registerInsumo("cantidad", {
+                      required: "La cantidad es requerida",
+                      pattern: {
+                        value: /^\d+(.\d+)?$/, // Expresión regular para números
+                        message: "Solo se permiten números",
+                      },
+                      min: {
+                        message:
+                          "¡Debes ingresar una cantidad igual mayor a cero!",
+                        value: 0,
+                      },
+                      max: { message: "¡Límite máximo de 250!", value: 300 },
+                    })}
+                    label="Cantidad"
+                    type="text"
+                    description={
+                      errorsAddInsumo.cantidad &&
+                      errorsAddInsumo.cantidad.message
+                    }
+                  />
+                )}
+
                 <SelectDash
                   {...registerInsumo("unidadMedidaId", {
                     required: "Debes escoger una unidad de medida!",
