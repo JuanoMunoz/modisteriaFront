@@ -126,7 +126,6 @@ const Compras = () => {
         handleAdd={handleAdd}
         buttonText={"Añadir compra"}
       ></Header>
-      <br />
 
       <div className="filtrosControl">
         <div className="header-actions">

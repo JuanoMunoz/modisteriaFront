@@ -728,7 +728,7 @@ export default function Prueba() {
                           </div>
                         ))
                       ) : (
-                        <div>Dale click a agregar un insumo!</div>
+                        <div className="clickInsumo">Dale click a agregar un insumo! ▲</div>
                       )}
                     </div>
                   )}
@@ -736,13 +736,20 @@ export default function Prueba() {
                     <div className="select-imagenes">
                       <h4>Imágenes</h4>
                       <div className="inputs-container">
-                        <div>
-                          <input
-                            type="checkbox"
-                            id="referencia"
-                            {...register("imagenes.referencia")}
-                          />
-                          <label htmlFor="referencia">Referencia</label>
+
+                        <div class="customCheckBoxHolder">
+                            <input 
+                              type="checkbox" 
+                              id="referencia" 
+                              className="customCheckBoxInput"
+                              {...register("imagenes.referencia")}
+                            />
+
+                            <label for="referencia" className="customCheckBoxWrapper">
+                                <div className="customCheckBox">
+                                    <div className="inner">Referencia</div>
+                                </div>
+                            </label>
                         </div>
                       </div>
                     </div>

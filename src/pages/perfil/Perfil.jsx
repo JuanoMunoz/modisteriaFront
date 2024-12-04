@@ -230,7 +230,7 @@ export default function Perfil() {
               </span>
             </div>
             <div className="change-tipo-cita">
-              <h2>TIPO CITA</h2>
+              <span>Tipo cita</span>
               <div className="options">
                 <label for="por-aprobar" className="option">
                   <input
@@ -287,9 +287,6 @@ export default function Perfil() {
             </div>
             {lastSale && (
               <div className="ultimaVenta">
-                <h1>
-                  Última <span>Venta</span>
-                </h1>
               </div>
             )}
           </div>

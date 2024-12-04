@@ -8,6 +8,26 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import useIsFirstRender from "../../hooks/useIsMount";
 import LoadingTableData from "../../components/loadingTableData/LoadingTableData";
+import Header from "../../components/Header/Header";
+import {
+  ShoppingCartOutlined,
+  ViewListOutlined,
+  AdminPanelSettingsOutlined,
+  LockOutlined,
+  Inventory2Outlined,
+  StyleOutlined,
+  CalendarTodayOutlined,
+  InventoryOutlined,
+  HelpOutlineOutlined,
+  StraightenOutlined,
+  HistoryOutlined,
+  Settings,
+  TableChart,
+  BarChart,
+  PointOfSale,
+  Business,
+  Paid,
+} from "@mui/icons-material";
 export default function ControlInsumos() {
   const [controlInsumosData, setControlInsumosData] = useState([]);
   const [lastModifications, setLastModifications] = useState(true);
@@ -44,9 +64,12 @@ export default function ControlInsumos() {
   }, [lastModifications, controlInsumosData, inputDateFilter]);
   return (
     <>
-      <header className="header">
-        <h4>Control de los insumos</h4>
-      </header>
+  
+      <Header
+        title="Control de los insumos"
+        icon={HistoryOutlined}
+      />
+      <br />
 
       <div className="filtrosControl">
         <div className="header-actions">

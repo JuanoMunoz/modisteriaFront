@@ -100,7 +100,6 @@
   padding-left: 40px;
   text-decoration: none;
   color: #fff;
-  text-transform: uppercase;
   letter-spacing: 1.5px;
   display: inline-flex;
   align-items: center;
@@ -116,7 +115,7 @@
 }
 
 .main-post__link-text {
-  font-size: 0.9em;
+  font-size: 1em;
 }
 
 .main-post__link-icon--arrow {
