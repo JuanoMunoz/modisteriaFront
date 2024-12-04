@@ -257,8 +257,7 @@ export default function Product({ data, isLoading }) {
           </div>
           <div className="infoDetalle">
             <span className="tituloPrenda">{title}</span>
-            <hr className="separacionDetalle" />
-            <br />
+            <br /><br />
             <span className="precioDetalle">{formToCop(finalPrice)}</span>
             <br />
             <br />
@@ -267,7 +266,7 @@ export default function Product({ data, isLoading }) {
               <p>{description}</p>
             </div>
             <div className="size">
-              <span>Tallas</span>
+              <span>Tallas:</span>
               <ul ref={listRefModal} className="list-size">
                 {sizes.map((valueSize, idx) => (
                   <li key={idx} className={`item-list`}>

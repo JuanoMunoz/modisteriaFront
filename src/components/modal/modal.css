@@ -21,7 +21,7 @@
   display: flex;
   text-align: center;
   justify-content: center;
-  background-image: url("/fondoModal.jfif");
+  background-image: url("https://i.pinimg.com/1200x/ff/5a/5a/ff5a5a7fc902669f25694b882ebb7d84.jpg");
   padding: 20px;
   border-radius: 8px;
   max-width: 500px;
@@ -30,6 +30,7 @@
   transform: translateY(100%);
   opacity: 0;
   transition: transform 1s ease, opacity 1s ease;
+  background-size: cover;
 }
 
 .modal.show {
