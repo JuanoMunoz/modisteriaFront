@@ -28,7 +28,11 @@ import UnidadesInsumo from "./pages/unidadesMedida/UnidadesMedida";
 import Compras from "./pages/compras/Compras";
 import Proveedores from "./pages/proveedores/Proveedores";
 import Prueba from "./pages/prueba/Prueba";
+import { useJwt } from "./context/JWTContext";
+import useDecodedJwt from "./hooks/useJwt";
 function App() {
+  const { token } = useJwt();
+  const payload = useDecodedJwt(token);
   return (
     <>
       <Routes>
@@ -43,35 +47,69 @@ function App() {
         </Route>
         <Route path="/dashboard" element={<LayoutDashboard />}>
           <Route index element={<Dashboard />} />
-          <Route path="/dashboard/contacts" element={<Contacts />} />
-          <Route path="/dashboard/catalogo" element={<CatalogoDashboard />} />
-          <Route path="/dashboard/compras" element={<Compras />} />
-          <Route path="/dashboard/proveedores" element={<Proveedores />} />
-          <Route
-            path="/dashboard/categoriaInsumos"
-            element={<CategoriaInsumos />}
-          />
-          <Route
-            path="/dashboard/categoriaPrenda"
-            element={<CategoriaPrenda />}
-          />
-          <Route path="/dashboard/cita" element={<CitasDashboard />} />
-          <Route path="/dashboard/insumo" element={<Insumo />} />
-          <Route path="/dashboard/roles" element={<Roles />} />
-          <Route path="/dashboard/permisos" element={<Permisos />} />
-          <Route path="/dashboard/ventas" element={<Ventas />} />
-          <Route
-            path="/dashboard/controlInsumos"
-            element={<ControlInsumos />}
-          />
-          <Route path="/dashboard/bar" element={<Bar />} />
-          <Route path="/dashboard/line" element={<Line />} />
-          <Route
-            path="/dashboard/unidades-medida"
-            element={<UnidadesInsumo />}
-          />
-          <Route path="/dashboard/prueba" element={<Prueba />} />
-          <Route path="/dashboard/tallas" element={<Tallas />} />
+          {payload?.permisos.includes(1) && (
+            <Route path="/dashboard/contacts" element={<Contacts />} />
+          )}
+          {payload?.permisos.includes(5) && (
+            <Route path="/dashboard/catalogo" element={<CatalogoDashboard />} />
+          )}
+          {payload?.permisos.includes(17) && (
+            <Route path="/dashboard/compras" element={<Compras />} />
+          )}
+          {payload?.permisos.includes(12) && (
+            <Route path="/dashboard/proveedores" element={<Proveedores />} />
+          )}
+          {payload?.permisos.includes(15) && (
+            <Route
+              path="/dashboard/categoriaInsumos"
+              element={<CategoriaInsumos />}
+            />
+          )}
+          {payload?.permisos.includes(6) && (
+            <Route
+              path="/dashboard/categoriaPrenda"
+              element={<CategoriaPrenda />}
+            />
+          )}
+          {payload?.permisos.includes(2) && (
+            <Route path="/dashboard/cita" element={<CitasDashboard />} />
+          )}
+          {payload?.permisos.includes(9) && (
+            <Route path="/dashboard/insumo" element={<Insumo />} />
+          )}
+          {payload?.permisos.includes(13) && (
+            <Route path="/dashboard/roles" element={<Roles />} />
+          )}
+          {payload?.permisos.includes(11) && (
+            <Route path="/dashboard/permisos" element={<Permisos />} />
+          )}
+          {payload?.permisos.includes(3) && (
+            <Route path="/dashboard/ventas" element={<Ventas />} />
+          )}
+          {payload?.permisos.includes(18) && (
+            <Route
+              path="/dashboard/controlInsumos"
+              element={<ControlInsumos />}
+            />
+          )}
+          {payload?.permisos.includes(16) && (
+            <Route
+              path="/dashboard/unidades-medida"
+              element={<UnidadesInsumo />}
+            />
+          )}
+          {payload?.permisos.includes(2) && (
+            <Route path="/dashboard/prueba" element={<Prueba />} />
+          )}
+          {payload?.permisos.includes(14) && (
+            <Route path="/dashboard/tallas" element={<Tallas />} />
+          )}
+          {payload?.permisos.includes(19) && (
+            <Route path="/dashboard/bar" element={<Bar />} />
+          )}
+          {payload?.permisos.includes(19) && (
+            <Route path="/dashboard/line" element={<Line />} />
+          )}
         </Route>
         <Route path="*" element={<Error404 />}></Route>
       </Routes>

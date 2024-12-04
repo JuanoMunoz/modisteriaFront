@@ -58,9 +58,11 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
   );
 };
 
-const Sidebar = ({ nombre }) => {
+const Sidebar = ({ nombre, permisos }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  console.log(permisos.includes(17));
+
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
 
@@ -69,6 +71,10 @@ const Sidebar = ({ nombre }) => {
       sx={{
         "& .pro-sidebar-inner": {
           background: `${colors.primary[400]} !important`,
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: isCollapsed ? `100px` : "300px",
         },
         "& .pro-icon-wrapper": {
           backgroundColor: "transparent !important",
@@ -145,228 +151,259 @@ const Sidebar = ({ nombre }) => {
               selected={selected}
               setSelected={setSelected}
             />
-            <Accordion
-              sx={{ background: `${colors.primary[400]}`, border: "none" }}
-            >
-              <AccordionSummary
-                aria-controls="panel1-content"
-                id="panel1-header"
-                expandIcon={<ArrowDropDownIcon />}
+            {[1, 13, 11].some((element) => permisos.includes(element)) && (
+              <Accordion
+                sx={{ background: `${colors.primary[400]}`, border: "none" }}
               >
-                {isCollapsed ? (
-                  <Settings></Settings>
-                ) : (
-                  <Item
-                    title="Configuración"
-                    icon={<Settings />}
-                  ></Item>
-                )}
-              </AccordionSummary>
-              <AccordionDetails>
-                <Item
-                  title="Usuarios"
-                  to="/dashboard/contacts"
-                  icon={<ContactsOutlinedIcon />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-                <Item
-                  title="Roles"
-                  to="/dashboard/roles"
-                  icon={<AdminPanelSettingsOutlined />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-                <Item
-                  title="Permisos"
-                  to="/dashboard/permisos"
-                  icon={<LockOutlined />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-              </AccordionDetails>
-            </Accordion>
-            <Accordion
-              sx={{ background: `${colors.primary[400]}`, border: "none" }}
-            >
-              <AccordionSummary
-                aria-controls="panel1-content"
-                id="panel1-header"
-                expandIcon={<ArrowDropDownIcon />}
+                <AccordionSummary
+                  aria-controls="panel1-content"
+                  id="panel1-header"
+                  expandIcon={<ArrowDropDownIcon />}
+                >
+                  {isCollapsed ? (
+                    <Settings></Settings>
+                  ) : (
+                    <Item title="Configuración" icon={<Settings />}></Item>
+                  )}
+                </AccordionSummary>
+                <AccordionDetails>
+                  {permisos.includes(1) && (
+                    <Item
+                      title="Usuarios"
+                      to="/dashboard/contacts"
+                      icon={<ContactsOutlinedIcon />}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  )}
+                  {permisos.includes(13) && (
+                    <Item
+                      title="Roles"
+                      to="/dashboard/roles"
+                      icon={<AdminPanelSettingsOutlined />}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  )}
+                  {permisos.includes(11) && (
+                    <Item
+                      title="Permisos"
+                      to="/dashboard/permisos"
+                      icon={<LockOutlined />}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  )}
+                </AccordionDetails>
+              </Accordion>
+            )}
+            {[12, 18, 17, 9, 15].some((element) =>
+              permisos.includes(element)
+            ) && (
+              <Accordion
+                sx={{ background: `${colors.primary[400]}`, border: "none" }}
               >
-                {isCollapsed ? (
-                  <ShoppingCartOutlined />
-                ) : (
-                  <Item
-                    title="Compra"
-                    icon={<ShoppingCartOutlined/>}
-                  ></Item>
-                )}
-              </AccordionSummary>
-              <AccordionDetails>
-                <Item
-                  title="Insumos"
-                  to="/dashboard/insumo"
-                  icon={<InventoryOutlined />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-                <Item
-                  title="Compras"
-                  to="/dashboard/compras"
-                  icon={<Paid />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-                <Item
-                  title="Control Insumos"
-                  to="/dashboard/controlInsumos"
-                  icon={<HistoryOutlined />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-                <Item
-                  title="Categoria Insumos"
-                  to="/dashboard/categoriaInsumos"
-                  icon={<Inventory2Outlined />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-                <Item
-                  title="Proveedores"
-                  to="/dashboard/proveedores"
-                  icon={<Business />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-              </AccordionDetails>
-            </Accordion>
-            <Accordion
-              sx={{ background: `${colors.primary[400]}`, border: "none" }}
-            >
-              <AccordionSummary
-                aria-controls="panel1-content"
-                id="panel1-header"
-                expandIcon={<ArrowDropDownIcon />}
+                <AccordionSummary
+                  aria-controls="panel1-content"
+                  id="panel1-header"
+                  expandIcon={<ArrowDropDownIcon />}
+                >
+                  {isCollapsed ? (
+                    <ShoppingCartOutlined />
+                  ) : (
+                    <Item title="Compra" icon={<ShoppingCartOutlined />}></Item>
+                  )}
+                </AccordionSummary>
+                <AccordionDetails>
+                  {permisos.includes(12) && (
+                    <Item
+                      title="Proveedores"
+                      to="/dashboard/proveedores"
+                      icon={<Business />}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  )}
+                  {permisos.includes(17) && (
+                    <Item
+                      title="Compras"
+                      to="/dashboard/compras"
+                      icon={<Paid />}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  )}
+                  {permisos.includes(15) && (
+                    <Item
+                      title="Categoria Insumos"
+                      to="/dashboard/categoriaInsumos"
+                      icon={<Inventory2Outlined />}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  )}
+                  {permisos.includes(9) && (
+                    <Item
+                      title="Insumos"
+                      to="/dashboard/insumo"
+                      icon={<InventoryOutlined />}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  )}
+                  {permisos.includes(18) && (
+                    <Item
+                      title="Control Insumos"
+                      to="/dashboard/controlInsumos"
+                      icon={<HistoryOutlined />}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  )}
+                </AccordionDetails>
+              </Accordion>
+            )}
+
+            {[3, 2, 5, 6].some((element) => permisos.includes(element)) && (
+              <Accordion
+                sx={{ background: `${colors.primary[400]}`, border: "none" }}
               >
-                {isCollapsed ? (
-                  <PointOfSale />
-                ) : (
-                  <Item
-                    title="Venta"
-                    icon={<PointOfSale/>}
-                  ></Item>
-                )}
-              </AccordionSummary>
-              <AccordionDetails>
-                <Item
-                  title="Ventas"
-                  to="/dashboard/ventas"
-                  icon={<ShoppingCartOutlined />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-                <Item
-                  title="Citas"
-                  to="/dashboard/cita"
-                  icon={<CalendarTodayOutlined />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-                <Item
-                  title="Productos"
-                  to="/dashboard/catalogo"
-                  icon={<ViewListOutlined />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-                <Item
-                  title="Categoria Prendas"
-                  to="/dashboard/categoriaPrenda"
-                  icon={<StyleOutlined />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-              </AccordionDetails>
-            </Accordion>
-            <Accordion
-              sx={{ background: `${colors.primary[400]}`, border: "none" }}
-            >
-              <AccordionSummary
-                aria-controls="panel1-content"
-                id="panel1-header"
-                expandIcon={<ArrowDropDownIcon />}
+                <AccordionSummary
+                  aria-controls="panel1-content"
+                  id="panel1-header"
+                  expandIcon={<ArrowDropDownIcon />}
+                >
+                  {isCollapsed ? (
+                    <PointOfSale />
+                  ) : (
+                    <Item title="Venta" icon={<PointOfSale />}></Item>
+                  )}
+                </AccordionSummary>
+                <AccordionDetails>
+                  {permisos.includes(2) && (
+                    <Item
+                      title="Citas"
+                      to="/dashboard/cita"
+                      icon={<CalendarTodayOutlined />}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  )}
+                  {permisos.includes(6) && (
+                    <Item
+                      title="Categoria Prendas"
+                      to="/dashboard/categoriaPrenda"
+                      icon={<StyleOutlined />}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  )}
+                  {permisos.includes(5) && (
+                    <Item
+                      title="Productos"
+                      to="/dashboard/catalogo"
+                      icon={<ViewListOutlined />}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  )}
+                  {permisos.includes(3) && (
+                    <Item
+                      title="Ventas"
+                      to="/dashboard/ventas"
+                      icon={<ShoppingCartOutlined />}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  )}
+                </AccordionDetails>
+              </Accordion>
+            )}
+            {[14, 16].some((element) => permisos.includes(element)) && (
+              <Accordion
+                sx={{ background: `${colors.primary[400]}`, border: "none" }}
               >
-                {isCollapsed ? (
-                  <TableChart />
-                ) : (
-                  <Item
-                    title="Tablas referencia"
-                    icon={<TableChart/>}
-                  ></Item>
-                )}
-              </AccordionSummary>
-              <AccordionDetails>
-                <Item
-                  title="Tallas"
-                  to="/dashboard/tallas"
-                  icon={<StraightenOutlined />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-                <Item
-                  title="prueba"
-                  to="/dashboard/prueba"
-                  icon={<StraightenOutlined />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-                <Item
-                  title="Unidades de medida"
-                  to="/dashboard/unidades-medida"
-                  icon={<HelpOutlineOutlined />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-              </AccordionDetails>
-            </Accordion>
-            <Accordion
-              sx={{
-                background: `${colors.primary[400]}`,
-                border: "none",
-              }}
-            >
-              <AccordionSummary
-                aria-controls="panel1-content"
-                id="panel1-header"
-                expandIcon={<ArrowDropDownIcon />}
+                <AccordionSummary
+                  aria-controls="panel1-content"
+                  id="panel1-header"
+                  expandIcon={<ArrowDropDownIcon />}
+                >
+                  {isCollapsed ? (
+                    <TableChart />
+                  ) : (
+                    <Item
+                      title="Tablas referencia"
+                      icon={<TableChart />}
+                    ></Item>
+                  )}
+                </AccordionSummary>
+                <AccordionDetails>
+                  {permisos.includes(14) && (
+                    <Item
+                      title="Tallas"
+                      to="/dashboard/tallas"
+                      icon={<StraightenOutlined />}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  )}
+                  {permisos.includes(2) && (
+                    <Item
+                      title="prueba"
+                      to="/dashboard/prueba"
+                      icon={<StraightenOutlined />}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  )}
+                  {permisos.includes(16) && (
+                    <Item
+                      title="Unidades de medida"
+                      to="/dashboard/unidades-medida"
+                      icon={<HelpOutlineOutlined />}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  )}
+                </AccordionDetails>
+              </Accordion>
+            )}
+            {permisos.includes(19) && (
+              <Accordion
+                sx={{
+                  background: `${colors.primary[400]}`,
+                  border: "none",
+                }}
               >
-                {isCollapsed ? (
-                  <BarChart />
-                ) : (
+                <AccordionSummary
+                  aria-controls="panel1-content"
+                  id="panel1-header"
+                  expandIcon={<ArrowDropDownIcon />}
+                >
+                  {isCollapsed ? (
+                    <BarChart />
+                  ) : (
+                    <Item title="Graficas" icon={<BarChart />}></Item>
+                  )}
+                </AccordionSummary>
+                <AccordionDetails>
                   <Item
-                    title="Graficas"
-                    icon={<BarChart/>}
-                  ></Item>
-                )}
-              </AccordionSummary>
-              <AccordionDetails>
-                <Item
-                  title="Bar Chart"
-                  to="/dashboard/bar"
-                  icon={<BarChartOutlinedIcon />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-                <Item
-                  title="Line Chart"
-                  to="/dashboard/line"
-                  icon={<TimelineOutlinedIcon />}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
-              </AccordionDetails>
-            </Accordion>
+                    title="Bar Chart"
+                    to="/dashboard/bar"
+                    icon={<BarChartOutlinedIcon />}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
+                  <Item
+                    title="Line Chart"
+                    to="/dashboard/line"
+                    icon={<TimelineOutlinedIcon />}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
+                </AccordionDetails>
+              </Accordion>
+            )}
           </Box>
         </Menu>
       </ProSidebar>

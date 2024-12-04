@@ -12,7 +12,7 @@ export default function LayoutDashboard() {
   const navigete = useNavigate();
 
   useEffect(() => {
-    (!token || payload?.roleId !== 2) && navigete("/");
+    (!token || !payload?.permisos.includes(4)) && navigete("/");
   }, []);
 
   const [theme, colorMode] = useMode();
@@ -23,8 +23,19 @@ export default function LayoutDashboard() {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <div className="app">
-            <Sidebar nombre={payload?.nombre} isSidebar={isSidebar} />
-            <main className="content" style={{ flexGrow: 1 }}>
+            <Sidebar
+              nombre={payload?.nombre}
+              permisos={payload?.permisos}
+              isSidebar={isSidebar}
+            />
+            <main
+              className="content"
+              style={{
+                flexGrow: 1,
+                width: "100vw",
+                height: "100vh",
+              }}
+            >
               <Topbar setIsSidebar={setIsSidebar} />
               <Outlet></Outlet>
             </main>

@@ -19,7 +19,6 @@ import InputDash from "../../components/inputDashboard/InputDash";
 import SelectDash from "../../components/selectDash/SelectDash";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
 
-
 const Usuarios = () => {
   const {
     handleSubmit: handleSaveUsuario,
@@ -35,6 +34,8 @@ const Usuarios = () => {
   });
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
+  console.log(payload);
+
   const [data, setData] = useState([]);
   const [roles, setRoles] = useState([]);
   const {

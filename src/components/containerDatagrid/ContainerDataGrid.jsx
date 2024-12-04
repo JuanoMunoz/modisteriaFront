@@ -8,7 +8,7 @@ export default function ContainerDataGrid({ children }) {
     <Box
       m="0px 20px"
       p="0px 10px"
-      height="56%"
+      height="69%"
       width="98%"
       sx={{
         "& .MuiDataGrid-root": { border: "none" },

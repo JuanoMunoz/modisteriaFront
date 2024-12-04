@@ -20,14 +20,19 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import useIsFirstRender from "../../hooks/useIsMount.js";
 import { Paid } from "@mui/icons-material";
+import { AddRounded } from "../../components/svg/Svg.jsx";
+import { useNavigate } from "react-router-dom";
+import { da } from "date-fns/locale";
 const Compras = () => {
   const {
     handleSubmit: handleSaveCompra,
     formState: { errors: errorsAddCompra },
     register: registerCompra,
     reset,
+    setValue,
     watch,
   } = useForm();
+  const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(false);
   const [data, setData] = useState([]);
   const [insumos, setInsumos] = useState([]);
@@ -81,12 +86,18 @@ const Compras = () => {
     return insumo && insumo.unidades_de_medida.nombre.toLowerCase();
   };
   const handleSave = async (data) => {
-    const { cantidad, ...restOfData } = data;
-    const response = await createCompra({
-      ...restOfData,
-      cantidad: parseInt(cantidad),
+    let compras = [];
+    numberOfInsumos.forEach((_, idx) => {
+      compras.push({
+        cantidad: parseFloat(data.cantidad[idx]),
+        valorTotal: parseInt(data.valorTotal[idx]),
+        insumoId: parseInt(data.insumoId[idx]),
+        proveedorId: data.proveedorId,
+      });
     });
-
+    const response = await createCompra({
+      compras: compras,
+    });
     if (response.status !== 201 && response.status !== 200)
       return toast.error(response.data.message, {
         autoClose: 2000,
@@ -100,9 +111,23 @@ const Compras = () => {
       toastId: "crudAction",
     });
   };
+  const handleAddInsumo = () => {
+    if (numberOfInsumos.length >= insumos?.length)
+      return toast.error("¡Ya has agregado todos tus insumos!", {
+        toastId: "errorAllInsumos",
+        autoClose: 1500,
+      });
+    setNumberOfInsumos((prev) => (!prev ? [1] : [...prev, prev.length + 1]));
+    setValue(
+      `insumoId[${numberOfInsumos.length}]`,
+      insumos[numberOfInsumos.length]?.id
+    );
+  };
   const [lastModifications, setLastModifications] = useState(true);
   const isFirstRender = useIsFirstRender();
   const [filteredData, setFilteredData] = useState([]);
+  const [totalCompra, setTotalCompra] = useState(0);
+  const [numberOfInsumos, setNumberOfInsumos] = useState([]);
   const [inputDateFilter, setInputDateFilter] = useState();
   const handleFilterDataDates = () => setLastModifications(!lastModifications);
   const handleSpecificDate = (e) => setInputDateFilter(e.target.value);
@@ -178,53 +203,6 @@ const Compras = () => {
           <DialogTitleCustom>{dialogProps.title}</DialogTitleCustom>
           <DialogContent>
             <SelectDash
-              {...registerCompra("insumoId", {
-                required: "Debes escoger un insumo!",
-              })}
-              description={
-                errorsAddCompra.insumoId && errorsAddCompra.insumoId.message
-              }
-              label="Insumo"
-            >
-              {insumos
-                .filter((proveedor) => proveedor.estadoId === 1)
-                .map((insumo) => (
-                  <option key={insumo.id} value={insumo.id}>
-                    {insumo.nombre}
-                  </option>
-                ))}
-            </SelectDash>
-            <InputDash
-              {...registerCompra("cantidad", {
-                required: "La cantidad es requerida",
-                pattern: {
-                  value: /^\d+(.\d+)?$/,
-                  message: "Solo se permiten números",
-                },
-                min: {
-                  message: "¡Debes ingresar una cantidad mayor a cero!",
-                  value: 1,
-                },
-                max: { message: "¡Límite máximo de 250!", value: 250 },
-                onChange: (e) => {
-                  let { value } = e.target;
-                  const regex = /^-?\d+(\.\d*)?$/;
-                  if (!regex.test(value)) {
-                    value = value.replace(/[^0-9.-]/g, "");
-                    if (value.includes(".") && !/\d+\./.test(value)) {
-                      value = value.replace(".", "");
-                    }
-                  }
-                  e.target.value = value;
-                },
-              })}
-              label={`Cantidad en ${getUnidadMedida(watch("insumoId"))}`}
-              type="text"
-              description={
-                errorsAddCompra.cantidad && errorsAddCompra.cantidad.message
-              }
-            />
-            <SelectDash
               {...registerCompra("proveedorId", {
                 required: "¡Debes escoger un proveedor!",
               })}
@@ -234,41 +212,110 @@ const Compras = () => {
               }
               label="Proveedor"
             >
-              {proveedores
-                .filter((proveedor) => proveedor.estadoId === 1)
-                .map((proveedor) => (
-                  <option key={proveedor.id} value={proveedor.id}>
-                    {proveedor.nombre}
-                  </option>
-                ))}
+              {proveedores.map((proveedor) => (
+                <option key={proveedor.id} value={proveedor.id}>
+                  {proveedor.nombre}
+                </option>
+              ))}
             </SelectDash>
-            <InputDash
-              {...registerCompra("valorTotal", {
-                required: "La cantidad es requerida en pesos Colombianos (COP)",
-                pattern: {
-                  value: /^\d+$/,
-                  message: "Solo se permiten números",
-                },
-                min: {
-                  message: "¡Mínimo de compra 2000 pesos colombianos!",
-                  value: 2000,
-                },
-                onChange: (e) => {
-                  let { value } = e.target;
-                  value = value.replace(/\D/g, "");
-                  e.target.value = value;
-                },
-              })}
-              label="Valor Compra ($COP)"
-              type="text"
-              description={
-                errorsAddCompra.valorTotal && errorsAddCompra.valorTotal.message
-              }
-            />
-            <section className="total-section">
-              <span>Total:</span>
-              <span>{formToCop(10000)}</span>
-            </section>
+            {insumos.length >= 1 ? (
+              <section className="add-insumo">
+                <span>Añadir El insumo Asociado</span>
+                <Button onClick={handleAddInsumo}>
+                  <AddRounded size={24} color={"#fff"}></AddRounded>
+                </Button>
+              </section>
+            ) : (
+              <div
+                onClick={() => {
+                  navigate("/dashboard/insumo");
+                }}
+                className="no-insumo"
+              >
+                ¡No tienes insumos activos! <span>Ir a insumos</span>
+              </div>
+            )}
+            {numberOfInsumos.length > 0 &&
+              numberOfInsumos.map((_, idx) => (
+                <div key={idx}>
+                  <SelectDash
+                    {...registerCompra(`insumoId[${idx}]`, {
+                      required: "Debes escoger un insumo!",
+                      onChange: (e) =>
+                        setValue(`insumoId[${idx}]`, e.target.value),
+                    })}
+                    description={
+                      errorsAddCompra.insumoId?.[idx] &&
+                      errorsAddCompra.insumoId?.[idx].message
+                    }
+                    label="Insumo"
+                  >
+                    {insumos.map((insumo) => (
+                      <option key={insumo.id} value={insumo.id}>
+                        {insumo.nombre}
+                      </option>
+                    ))}
+                  </SelectDash>
+                  <InputDash
+                    {...registerCompra(`cantidad[${idx}]`, {
+                      required: "La cantidad es requerida",
+                      pattern: {
+                        value: /^\d+(.\d+)?$/,
+                        message: "Solo se permiten números",
+                      },
+                      min: {
+                        message: "¡Debes ingresar una cantidad mayor a cero!",
+                        value: 1,
+                      },
+                      max: { message: "¡Límite máximo de 250!", value: 250 },
+                      onChange: (e) => {
+                        let { value } = e.target;
+                        const regex = /^-?\d+(\.\d*)?$/;
+                        if (!regex.test(value)) {
+                          value = value.replace(/[^0-9.-]/g, "");
+                          if (value.includes(".") && !/\d+\./.test(value)) {
+                            value = value.replace(".", "");
+                          }
+                        }
+                        setValue(`cantidad[${idx}]`, value);
+                      },
+                    })}
+                    label={`Cantidad en ${getUnidadMedida(
+                      watch(`insumoId[${idx}]`)
+                    )}`}
+                    type="text"
+                    description={
+                      errorsAddCompra.cantidad?.[idx] &&
+                      errorsAddCompra.cantidad?.[idx].message
+                    }
+                  />
+                  <InputDash
+                    {...registerCompra(`valorTotal[${idx}]`, {
+                      required:
+                        "La cantidad es requerida en pesos Colombianos (COP)",
+                      pattern: {
+                        value: /^\d+$/,
+                        message: "Solo se permiten números",
+                      },
+                      min: {
+                        message: "¡Mínimo de compra 2000 pesos colombianos!",
+                        value: 2000,
+                      },
+                      onChange: (e) => {
+                        let { value } = e.target;
+                        value = value.replace(/\D/g, "");
+                        setValue(`valorTotal[${idx}]`, value);
+                      },
+                    })}
+                    label="Valor Compra ($COP)"
+                    type="text"
+                    description={
+                      errorsAddCompra.valorTotal?.[idx] &&
+                      errorsAddCompra.valorTotal?.[idx].message
+                    }
+                  />
+                </div>
+              ))}
           </DialogContent>
           <CustomDialogActions
             cancelButton

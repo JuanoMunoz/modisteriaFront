@@ -64,11 +64,7 @@ export default function ControlInsumos() {
   }, [lastModifications, controlInsumosData, inputDateFilter]);
   return (
     <>
-  
-      <Header
-        title="Control de los insumos"
-        icon={HistoryOutlined}
-      />
+      <Header title="Control de los insumos" icon={HistoryOutlined} />
       <br />
 
       <div className="filtrosControl">

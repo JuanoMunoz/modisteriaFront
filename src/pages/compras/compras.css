@@ -35,6 +35,15 @@
 .total-section {
   font-weight: 800;
   font-size: 1.3rem;
+  width: 100%;
+  margin-top: 25px;
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+}
+.total-price {
+  color: rgb(187, 14, 202);
 }
 .icono-compra-container {
   display: flex;
@@ -48,6 +57,27 @@
   margin-bottom: 1rem;
 }
 
+.add-insumo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+.no-insumo span {
+  color: #e35ad7;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: 0.1s all ease;
+}
+.no-insumo span:hover {
+  color: #732f6d;
+  scale: 1.09;
+}
+.no-insumo {
+  font-size: 1rem;
+  text-align: center;
+  padding: 1rem;
+}
 .icono-compra {
   color: #fff;
   font-size: 2rem;

@@ -86,7 +86,7 @@ export default function Layout() {
             <li className="navItem">
               <Link to={"/cita"}>Citas</Link>
             </li>
-            {payload?.roleId === 2 ? (
+            {payload?.permisos?.includes(4) ? (
               <li className="navItem">
                 <Link title="Perfil" to={"/dashboard"}>
                   Dashboard
@@ -186,15 +186,26 @@ export default function Layout() {
           <div className="box">
             <span className="nosotros">Sobre </span>
             <span className="nosotros purple">Nosotros</span>
-            <p>“Modistería Doña Luz” es una empresa de confecciones; Cuya propietaria es Luz Esther Vidales Hernández,</p>
-            <p>¿Estas interesado?  <a href="">Ver más...</a></p>
+            <p>
+              “Modistería Doña Luz” es una empresa de confecciones; Cuya
+              propietaria es Luz Esther Vidales Hernández,
+            </p>
+            <p>
+              ¿Estas interesado? <a href="">Ver más...</a>
+            </p>
           </div>
 
           <div className="box">
             <span className="contacto">Contáctanos</span>
-            <p><b>Dirección:</b> Calle 43 #34 - 195 int 306 Copacabana Antioquia.</p>
-            <p><b>Email: </b> modistadonaluzz@gmail.com</p>
-            <p><b>Teléfono:</b> 3012349235</p>
+            <p>
+              <b>Dirección:</b> Calle 43 #34 - 195 int 306 Copacabana Antioquia.
+            </p>
+            <p>
+              <b>Email: </b> modistadonaluzz@gmail.com
+            </p>
+            <p>
+              <b>Teléfono:</b> 3012349235
+            </p>
           </div>
         </div>
         <div className="grupo-2">
