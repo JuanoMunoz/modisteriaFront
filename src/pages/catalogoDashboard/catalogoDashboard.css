@@ -211,3 +211,26 @@
   text-align: justify;
   line-height: 1.6;
 }
+
+/*AJUSTE DEL FORMULARIO*/
+.formProductDash{
+  display: flex;
+  padding: 20px;
+  gap: 120px;
+}
+
+.tallasProduct{
+  width: 300px;
+  margin-top: 20px;
+}
+
+.clickInsumo{
+  text-align: end;
+  margin-right: 45px;
+}
+
+.gridInsumoSection{
+  display: flex;
+  justify-content: center;
+
+}

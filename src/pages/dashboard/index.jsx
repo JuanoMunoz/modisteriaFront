@@ -13,6 +13,10 @@ import { useEffect, useState } from "react";
 import "./dashboard-index.css";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import LoadingTableData from "../../components/loadingTableData/LoadingTableData";
+import {
+  CalendarTodayOutlined,
+  ViewListOutlined
+} from "@mui/icons-material";
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -102,13 +106,13 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <Box display="flex" flexDirection="column" alignItems="center">
-            <EmailIcon sx={{ color: colors.purple[500], fontSize: "32px" }} />
+            <CalendarTodayOutlined sx={{ color: colors.purple[500], fontSize: "32px" }} />
             <br />
             <Typography variant="h4" color={colors.grey[100]} fontWeight="bold">
               {pqrs.length}
             </Typography>
             <Typography variant="h6" color={colors.white} fontWeight="600">
-              PQRs pendientes
+              Citas pendientes
             </Typography>
           </Box>
         </Box>
@@ -166,13 +170,13 @@ const Dashboard = () => {
           borderRadius={"10px"}
         >
           <Box display="flex" flexDirection="column" alignItems="center">
-            <TrafficIcon sx={{ color: colors.purple[500], fontSize: "32px" }} />
+            <ViewListOutlined sx={{ color: colors.purple[500], fontSize: "32px" }} />
             <br />
             <Typography variant="h4" color={colors.grey[100]} fontWeight="bold">
               {cotizaciones.length}
             </Typography>
             <Typography variant="h6" color={colors.white} fontWeight="600">
-              Cotizaciones pendientes
+              Productos totales
             </Typography>
           </Box>
         </Box>
@@ -234,7 +238,7 @@ const Dashboard = () => {
             height={"70px"}
           >
             <Typography color={colors.grey[100]} variant="h5" fontWeight="600">
-              PQRS Recientes
+              Ventas recientes
             </Typography>
           </Box>
 

@@ -156,7 +156,7 @@ export default function Register() {
               color={colombianPhone() ? "#000" : "#f00"}
               description={
                 watch("telefono")?.length > 0
-                  ? "Ingrese un número válido (+57)"
+                  ? "Ingrese un número válido (+57 Colombiano)"
                   : ""
               }
               placeholder={"Télefono:"}

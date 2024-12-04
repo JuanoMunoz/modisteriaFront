@@ -328,9 +328,9 @@ const CatalogoDashboard = () => {
   return (
     <>
       <Header
-        title={"Catálogo"}
+        title={"Productos"}
         handleAdd={handleAdd}
-        buttonText={"Agregar al catálogo"}
+        buttonText={"Agregar producto"}
         icon={ViewListOutlined}
       />
       <br />
@@ -363,8 +363,8 @@ const CatalogoDashboard = () => {
         onClose={() => toggleState(setOpenModal)}
         sx={{
           "& .MuiDialog-paper": {
-            width: "80%", // Ancho deseado (puedes ajustarlo)
-            maxWidth: "none", // Evita que el ancho se limite
+            width: "80%",
+            maxWidth: "none",
           },
         }}
       >
@@ -372,7 +372,7 @@ const CatalogoDashboard = () => {
           <DialogTitleCustom>{dialogProps.title}</DialogTitleCustom>
           <DialogContent>
             {dialogProps.action === "delete" ? (
-              <DialogContentText>{`¿Estás seguro de que deseas eliminar el profucto del catálogo con nombre "${dialogProps.row.producto}" ?`}</DialogContentText>
+              <DialogContentText sx={{textAlign:"center"}}>{`¿Estás seguro de que deseas eliminar el profucto del catálogo con nombre "${dialogProps.row.producto}" ?`}</DialogContentText>
             ) : dialogProps.action === "preview" ? (
               <div className="catalagoCard">
                 <div class="catalogo-imagen">
@@ -429,165 +429,174 @@ const CatalogoDashboard = () => {
               </div>
             ) : (
               <div>
-                <InputDash
-                  {...registerCatalogo("producto", {
-                    required: "El producto del catálogo necesita un nombre.",
-                    minLength: {
-                      message:
-                        "¡El nombre del producto debe tener mínimo 4 caracteres!",
-                      value: 4,
-                    },
-                    maxLength: {
-                      message: "¡Máximo permitido 50 caracteres!",
-                      value: 50,
-                    },
-                  })}
-                  description={
-                    errorsAddCatalogo.producto &&
-                    errorsAddCatalogo.producto.message
-                  }
-                  type="text"
-                  label="Nombre"
-                />
-                <InputDash
-                  {...registerCatalogo("descripcion", {
-                    required:
-                      "El producto del catálogo necesita una descripción.",
-                    minLength: {
-                      message:
-                        "¡La descripción del producto debe tener mínimo 4 caracteres!",
-                      value: 4,
-                    },
-                    maxLength: {
-                      message: "¡Máximo permitido 255 caracteres!",
-                      value: 255,
-                    },
-                  })}
-                  description={
-                    errorsAddCatalogo.descripcion &&
-                    errorsAddCatalogo.descripcion.message
-                  }
-                  type="text"
-                  label="Descripción"
-                />
-                <InputDash
-                  {...registerCatalogo("precio", {
-                    required:
-                      "La cantidad es requerida en pesos Colombianos (COP)",
-                    pattern: {
-                      value: /^\d+$/,
-                      message: "Solo se permiten números",
-                    },
-                    min: {
-                      message: "¡Mínimo de compra 5000 pesos colombianos!",
-                      value: 5000,
-                    },
-                    onChange: (e) => {
-                      let { value } = e.target;
-                      value = value.replace(/\D/g, "");
-                      e.target.value = value;
-                    },
-                  })}
-                  label="Precio"
-                  type="text"
-                  description={
-                    errorsAddCatalogo.precio && errorsAddCatalogo.precio.message
-                  }
-                />
-                <SelectDash
-                  {...registerCatalogo("categoriaId", {
-                    required: "Debes escoger una categoría!",
-                  })}
-                  label="Categoría"
-                  description={
-                    errorsAddCatalogo.categoriaId &&
-                    errorsAddCatalogo.categoriaId.message
-                  }
-                >
-                  {categorias.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.nombre}
-                    </option>
-                  ))}
-                </SelectDash>
-                <SelectDash
-                  {...registerCatalogo("linea", {
-                    required: "Debes escoger una línea!",
-                  })}
-                  label="Línea"
-                  description={
-                    errorsAddCatalogo.linea && errorsAddCatalogo.linea.message
-                  }
-                >
-                  <option value="premium">Premium</option>
-                  <option value="especial">Especial</option>
-                  <option value="básica">Básica</option>
-                  <option value="temporada">Temporada</option>
-                  <option value="ecológica">Ecológica</option>
-                  <option value="accesorios">Accesorios</option>
-                  <option value="infantil">Infantil</option>
-                  <option value="deportiva">Deportiva</option>
-                  <option value="casual">Casual</option>
-                  <option value="formal">Formal</option>
-                </SelectDash>
-                <div className="tallas-div">
-                  <h4>Tallas</h4>
-                  <div className="switch-tallas-father">
-                    <h5>Numéricas</h5>
-                    <Switch
-                      sx={{
-                        "& .MuiSwitch-switchBase.Mui-checked": {
-                          color: colors.purple[200],
-                          "&:hover": {
-                            backgroundColor: alpha(
-                              colors.purple[200],
-                              theme.palette.action.hoverOpacity
-                            ),
-                          },
+                <div className="formProductDash">
+                  <div className="inputProduct">
+                    <InputDash
+                      {...registerCatalogo("producto", {
+                        required: "El producto del catálogo necesita un nombre.",
+                        minLength: {
+                          message:
+                            "¡El nombre del producto debe tener mínimo 4 caracteres!",
+                          value: 4,
                         },
-                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
-                          {
-                            backgroundColor: colors.purple[200],
-                          },
-                      }}
-                      onChange={(e) => {
-                        if (e.target.checked)
-                          return setKindOfTallas(
-                            tallas.filter(
-                              (talla) => talla.tipo === "alfanumérica"
-                            )
-                          );
-                        return setKindOfTallas(
-                          tallas.filter((talla) => talla.tipo === "numérica")
-                        );
-                      }}
-                      defaultChecked
-                      size="small"
+                        maxLength: {
+                          message: "¡Máximo permitido 50 caracteres!",
+                          value: 50,
+                        },
+                      })}
+                      description={
+                        errorsAddCatalogo.producto &&
+                        errorsAddCatalogo.producto.message
+                      }
+                      type="text"
+                      label="Nombre"
                     />
-                    <h5>Alfanuméricas</h5>
+                    <InputDash
+                      {...registerCatalogo("descripcion", {
+                        required:
+                          "El producto del catálogo necesita una descripción.",
+                        minLength: {
+                          message:
+                            "¡La descripción del producto debe tener mínimo 4 caracteres!",
+                          value: 4,
+                        },
+                        maxLength: {
+                          message: "¡Máximo permitido 255 caracteres!",
+                          value: 255,
+                        },
+                      })}
+                      description={
+                        errorsAddCatalogo.descripcion &&
+                        errorsAddCatalogo.descripcion.message
+                      }
+                      type="text"
+                      label="Descripción"
+                    />
+                    <InputDash
+                      {...registerCatalogo("precio", {
+                        required:
+                          "La cantidad es requerida en pesos Colombianos (COP)",
+                        pattern: {
+                          value: /^\d+$/,
+                          message: "Solo se permiten números",
+                        },
+                        min: {
+                          message: "¡Mínimo de compra 5000 pesos colombianos!",
+                          value: 5000,
+                        },
+                        onChange: (e) => {
+                          let { value } = e.target;
+                          value = value.replace(/\D/g, "");
+                          e.target.value = value;
+                        },
+                      })}
+                      label="Precio"
+                      type="text"
+                      description={
+                        errorsAddCatalogo.precio && errorsAddCatalogo.precio.message
+                      }
+                    />
+                                      
+                    <SelectDash
+                      {...registerCatalogo("categoriaId", {
+                        required: "Debes escoger una categoría!",
+                      })}
+                      label="Categoría"
+                      description={
+                        errorsAddCatalogo.categoriaId &&
+                        errorsAddCatalogo.categoriaId.message
+                      }
+                    >
+                      {categorias.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.nombre}
+                        </option>
+                      ))}
+                    </SelectDash>
+                    <SelectDash
+                      {...registerCatalogo("linea", {
+                        required: "Debes escoger una línea!",
+                      })}
+                      label="Línea"
+                      description={
+                        errorsAddCatalogo.linea && errorsAddCatalogo.linea.message
+                      }
+                    >
+                      <option value="premium">Premium</option>
+                      <option value="especial">Especial</option>
+                      <option value="básica">Básica</option>
+                      <option value="temporada">Temporada</option>
+                      <option value="ecológica">Ecológica</option>
+                      <option value="accesorios">Accesorios</option>
+                      <option value="infantil">Infantil</option>
+                      <option value="deportiva">Deportiva</option>
+                      <option value="casual">Casual</option>
+                      <option value="formal">Formal</option>
+                    </SelectDash>
+                  </div>
+
+                  <div className="tallasProduct">
+                    <div className="tallas-div">
+                      <h4>Tallas</h4>
+                      <div className="switch-tallas-father">
+                        <h5>Numéricas</h5>
+                        <Switch
+                          sx={{
+                            "& .MuiSwitch-switchBase.Mui-checked": {
+                              color: colors.purple[200],
+                              "&:hover": {
+                                backgroundColor: alpha(
+                                  colors.purple[200],
+                                  theme.palette.action.hoverOpacity
+                                ),
+                              },
+                            },
+                            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                              {
+                                backgroundColor: colors.purple[200],
+                              },
+                          }}
+                          onChange={(e) => {
+                            if (e.target.checked)
+                              return setKindOfTallas(
+                                tallas.filter(
+                                  (talla) => talla.tipo === "alfanumérica"
+                                )
+                              );
+                            return setKindOfTallas(
+                              tallas.filter((talla) => talla.tipo === "numérica")
+                            );
+                          }}
+                          defaultChecked
+                          size="small"
+                        />
+                        <h5>Alfanuméricas</h5>
+                      </div>
+                    </div>
+                    <section className="tallas-grid">
+                      {kindOfTallas
+                        .sort((a, b) => a.id - b.id)
+                        .map((talla) => (
+                          <CheckboxCustom
+                            key={talla.id}
+                            {...registerCatalogo(`tallas`, {
+                              required: "¡Debes elegir mínimo una talla!",
+                            })}
+                            handlecheckbox={handleCheckboxChange}
+                            checked={selectedTallas.includes(talla.id)}
+                            permisoName={`${talla.nombre}`}
+                            idPermiso={talla.id}
+                          />
+                        ))}
+                    </section>
+                    {errorsAddCatalogo.tallas && (
+                      <span style={{ color: "rgb(250, 24, 24)" }}>
+                        {errorsAddCatalogo.tallas.message}
+                      </span>
+                    )}
                   </div>
                 </div>
-                <section className="tallas-grid">
-                  {kindOfTallas
-                    .sort((a, b) => a.id - b.id)
-                    .map((talla) => (
-                      <CheckboxCustom
-                        key={talla.id}
-                        {...registerCatalogo(`tallas`, {
-                          required: "¡Debes elegir mínimo una talla!",
-                        })}
-                        handlecheckbox={handleCheckboxChange}
-                        checked={selectedTallas.includes(talla.id)}
-                        permisoName={`${talla.nombre}`}
-                        idPermiso={talla.id}
-                      />
-                    ))}
-                </section>
-                {errorsAddCatalogo.tallas && (
-                  <span style={{ color: "rgb(250, 24, 24)" }}>
-                    {errorsAddCatalogo.tallas.message}
-                  </span>
-                )}
+                
                 <h4>Imagen de referencia</h4>
                 <div style={{ width: "100%" }}>
                   <label className="subir-img">
@@ -683,76 +692,80 @@ const CatalogoDashboard = () => {
                 </DialogTitle>
                 {numberOfInsumos.length >= 1 ? (
                   numberOfInsumos.map((_, idx) => (
-                    <div
-                      style={{ marginTop: "10px" }}
-                      key={idx}
-                      className="add-insumo-section"
-                    >
-                      <div>
-                        <SelectDash
-                          label="Insumo"
-                          width="200px"
-                          {...registerCatalogo(`insumo[${idx}]`, {
-                            required: "Debes escoger un insumo!",
-                            onChange: (e) =>
-                              setValue(`insumo[${idx}]`, e.target.value),
-                          })}
-                          description={
-                            errorsAddCatalogo?.insumo?.[idx]?.message
-                          }
-                        >
-                          {insumos.map((ins) => (
-                            <option key={ins.id} value={ins.id}>
-                              {ins.nombre}
-                            </option>
-                          ))}
-                        </SelectDash>
-                      </div>
-                      <div>
-                        <InputDash
-                          width="320px"
-                          allowDecimal
-                          label={`Cantidad usada (Máximo ${findMaxQuantityInsumo(
-                            parseFloat(getValues(`insumo[${idx}]`))
-                          )})`}
-                          type="number"
-                          {...registerCatalogo(`cantidad_utilizada[${idx}]`, {
-                            required: "¡La cantidad usada es requerida!",
-                            pattern: {
-                              value: /^\d+(.\d+)?$/,
-                              message: "Solo se permiten números",
-                            },
-                            min: {
-                              value: 1,
-                              message: "¡La cantidad mínima es de 1!",
-                            },
-                            max: {
-                              value: findMaxQuantityInsumo(
-                                parseFloat(watch(`insumo[${idx}]`))
-                              ),
-                              message: `¡La cantidad máxima es de ${findMaxQuantityInsumo(
-                                parseFloat(watch(`insumo[${idx}]`))
-                              )}!`,
-                            },
-                          })}
-                          onChange={(e) =>
-                            setValue(
-                              `cantidad_utilizada[${idx}]`,
-                              e.target.value
-                            )
-                          }
-                          description={
-                            errorsAddCatalogo?.cantidad_utilizada?.[idx]
-                              ?.message
-                          }
-                        />
+                    
+                    <div className="gridInsumoSection">
+                      <div
+                        style={{ marginTop: "10px" }}
+                        key={idx}
+                        className="add-insumo-section"
+                      >
+                        <div>
+                          <SelectDash
+                            label="Insumo"
+                            width="200px"
+                            {...registerCatalogo(`insumo[${idx}]`, {
+                              required: "Debes escoger un insumo!",
+                              onChange: (e) =>
+                                setValue(`insumo[${idx}]`, e.target.value),
+                            })}
+                            description={
+                              errorsAddCatalogo?.insumo?.[idx]?.message
+                            }
+                          >
+                            {insumos.map((ins) => (
+                              <option key={ins.id} value={ins.id}>
+                                {ins.nombre}
+                              </option>
+                            ))}
+                          </SelectDash>
+                        </div>
+                        <div>
+                          <InputDash
+                            width="320px"
+                            allowDecimal
+                            label={`Cantidad usada (Máximo ${findMaxQuantityInsumo(
+                              parseFloat(getValues(`insumo[${idx}]`))
+                            )})`}
+                            type="number"
+                            {...registerCatalogo(`cantidad_utilizada[${idx}]`, {
+                              required: "¡La cantidad usada es requerida!",
+                              pattern: {
+                                value: /^\d+(.\d+)?$/,
+                                message: "Solo se permiten números",
+                              },
+                              min: {
+                                value: 1,
+                                message: "¡La cantidad mínima es de 1!",
+                              },
+                              max: {
+                                value: findMaxQuantityInsumo(
+                                  parseFloat(watch(`insumo[${idx}]`))
+                                ),
+                                message: `¡La cantidad máxima es de ${findMaxQuantityInsumo(
+                                  parseFloat(watch(`insumo[${idx}]`))
+                                )}!`,
+                              },
+                            })}
+                            onChange={(e) =>
+                              setValue(
+                                `cantidad_utilizada[${idx}]`,
+                                e.target.value
+                              )
+                            }
+                            description={
+                              errorsAddCatalogo?.cantidad_utilizada?.[idx]
+                                ?.message
+                            }
+                          />
+                        </div>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div>Dale click a agregar un insumo!</div>
+                    <div className="clickInsumo">Dale click a agregar un insumo! ▲</div>
                 )}
               </div>
+              
             )}
           </DialogContent>
 

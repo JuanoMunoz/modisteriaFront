@@ -156,13 +156,10 @@ const Sidebar = ({ nombre }) => {
                 {isCollapsed ? (
                   <Settings></Settings>
                 ) : (
-                  <Typography
-                    variant="h6"
-                    color={colors.grey[300]}
-                    sx={{ m: "15px 0 5px 20px" }}
-                  >
-                    Configuración
-                  </Typography>
+                  <Item
+                    title="Configuración"
+                    icon={<Settings />}
+                  ></Item>
                 )}
               </AccordionSummary>
               <AccordionDetails>
@@ -200,13 +197,10 @@ const Sidebar = ({ nombre }) => {
                 {isCollapsed ? (
                   <ShoppingCartOutlined />
                 ) : (
-                  <Typography
-                    variant="h6"
-                    color={colors.grey[300]}
-                    sx={{ m: "15px 0 5px 20px" }}
-                  >
-                    Compra
-                  </Typography>
+                  <Item
+                    title="Compra"
+                    icon={<ShoppingCartOutlined/>}
+                  ></Item>
                 )}
               </AccordionSummary>
               <AccordionDetails>
@@ -258,13 +252,10 @@ const Sidebar = ({ nombre }) => {
                 {isCollapsed ? (
                   <PointOfSale />
                 ) : (
-                  <Typography
-                    variant="h6"
-                    color={colors.grey[300]}
-                    sx={{ m: "15px 0 5px 20px" }}
-                  >
-                    Venta
-                  </Typography>
+                  <Item
+                    title="Venta"
+                    icon={<PointOfSale/>}
+                  ></Item>
                 )}
               </AccordionSummary>
               <AccordionDetails>
@@ -283,7 +274,7 @@ const Sidebar = ({ nombre }) => {
                   setSelected={setSelected}
                 />
                 <Item
-                  title="Catálogo"
+                  title="Productos"
                   to="/dashboard/catalogo"
                   icon={<ViewListOutlined />}
                   selected={selected}
@@ -309,13 +300,10 @@ const Sidebar = ({ nombre }) => {
                 {isCollapsed ? (
                   <TableChart />
                 ) : (
-                  <Typography
-                    variant="h6"
-                    color={colors.grey[300]}
-                    sx={{ m: "15px 0 5px 20px" }}
-                  >
-                    Tablas de referencia
-                  </Typography>
+                  <Item
+                    title="Tablas referencia"
+                    icon={<TableChart/>}
+                  ></Item>
                 )}
               </AccordionSummary>
               <AccordionDetails>
@@ -356,13 +344,10 @@ const Sidebar = ({ nombre }) => {
                 {isCollapsed ? (
                   <BarChart />
                 ) : (
-                  <Typography
-                    variant="h6"
-                    color={colors.grey[300]}
-                    sx={{ m: "15px 0 5px 20px" }}
-                  >
-                    Gráficas
-                  </Typography>
+                  <Item
+                    title="Graficas"
+                    icon={<BarChart/>}
+                  ></Item>
                 )}
               </AccordionSummary>
               <AccordionDetails>

@@ -8,13 +8,19 @@ import {
 export default function CardCompras({ compra }) {
   return (
     <article className="compra" key={compra.id}>
-      <div className="icono-compra-container">
-        <ShoppingCart className="icono-compra" />
-      </div>
       <div className="card-header">
+        <div className="icono-compra-container">
+          <ShoppingCart className="icono-compra" />
+        </div>
         {`${formatDateSpanish(compra.fecha)} ${formaTime(compra.fecha)}`}
       </div>
+
       <div className="card-body">
+        <span className="action-text">Proveedor</span>
+        <div className="proveedor">
+          <Business className="icono-body" />
+          <span>{compra.proveedor.nombre}</span>
+        </div>
         <div className="insumos">
           <Inventory className="icono-body" />
           <span>
@@ -23,14 +29,10 @@ export default function CardCompras({ compra }) {
             {compra.insumo.nombre.toLowerCase()}
           </span>
         </div>
-        <span className="action-text">Proveedor</span>
-        <div className="proveedor">
-          <Business className="icono-body" />
-          <span>{compra.proveedor.nombre}</span>
-        </div>
-        <div className="valor">
-          <span>{formToCop(compra.valorTotal)}</span>
-        </div>
+      </div>
+
+      <div className="valor">
+        <span>{formToCop(compra.valorTotal)}</span>
       </div>
     </article>
   );
