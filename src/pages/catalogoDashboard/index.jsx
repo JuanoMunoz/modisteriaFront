@@ -112,7 +112,7 @@ const CatalogoDashboard = () => {
         setCategorias(categoria.data);
         setTallas(tallas.data);
         setKindOfTallas(
-          tallas.data.filter((talla) => talla.tipo === "alfanumérica")
+          tallas.data.filter((talla) => talla.tipo === "Alfanumérica")
         );
         setInsumos(insumos.data);
       }
@@ -554,11 +554,11 @@ const CatalogoDashboard = () => {
                         if (e.target.checked)
                           return setKindOfTallas(
                             tallas.filter(
-                              (talla) => talla.tipo === "alfanumérica"
+                              (talla) => talla.tipo === "Alfanumérica"
                             )
                           );
                         return setKindOfTallas(
-                          tallas.filter((talla) => talla.tipo === "numérica")
+                          tallas.filter((talla) => talla.tipo === "Numérica")
                         );
                       }}
                       defaultChecked

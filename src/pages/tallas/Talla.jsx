@@ -51,7 +51,7 @@ const Tallas = () => {
   // Funciones para las modales
   const handleDialog = (action, title, row = null) => {
     setDialogProps({ action, row, title });
-    reset({ nombre: row?.nombre || "", tipo: row?.tipo || "alfanumérica" });
+    reset({ nombre: row?.nombre || "", tipo: row?.tipo || "Alfanumérica" });
     toggleState(setOpenModal);
   };
   const handleAdd = () => {
@@ -146,9 +146,9 @@ const Tallas = () => {
                     required: "La talla necesita un nombre.",
                     maxLength: {
                       message: `¡La talla solo puede tener hasta ${
-                        watch("tipo") === "alfanumérica" ? 4 : 2
+                        watch("tipo") === "Alfanumérica" ? 4 : 2
                       } caracteres!`,
-                      value: watch("tipo") === "alfanumérica" ? 4 : 2,
+                      value: watch("tipo") === "Alfanumérica" ? 4 : 2,
                     },
                     validate: {
                       isAlreadyRegistered: (value) => {
@@ -167,7 +167,7 @@ const Tallas = () => {
                         );
                       },
                       isNotNumberWhenNumericSelected: (value) => {
-                        if (watch("tipo") === "alfanumérica") return;
+                        if (watch("tipo") === "Alfanumérica") return;
                         return (
                           /^\d+$/.test(value) ||
                           "Este tipo solo permite números"
@@ -185,8 +185,8 @@ const Tallas = () => {
                   }
                   label={"Tipo Talla"}
                 >
-                  <option value="alfanumérica">Alfanumérica</option>
-                  <option value="numérica">Numérica</option>
+                  <option value="Alfanumérica">Alfanumérica</option>
+                  <option value="Numérica">Numérica</option>
                 </SelectDash>
               </div>
             )}

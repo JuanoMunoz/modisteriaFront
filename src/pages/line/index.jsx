@@ -4,6 +4,7 @@ import LineChart from "../../components/LineChart/LineChart";
 import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import { useJwt } from "../../context/JWTContext"; // Importar el contexto
+import { URL_BACK } from "../../assets/constants.d";
 
 const Line = () => {
   const { token } = useJwt(); // Obtener el token del contexto
@@ -18,7 +19,7 @@ const Line = () => {
       }
 
       const { data: responseData, status } = await triggerFetch(
-        'https://modisteria-back-production.up.railway.app/api/ventas/getAllVentas',
+        `${URL_BACK}/ventas/getAllVentas`,
         'GET',
         null,
         { "x-token": token } // Pasar el token en los headers
