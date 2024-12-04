@@ -6,7 +6,7 @@ import useDebounce from "../../hooks/useDebounce";
 import axios from "axios";
 import useIsFirstRender from "../../hooks/useIsMount";
 import { useJwt } from "../../context/JWTContext";
-import { formToCop } from "../../assets/constants.d";
+import { formToCop, URL_BACK } from "../../assets/constants.d";
 export default function ProductoCarrito({ data, changeSubtotal }) {
   const { token } = useJwt();
   const { removeItem } = useCart();
@@ -18,7 +18,7 @@ export default function ProductoCarrito({ data, changeSubtotal }) {
     if (isFirstRender) return;
     axios
       .put(
-        `https://modisteria-back-production.up.railway.app/api/pedidos/updatePedido/${data.idPedido}`,
+        `${URL_BACK}/pedidos/updatePedido/${data.idPedido}`,
         {
           cantidad: debouncedValue,
         },

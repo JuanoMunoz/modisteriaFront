@@ -6,6 +6,7 @@ import { useJwt } from "../../context/JWTContext";
 import useFetch from "../../hooks/useFetch";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import LoadingTableData from "../../components/loadingTableData/LoadingTableData";
+import { URL_BACK } from "../../assets/constants.d";
 
 const Bar = () => {
   const { token } = useJwt();
@@ -16,7 +17,7 @@ const Bar = () => {
     const fetchData = async () => {
       try {
         const response = await triggerFetch(
-          "https://modisteria-back-production.up.railway.app/api/insumos/getAllInsumos",
+          `${URL_BACK}/insumos/getAllInsumos`,
           "GET",
           null,
           { "x-token": token }
