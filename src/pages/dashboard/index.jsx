@@ -118,7 +118,6 @@ const Dashboard = () => {
             <Typography variant="h6" color={colors.white} fontWeight="600">
 
               Citas pendientes
-              Productos
 
             </Typography>
           </Box>

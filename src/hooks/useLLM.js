@@ -11,7 +11,7 @@ const useLLM = () => {
   const payload = useDecodedJwt(token);
   const { triggerFetch } = useFetch();
   const IsFirstRender = useIsFirstRender();
-  const [citasAprobadas, setCitasAprobadas] = useState([]);
+  const [citasCotizadas, setCitasCotizada] = useState([]);
   const [initialHistory, setInitialHistory] = useState([]);
   const [historial, setHistorial] = useState(initialHistory);
   const [isLoadingMessage, setIsloadingMessage] = useState(false);
