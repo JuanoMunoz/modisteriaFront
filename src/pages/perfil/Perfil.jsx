@@ -243,15 +243,15 @@ export default function Perfil() {
                   />
                   <span>Por aprobar</span>
                 </label>
-                <label for="aprobada" className="option">
+                <label for="cotizada" className="option">
                   <input
                     type="radio"
-                    id="aprobada"
+                    id="cotizada"
                     name="tipoCita"
                     value="10"
                     onChange={onChangeTypeAppointment}
                   />
-                  <div>Aprobada</div>
+                  <div>Cotizada</div>
                 </label>
                 <label for="aceptada" className="option">
                   <input

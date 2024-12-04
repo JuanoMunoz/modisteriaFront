@@ -287,7 +287,7 @@ const CitasDashboard = () => {
         const estadoText =
           {
             9: "Por aprobar",
-            10: "Aprobada",
+            10: "Cotizada",
             11: "Aceptada",
             12: "Cancelada",
             13: "Terminada",
@@ -442,7 +442,7 @@ const CitasDashboard = () => {
                   }}
                 >
                   <option value="9">Por aprobar</option>
-                  <option value="10">Aprobada</option>
+                  <option value="10">Cotizada</option>
                   <option value="11">Aceptada</option>
                   <option value="12">Cancelada</option>
                   <option value="13">Terminada</option>

@@ -27,7 +27,7 @@ export const estadoCitasColores = [
     color: "#F4D03F",
   },
   {
-    nombre: "Aprobada (Modista)",
+    nombre: "Cotizada (Modista)",
     color: "#E67E22",
   },
   {
