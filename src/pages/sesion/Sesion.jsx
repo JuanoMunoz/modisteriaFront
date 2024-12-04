@@ -7,7 +7,7 @@ import Metadata from "../../components/metadata/Metadata";
 import OTP from "../../components/input_otp/Otp";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
-import constants from "../../assets/constants.d";
+import constants, { URL_BACK } from "../../assets/constants.d";
 import axios from "axios";
 import Loading from "../../components/loading/Loading";
 import useModals from "../../hooks/useSessionModals";
@@ -67,7 +67,7 @@ export default function InicioSesion() {
     setLoading(true);
     axios
       .post(
-        "https://modisteria-back-production.up.railway.app/api/usuarios/login",
+        `${URL_BACK}/usuarios/login`,
         {
           email: data.email,
           password: data.password,

@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { formToCop } from "../../assets/constants.d";
+import { formToCop, URL_BACK } from "../../assets/constants.d";
 export default function Product({ data, isLoading }) {
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
@@ -45,7 +45,7 @@ export default function Product({ data, isLoading }) {
   const pedidoAlreadyExists = async (catalogoId, talla) => {
     try {
       const response = await axios.get(
-        `https://modisteria-back-production.up.railway.app/api/pedidos/getPedidoById/${payload?.id}?catalogoId=${catalogoId}&tallaId=${talla}`,
+        `${URL_BACK}/pedidos/getPedidoById/${payload?.id}?catalogoId=${catalogoId}&tallaId=${talla}`,
         { headers: { "x-token": token } }
       );
       return response.data;
@@ -124,7 +124,7 @@ export default function Product({ data, isLoading }) {
     response.length === 1
       ? axios
           .put(
-            `https://modisteria-back-production.up.railway.app/api/pedidos/updatePedido/${response[0].idPedido}`,
+            `${URL_BACK}/pedidos/updatePedido/${response[0].idPedido}`,
             {
               cantidad: response[0].cantidad + carritoData.cantidad,
               precioFinal: response[0].precioFinal + carritoData.precioFinal,
@@ -145,7 +145,7 @@ export default function Product({ data, isLoading }) {
           })
       : axios
           .post(
-            "https://modisteria-back-production.up.railway.app/api/pedidos/createPedido",
+            `${URL_BACK}/pedidos/createPedido`,
             carritoData,
             { headers: { "x-token": token } }
           )

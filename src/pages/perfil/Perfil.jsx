@@ -137,7 +137,7 @@ export default function Perfil() {
   }, [passwordAttempts]);
   const handleFirstPasswordSubmit = async (data) => {
     const response = await fetchIsYourPass(
-      `https://modisteria-back-production.up.railway.app/api/usuarios/isYourCurrentPassword`,
+      `${URL_BACK}/usuarios/isYourCurrentPassword`,
       "POST",
       { email: payload?.email, password: data.contraseniaActual }
     );
@@ -157,7 +157,7 @@ export default function Perfil() {
 
   const handleNewPasswordSubmitLogic = async (data) => {
     const response = await fetchChangePass(
-      `https://modisteria-back-production.up.railway.app/api/usuarios/resetCurrentPassword`,
+      `${URL_BACK}/usuarios/resetCurrentPassword`,
       "POST",
       { email: payload?.email, newPassword: data.nuevaContrasenia },
       { "x-token": token }
@@ -174,7 +174,7 @@ export default function Perfil() {
   };
   const handleUpdateInfoLogic = async (data) => {
     const response = await fetchChangePass(
-      `https://modisteria-back-production.up.railway.app/api/usuarios/updateInfo/${payload?.id}`,
+      `${URL_BACK}/usuarios/updateInfo/${payload?.id}`,
       "PUT",
       { nombre: data.nombre, telefono: data.telefono },
       { "x-token": token }

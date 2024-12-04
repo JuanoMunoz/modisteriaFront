@@ -4,6 +4,7 @@ import { useJwt } from "../context/JWTContext";
 import useDecodedJwt from "../hooks/useJwt";
 import useFetch from "../hooks/useFetch";
 import useIsFirstRender from "./useIsMount";
+import { URL_BACK } from "../assets/constants.d";
 
 const useLLM = () => {
   const { token } = useJwt();
@@ -18,7 +19,7 @@ const useLLM = () => {
   useEffect(() => {
     const fetchCitas = async () => {
       const response = await triggerFetch(
-        "https://modisteria-back-production.up.railway.app/api/citas/getAllCitas?estadoId=11",
+        `${URL_BACK}/citas/getAllCitas?estadoId=11`,
         "GET",
         null,
         {

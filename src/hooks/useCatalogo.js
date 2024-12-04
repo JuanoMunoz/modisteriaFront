@@ -5,7 +5,7 @@ export default function useCatalogoData(page,price,categoria) {
   const [fetchCatalagoData, setFetchCatalogoData] = useState(null);
   const [numberOfPages, setNumberOfPages] = useState([]);
   useEffect(() => {
-    const url = categoria ?  `${URL_BACK}/catalogos/getAllCatalogo?page=${page}&price=${price}&category=${categoria}` :  `https://modisteria-back-production.up.railway.app/api/catalogos/getAllCatalogo?page=${page}&price=${price}`
+    const url = categoria ?  `${URL_BACK}/catalogos/getAllCatalogo?page=${page}&price=${price}&category=${categoria}` :  `${URL_BACK}/catalogos/getAllCatalogo?page=${page}&price=${price}`
     const fetchCatalogo = async () => {
       setIsLoading(true);
       fetch(

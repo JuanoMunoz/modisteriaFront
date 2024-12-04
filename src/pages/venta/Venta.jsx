@@ -14,7 +14,7 @@ import { QrCode } from "../../components/svg/Svg";
 import { toast, ToastContainer } from "react-toastify";
 import useActiveUserInfo from "../../hooks/useActiveUserInfo";
 import useIsFirstRender from "../../hooks/useIsMount";
-import { formToCop, imageExtensions } from "../../assets/constants.d";
+import { formToCop, imageExtensions, URL_BACK } from "../../assets/constants.d";
 import useFetch from "../../hooks/useFetch";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 export default function Venta() {
@@ -48,7 +48,7 @@ export default function Venta() {
     const direccionString = `${data.tipoCalle} ${data.calle} ${data.numero1}${data.numero2} ${data.infoAdicional}`;
     axios
       .put(
-        `https://modisteria-back-production.up.railway.app/api/usuarios/updateUser/${payload?.id}`,
+        `${URL_BACK}/usuarios/updateUser/${payload?.id}`,
         { direccion: direccionString },
         { headers: { "x-token": token } }
       )
@@ -59,7 +59,7 @@ export default function Venta() {
         });
         axios
           .get(
-            `https://modisteria-back-production.up.railway.app/api/usuarios/getUserById/${payload?.id}`,
+            `${URL_BACK}/usuarios/getUserById/${payload?.id}`,
             { headers: { "x-token": token } }
           )
           .then((res) => {
@@ -158,7 +158,7 @@ export default function Venta() {
     formDataAdd.append("file", imagen);
 
     const response = await triggerFetch(
-      "https://modisteria-back-production.up.railway.app/api/ventas/createVenta",
+      `${URL_BACK}/ventas/createVenta`,
       "POST",
       formDataAdd,
       {

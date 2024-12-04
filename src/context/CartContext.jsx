@@ -3,6 +3,7 @@ import axios from "axios";
 import { useJwt } from "./JWTContext";
 import useDecodedJwt from "../hooks/useJwt";
 import { json } from "react-router-dom";
+import { URL_BACK } from "../assets/constants.d";
 const CartContext = createContext();
 
 export function useCart() {
@@ -19,7 +20,7 @@ export default function CartProvider({ children }) {
     setIsCartLoading(true);
     axios
       .get(
-        `https://modisteria-back-production.up.railway.app/api/pedidos/getPedidoById/${payload?.id}`,
+        `${URL_BACK}/pedidos/getPedidoById/${payload?.id}`,
         { headers: { "x-token": token } }
       )
       .then((res) => {
@@ -38,7 +39,7 @@ export default function CartProvider({ children }) {
   const removeItem = (idPedido) => {
     setCartData((prev) => prev.filter((value) => value.idPedido !== idPedido));
     axios.delete(
-      `https://modisteria-back-production.up.railway.app/api/pedidos/deletePedido/${idPedido}`,
+      `${URL_BACK}/pedidos/deletePedido/${idPedido}`,
       { headers: { "x-token": token } }
     );
   };

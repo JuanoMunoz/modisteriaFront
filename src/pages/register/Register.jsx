@@ -6,7 +6,7 @@ import Input from "../../components/input_basico/Input";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import constants from "../../assets/constants.d";
+import constants, { URL_BACK } from "../../assets/constants.d";
 import axios from "axios";
 import Loading from "../../components/loading/Loading";
 import { useNavigate } from "react-router-dom";
@@ -41,7 +41,7 @@ export default function Register() {
     if (otpCode.length !== 6) return;
     axios
       .post(
-        "https://modisteria-back-production.up.railway.app/api/usuarios/verifyUser",
+        `${URL_BACK}/usuarios/verifyUser`,
         {
           nombre: registerData.nombre,
           codigo: parseInt(otpCode),
@@ -78,7 +78,7 @@ export default function Register() {
     setLoading(true);
     axios
       .post(
-        "https://modisteria-back-production.up.railway.app/api/usuarios/createUser",
+        `${URL_BACK}/usuarios/createUser`,
         {
           email: data.correo,
         }

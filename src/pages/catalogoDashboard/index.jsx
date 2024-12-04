@@ -112,7 +112,7 @@ const CatalogoDashboard = () => {
         setCategorias(categoria.data);
         setTallas(tallas.data);
         setKindOfTallas(
-          tallas.data.filter((talla) => talla.tipo === "alfanumérica")
+          tallas.data.filter((talla) => talla.tipo === "Alfanumérica")
         );
         setInsumos(insumos.data);
       }
@@ -464,6 +464,7 @@ const CatalogoDashboard = () => {
                           message: "¡Máximo permitido 255 caracteres!",
                           value: 255,
                         },
+
                       })}
                       description={
                         errorsAddCatalogo.descripcion &&
@@ -471,6 +472,25 @@ const CatalogoDashboard = () => {
                       }
                       type="text"
                       label="Descripción"
+                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                          {
+                            backgroundColor: colors.purple[200],
+                          },
+                      }}
+                      onChange={(e) => {
+                        if (e.target.checked)
+                          return setKindOfTallas(
+                            tallas.filter(
+                              (talla) => talla.tipo === "Alfanumérica"
+                            )
+                          );
+                        return setKindOfTallas(
+                          tallas.filter((talla) => talla.tipo === "Numérica")
+                        );
+                      }}
+                      defaultChecked
+                      size="small"
+
                     />
                     <InputDash
                       {...registerCatalogo("precio", {

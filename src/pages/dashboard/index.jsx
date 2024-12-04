@@ -13,10 +13,14 @@ import { useEffect, useState } from "react";
 import "./dashboard-index.css";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import LoadingTableData from "../../components/loadingTableData/LoadingTableData";
+
 import {
   CalendarTodayOutlined,
   ViewListOutlined
 } from "@mui/icons-material";
+
+import { URL_BACK } from "../../assets/constants.d";
+
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -25,7 +29,7 @@ const Dashboard = () => {
   const { token } = useJwt();
 
   const [ventas, setVentas] = useState([]);
-  const [pqrs, setPqrs] = useState([]);
+  const [productos, setProductos] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
   const [cotizaciones, setCotizaciones] = useState([]);
   const [insumos, setInsumos] = useState([]);
@@ -33,7 +37,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       const ventasResponse = await triggerFetch(
-        "https://modisteria-back-production.up.railway.app/api/ventas/getAllVentas",
+        `${URL_BACK}/ventas/getAllVentas`,
         "GET",
         null,
         { "x-token": token }
@@ -42,18 +46,18 @@ const Dashboard = () => {
         setVentas(ventasResponse.data);
       }
 
-      const pqrsResponse = await triggerFetch(
-        "https://modisteria-back-production.up.railway.app/api/pqrs/getAllPQRS",
+      const productosResponse = await triggerFetch(
+        `${URL_BACK}/catalogos/getAllCatalogo`,
         "GET",
         null,
         { "x-token": token }
       );
-      if (pqrsResponse.status === 200) {
-        setPqrs(pqrsResponse.data);
+      if (productosResponse.status === 200) {
+        setProductos(productosResponse.data.rows); 
       }
 
       const usuariosResponse = await triggerFetch(
-        "https://modisteria-back-production.up.railway.app/api/usuarios/getAllUsers",
+        `${URL_BACK}/usuarios/getAllUsers`,
         "GET",
         null,
         { "x-token": token }
@@ -63,7 +67,7 @@ const Dashboard = () => {
       }
 
       const insumosResponse = await triggerFetch(
-        "https://modisteria-back-production.up.railway.app/api/insumos/getAllInsumos",
+        `${URL_BACK}/insumos/getAllInsumos`,
         "GET",
         null,
         { "x-token": token }
@@ -109,10 +113,13 @@ const Dashboard = () => {
             <CalendarTodayOutlined sx={{ color: colors.purple[500], fontSize: "32px" }} />
             <br />
             <Typography variant="h4" color={colors.grey[100]} fontWeight="bold">
-              {pqrs.length}
+              {productos.length}
             </Typography>
             <Typography variant="h6" color={colors.white} fontWeight="600">
+
               Citas pendientes
+              Productos
+
             </Typography>
           </Box>
         </Box>
@@ -239,13 +246,14 @@ const Dashboard = () => {
           >
             <Typography color={colors.grey[100]} variant="h5" fontWeight="600">
               Ventas recientes
+              Productos
             </Typography>
           </Box>
 
           <br />
-          {pqrs.map((pqr, i) => (
+          {productos.map((producto, i) => (
             <Box
-              key={`${pqr.id}-${i}`}
+              key={`${producto.id}-${i}`}
               display="flex"
               justifyContent="space-between"
               alignItems="center"
@@ -258,13 +266,12 @@ const Dashboard = () => {
                   variant="h5"
                   fontWeight="600"
                 >
-                  {pqr.tipo}
+                  {producto.producto}
                 </Typography>
               </Box>
               <Box color={colors.grey[100]} flexBasis="40%">
-                <Typography>{pqr.motivo}</Typography>
+                <Typography>{producto.precio}</Typography>
               </Box>
-              <Box color={colors.grey[100]}>{pqr.fecha}</Box>
             </Box>
           ))}
         </Box>
