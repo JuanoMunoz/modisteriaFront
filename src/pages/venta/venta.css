@@ -101,11 +101,10 @@
   text-decoration: underline;
 }
 .number-address {
-  display: flex;
-  gap: 1rem;
+  display: grid;
 }
 .resumen-compra-title {
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   font-weight: bold;
   margin-left: 20px;
 }
@@ -121,13 +120,15 @@
 }
 .address-modal {
   display: flex;
-  gap: 7rem;
+  gap: 100px;
+}
+.addressRight{
+  margin-right: 170px;
 }
 .piso-depto {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 10px;
 }
 .price-choice {
   width: 30%;
@@ -197,12 +198,11 @@ input[type="radio"]:hover {
 }
 .add-address-title {
   font-weight: bold;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
 }
 .text-label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  margin-top: 19px;
+  font-size: 1rem;
+  font-weight: bold;
 }
 .separacion {
   width: 50%;
@@ -212,8 +212,9 @@ input[type="radio"]:hover {
 }
 .separacion-resumen {
   width: 100%;
-  height: 4px;
+  height: 6px;
   background-color: rgb(187, 14, 202);
+  border: none;
 }
 .ficha-productos {
   flex-grow: 1;
@@ -286,7 +287,8 @@ input[type="radio"]:hover {
 }
 
 .modal-qr img {
-  width: 60%;
+  width: 40%;
+  margin-bottom: 10px;
 }
 .modal-qr div {
   display: flex;
@@ -307,9 +309,18 @@ input[type="radio"]:hover {
   margin-left: 20px;
 }
 
-.qrcode-data {
-  width: 100%;
+.emisor{
   display: flex;
+}
+
+.emisor span{
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.qrcode-data {
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: baseline;
 }
@@ -354,19 +365,7 @@ input[type="radio"]:hover {
   align-items: end;
 }
 
-.qrcode-data input[type="checkbox"] {
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgb(187, 14, 202);
-  border-radius: 4px;
-  position: relative;
-  margin-right: 3px;
-  outline: none;
-  cursor: pointer;
-  top: 7px;
-  transition: 0.2s ease-in-out;
-}
+
 .icon-large {
   cursor: pointer;
   color: black;
@@ -405,3 +404,185 @@ input[type="radio"]:hover {
   border-color: rgb(187, 14, 202);
   outline: none;
 }
+
+/*SELECT*/
+.select-group {
+  position: relative;
+  margin-bottom: 30px;
+  text-align: start;
+}
+
+.select-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.select {
+  flex: 1;
+  height: 44px;
+  width: 230px;
+  background-color: #05060f1c;
+  border-radius: 0.5rem;
+  padding: 0 1rem;
+  border: 2px solid transparent;
+  font-size: 0.9rem;
+  transition: border-color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s,
+    color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s,
+    background 0.2s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
+  padding-right: 30px; /* Espacio para el ícono de ojo */
+  font-family: "Comfortaa", sans-serif
+}
+
+.label {
+  display: block;
+  margin-bottom: .3rem;
+  font-size: .9rem;
+  font-weight: bold;
+  color: #05060f63;
+  transition: color .3s cubic-bezier(.25,.01,.25,1) 0s;
+}
+
+.select:hover, .select:focus, .select-group:hover .select {
+  outline: none;
+  border-color: rgb(187, 14, 202);
+}
+
+.select-group:hover .label {
+  color: black;
+}
+
+
+.descripcion {
+  font-size: 12px;
+  margin-bottom: 50px;
+  color: black;
+  width: 100px;
+}
+
+.addressLeft{
+  margin-top: 10px;
+}
+
+/*Checkbox QR*/
+.checkbox-wrapper-10 .tgl {
+  display: none;
+}
+
+.checkbox-wrapper-10 .tgl,
+  .checkbox-wrapper-10 .tgl:after,
+  .checkbox-wrapper-10 .tgl:before,
+  .checkbox-wrapper-10 .tgl *,
+  .checkbox-wrapper-10 .tgl *:after,
+  .checkbox-wrapper-10 .tgl *:before,
+  .checkbox-wrapper-10 .tgl + .tgl-btn {
+  box-sizing: border-box;
+}
+
+.checkbox-wrapper-10 .tgl::-moz-selection,
+  .checkbox-wrapper-10 .tgl:after::-moz-selection,
+  .checkbox-wrapper-10 .tgl:before::-moz-selection,
+  .checkbox-wrapper-10 .tgl *::-moz-selection,
+  .checkbox-wrapper-10 .tgl *:after::-moz-selection,
+  .checkbox-wrapper-10 .tgl *:before::-moz-selection,
+  .checkbox-wrapper-10 .tgl + .tgl-btn::-moz-selection,
+  .checkbox-wrapper-10 .tgl::selection,
+  .checkbox-wrapper-10 .tgl:after::selection,
+  .checkbox-wrapper-10 .tgl:before::selection,
+  .checkbox-wrapper-10 .tgl *::selection,
+  .checkbox-wrapper-10 .tgl *:after::selection,
+  .checkbox-wrapper-10 .tgl *:before::selection,
+  .checkbox-wrapper-10 .tgl + .tgl-btn::selection {
+  background: none;
+}
+
+.checkbox-wrapper-10 .tgl + .tgl-btn {
+  outline: 0;
+  display: block;
+  width: 4em;
+  height: 2em;
+  position: relative;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.checkbox-wrapper-10 .tgl + .tgl-btn:after,
+  .checkbox-wrapper-10 .tgl + .tgl-btn:before {
+  position: relative;
+  display: block;
+  content: "";
+  width: 50%;
+  height: 100%;
+}
+
+.checkbox-wrapper-10 .tgl + .tgl-btn:after {
+  left: 0;
+}
+
+.checkbox-wrapper-10 .tgl + .tgl-btn:before {
+  display: none;
+}
+
+.checkbox-wrapper-10 .tgl:checked + .tgl-btn:after {
+  left: 50%;
+}
+
+.checkbox-wrapper-10 .tgl-flip + .tgl-btn {
+  padding: 2px;
+  transition: all 0.2s ease;
+  font-family: sans-serif;
+  perspective: 100px;
+}
+
+.checkbox-wrapper-10 .tgl-flip + .tgl-btn:after,
+  .checkbox-wrapper-10 .tgl-flip + .tgl-btn:before {
+  display: inline-block;
+  transition: all 0.4s ease;
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  line-height: 2em;
+  font-weight: bold;
+  color: #fff;
+  position: absolute;
+  top: 0;
+  left: 0;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 4px;
+}
+
+.checkbox-wrapper-10 .tgl-flip + .tgl-btn:after {
+  content: attr(data-tg-on);
+  background: rgb(53, 184, 53);
+  transform: rotateY(-180deg);
+}
+
+.checkbox-wrapper-10 .tgl-flip + .tgl-btn:before {
+  background: #FF3A19;
+  content: attr(data-tg-off);
+}
+
+.checkbox-wrapper-10 .tgl-flip + .tgl-btn:active:before {
+  transform: rotateY(-20deg);
+}
+
+.checkbox-wrapper-10 .tgl-flip:checked + .tgl-btn:before {
+  transform: rotateY(180deg);
+}
+
+.checkbox-wrapper-10 .tgl-flip:checked + .tgl-btn:after {
+  transform: rotateY(0);
+  left: 0;
+  background: rgb(53, 184, 53);
+}
+
+.checkbox-wrapper-10 .tgl-flip:checked + .tgl-btn:active:after {
+  transform: rotateY(20deg);
+}
+
+/*Ajustes al QR*/

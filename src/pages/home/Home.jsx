@@ -4,6 +4,12 @@ import "./home.css";
 import { ToastContainer } from "react-toastify";
 import { useJwt } from "../../context/JWTContext";
 import { postSession, postsNoSession } from "../../assets/constants.d";
+import formal from "/lineaFormal.png";
+import casual from "/lineaCasual.png";
+import deportiva from "/lineaDeportiva.png";
+import accesorios from "/lineaAccesorios.png";
+import infantil from "/lineaInfantil.png";
+import temporada from "/lineaTemporada.png";
 
 
 export default function Home() {
@@ -159,7 +165,6 @@ export default function Home() {
         </div>
       </div>
 
-
       <div className="seccion2">
         <div className="div2">
           <div className="contenido2">
@@ -187,6 +192,92 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <section className="lineas">
+        <span className="headerLinea" data-aos="fade-down" data-aos-duration="1000">Nuestras Lineas</span>
+
+        <div className="lineasContainer">
+
+          <div className="linea deportiva" data-aos="fade-up" data-aos-duration="1000">
+            <div className="lineaOverlay">
+              <div className="lineaContenido">
+                <div className="iconoLinea">
+                  <div className="iconoL">
+                    <img src={deportiva}/>
+                  </div>
+                </div>
+                <span className="nombreLinea">Deportiva</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="linea casual" data-aos="fade-down" data-aos-duration="1000">
+            <div className="lineaOverlay">
+              <div className="lineaContenido">
+                <div className="iconoLinea">
+                  <div className="iconoL">
+                    <img src={casual}/>
+                  </div>
+                </div>
+                <span className="nombreLinea">Casual</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="linea formal" data-aos="fade-up" data-aos-duration="1000">
+            <div className="lineaOverlay">
+              <div className="lineaContenido">
+                <div className="iconoLinea">
+                  <div className="iconoL">
+                    <img src={formal}/>
+                  </div>
+                </div>
+                <span className="nombreLinea">Formal</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="linea infantil" data-aos="fade-down" data-aos-duration="1000">
+            <div className="lineaOverlay">
+              <div className="lineaContenido">
+                <div className="iconoLinea">
+                  <div className="iconoL">
+                    <img src={infantil}/>
+                  </div>
+                </div>
+                <span className="nombreLinea">Infantil</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="linea temporada" data-aos="fade-up" data-aos-duration="1000">
+            <div className="lineaOverlay">
+              <div className="lineaContenido">
+                <div className="iconoLinea">
+                  <div className="iconoL">
+                    <img src={temporada}/>
+                  </div>
+                </div>
+                <span className="nombreLinea">Temporada</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="linea accesorios" data-aos="fade-down" data-aos-duration="1000">
+            <div className="lineaOverlay">
+              <div className="lineaContenido">
+                <div className="iconoLinea">
+                  <div className="iconoL">
+                    <img src={accesorios}/>
+                  </div>
+                </div>
+                <span className="nombreLinea">Accesorios</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
       <ToastContainer></ToastContainer>
     </>
   );

@@ -17,6 +17,7 @@ import useIsFirstRender from "../../hooks/useIsMount";
 import { formToCop, imageExtensions, URL_BACK } from "../../assets/constants.d";
 import useFetch from "../../hooks/useFetch";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
+import SelectDash from "../../components/selectDash/SelectDash";
 export default function Venta() {
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
@@ -302,6 +303,7 @@ export default function Venta() {
             {cartData.map((value) => (
               <div key={value.idPedido} className="ficha-producto">
                 <div>
+                  <span>⦿&nbsp;&nbsp;</span>
                   "{value?.catalogo.producto}"{" "}
                   <span style={{ marginLeft: "5px" }}>Talla</span>
                   <span className="talla-producto">{value.Talla.nombre}</span>
@@ -331,68 +333,74 @@ export default function Venta() {
       <Modal customWidth={"800px"} onClose={addressToggle} show={address}>
         <form onSubmit={handleSubmit(handleAddressSubmit)}>
           <h2 className="add-address-title">Agregar dirección 📍</h2>
-          <hr className="separacion" />
           <div className="address-modal">
-            <label>
-              <h3 className="text-label">Tipo de Calle</h3>
-              <div className="select-wrapper">
-                <select
-                  {...register("tipoCalle", { required: true })}
-                  defaultValue={"Carrera"}
-                  className="tipocalle-select"
-                  name=""
-                  id=""
-                >
-                  <option value="Avenida">Avenida</option>
-                  <option value="Calle">Calle</option>
-                  <option value="Carrera">Carrera</option>
-                  <option value="Diagonal">Diagonal</option>
-                  <option value="Circular">Circular</option>
-                  <option value="Circunvalar">Circunvalar</option>
-                  <option value="Transversal">Transversal</option>
-                  <option value="Vía">Vía</option>
-                </select>
-              </div>
-              <Input
-                {...register("calle", {
-                  maxLength: 5,
-                  required: "obligado",
-                  pattern: {
-                    value: /^\d+[a-zA-Z]?$/,
-                    message: "no está bien hecho",
-                  },
-                })}
-                error={errors.calle}
-                placeholder={"Ej. 67A "}
-              ></Input>
-            </label>
+
+            <div className="addressLeft">
             <label className="label-number-address">
-              <h3 className="text-label">Número</h3>
-              <div className="number-address">
-                {" "}
+                <h3 className="text-label">Tipo de Calle</h3>
+                <br />
+                <div className="select-container">
+                  <select
+                    {...register("tipoCalle", { required: true })}
+                    defaultValue={"Carrera"}
+                    className="select"
+                  >
+                    <option value="Avenida">Avenida</option>
+                    <option value="Calle">Calle</option>
+                    <option value="Carrera">Carrera</option>
+                    <option value="Diagonal">Diagonal</option>
+                    <option value="Circular">Circular</option>
+                    <option value="Circunvalar">Circunvalar</option>
+                    <option value="Transversal">Transversal</option>
+                    <option value="Vía">Vía</option>
+                  </select>
+                </div>
+                <br />
                 <Input
-                  {...register("numero1", {
-                    maxLength: 4,
-                    required: true,
-                    pattern: { value: /^#\d+/ },
+                  {...register("calle", {
+                    maxLength: 5,
+                    required: "obligado",
+                    pattern: {
+                      value: /^\d+[a-zA-Z]?$/,
+                      message: "no está bien hecho",
+                    },
                   })}
-                  placeholder={"Ej. #34"}
-                  width={"3rem"}
-                  description={""}
-                  error={errors.numero1}
+                  error={errors.calle}
+                  placeholder={"Ej. 67A "}
                 ></Input>
-                <Input
-                  placeholder={"Ej. -195"}
-                  width={"3rem"}
-                  {...register("numero2", {
-                    maxLength: 4,
-                    required: true,
-                    pattern: { value: /^-\d+/ },
-                  })}
-                  error={errors.numero2}
-                ></Input>
-              </div>
-            </label>
+              </label>
+            </div>
+
+            <div className="addressRight">
+            <label className="label-number-address">
+                <h3 className="text-label">Número</h3>
+                <div className="number-address">
+                  {" "}
+                  <Input
+                    {...register("numero1", {
+                      maxLength: 4,
+                      required: true,
+                      pattern: { value: /^#\d+/ },
+                    })}
+                    placeholder={"Ej. #34"}
+                    width={"3rem"}
+                    description={""}
+                    error={errors.numero1}
+                  ></Input>
+                  <Input
+                    placeholder={"Ej. -195"}
+                    width={"3rem"}
+                    {...register("numero2", {
+                      maxLength: 4,
+                      required: true,
+                      pattern: { value: /^-\d+/ },
+                    })}
+                    error={errors.numero2}
+                  ></Input>
+                </div>
+              </label>
+            </div>
+
           </div>
           <div className="">
             <label className="piso-depto">
@@ -412,6 +420,7 @@ export default function Venta() {
           </button>
         </form>
       </Modal>
+
       <Modal onClose={qrToggle} show={showFullQr}>
         <form
           onSubmit={handleSubmitForm2(handleTransferencia)}
@@ -422,14 +431,23 @@ export default function Venta() {
             alt="qr"
             title="Qr Doña Luz"
           />
+          <br />
           <div className="qrcode-data">
-            <label>
-              <input
-                type="checkbox"
-                {...registerForm2("incluirNombreComprobante")}
-              />
-              <span>¿Cambiar quién envía?</span>
-            </label>
+            <div className="emisor">
+
+              <span>¿Cambiar quien lo envía?</span>
+
+              <div class="checkbox-wrapper-10">
+                <input 
+                  type="checkbox" 
+                  id="cb5" 
+                  class="tgl tgl-flip"
+                  {...registerForm2("incluirNombreComprobante")}
+                />
+                <label for="cb5" data-tg-on="Si" data-tg-off="No" class="tgl-btn"></label>
+              </div>
+            </div>
+
             <Input
               {...registerForm2("nombreComprobante", {
                 required: true,
@@ -437,7 +455,6 @@ export default function Venta() {
               })}
               defaultValue={payload?.nombre}
               readOnly={!isCheckedChangeName}
-              placeholder={"Nombre Comprobante"}
               error={errorsForm2.nombreComprobante}
             />
           </div>

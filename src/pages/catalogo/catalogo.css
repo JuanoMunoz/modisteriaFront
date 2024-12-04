@@ -21,7 +21,7 @@ h1 {
   bottom: 10px;
   right: 125px;
   height: 3px;
-  background-color: rgb(187, 14, 202);
+  background-color: #bb0eca;
   border: 0;
 }
 
@@ -52,22 +52,25 @@ h1 {
 }
 
 .imageDetalle {
-  width: 400px;
-  height: 400px;
+  width: 350px;
+  height: 350px;
   margin-right: 50px;
   background-color: rgba(255, 255, 255, 0.733);
-  mask-image: linear-gradient(black 80%, transparent);
+  border-radius: 10px;
 }
 
 .infoDetalle {
   text-align: start;
-  background-color: rgba(255, 255, 255, 0.733);
   width: 22rem;
 }
 
-.precioDetalle,
-.tituloPrenda {
+.precioDetalle{
   font-size: 25px;
+  font-weight: bold;
+  color: #bb0eca;
+}
+.tituloPrenda{
+  font-size: 35px;
   font-weight: bold;
 }
 
@@ -81,7 +84,6 @@ h1 {
 }
 
 .accionesDetalle {
-  margin-top: 3rem;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -152,7 +154,8 @@ h1 {
 }
 
 .size {
-  font-size: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: bold;
 }
 
 .list-size {
@@ -215,6 +218,9 @@ h1 {
   align-items: center;
   gap: 1rem;
   user-select: none;
+  padding: 10px;
+  background-color: rgba(182, 172, 172, 0.671);
+  border-radius: 10px;
 }
 .btnAccion,
 .btnAccionDetalle {

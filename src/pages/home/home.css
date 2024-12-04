@@ -256,3 +256,123 @@
   border: none;
   display: flex;
 }
+
+/* Lineas */
+.lineas {
+  color: black;
+  margin-top: 70px;
+}
+
+.headerLinea {
+  font-weight: bold;
+  font-size: 2.3rem;
+}
+
+.lineasContainer {
+  margin-top: 50px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.linea {
+  position: relative;
+  height: 300px;
+  width: 400px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 30px;
+}
+
+.linea::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.5s ease-in-out; 
+  z-index: 0;
+}
+
+.linea.deportiva::before {
+  background-image: url('https://i.pinimg.com/1200x/65/b7/60/65b76036d9780fe1da7f26f2758241a4.jpg');
+}
+.linea.casual::before {
+  background-image: url('https://i.pinimg.com/1200x/58/1a/be/581abe8e3f85ec2e3c1b438283f05e87.jpg');
+}
+.linea.formal::before {
+  background-image: url('https://i.pinimg.com/1200x/29/9e/22/299e22d344e4c29d4891e00a676e043c.jpg');
+}
+.linea.accesorios::before {
+  background-image: url('https://i.pinimg.com/1200x/cc/6c/fb/cc6cfb53516dd279f2b9e990a8370784.jpg');
+}
+.linea.infantil::before {
+  background-image: url('https://i.pinimg.com/1200x/13/4a/36/134a367f9ac2c82c82f32e74936f9a1d.jpg');
+}
+.linea.temporada::before {
+  background-image: url('https://i.pinimg.com/1200x/80/d6/64/80d6645447aa7a7f7e6eb7b7c09c0b72.jpg');
+}
+
+.linea:hover::before {
+  transform: scale(1.1);
+}
+
+.lineaOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.473);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.iconoLinea {
+  background-color: #bb0eca;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.iconoL {
+  background-color: white;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s ease-in-out;
+}
+
+.linea:hover .iconoL {
+  background-color: #000;
+}
+
+.linea:hover .iconoL img {
+  filter: invert(100%);
+  transition: 0.3s ease-in-out;
+}
+
+.iconoL img {
+  width: 70px;
+  transition: 0.3s ease-in-out;
+}
+
+.nombreLinea {
+  color: white;
+  font-weight: bold;
+  font-size: 1.4rem;
+  text-align: center;
+}

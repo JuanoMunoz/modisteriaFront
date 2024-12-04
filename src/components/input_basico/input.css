@@ -25,6 +25,7 @@
     color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s,
     background 0.2s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
   padding-right: 30px; /* Espacio para el ícono de ojo */
+  font-family: "Comfortaa", sans-serif
 }
 
 .label {
