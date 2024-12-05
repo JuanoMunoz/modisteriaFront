@@ -55,22 +55,6 @@ export default function Perfil() {
   };
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetchYourAppointments(
-        `${URL_BACK}/citas/getCitaByUserId/${payload?.id}${
-          typeAppointment !== null
-            ? `?estadoId=${typeAppointment}`
-            : "?estadoId=9"
-        }`,
-        "GET",
-        null,
-        { "x-token": token }
-      );
-      setMyAppointments(response.data);
-    };
-    fetchData();
-  }, [typeAppointment]);
-  useEffect(() => {
-    const fetchData = async () => {
       const response = await fetchYourLastSale(
         `${URL_BACK}/ventas/getVentaByUsuarioId/${payload?.id}`,
         "GET",
@@ -231,80 +215,76 @@ export default function Perfil() {
             </div>
             <div className="change-tipo-cita">
               <span>Filtrar cita</span>
-                
+
               <div className="radio-input-wrapper">
+                <label className="labelRadio">
+                  <input
+                    value="9"
+                    name="tipoCita"
+                    id="por-cotizar"
+                    className="radio-input"
+                    type="radio"
+                    defaultChecked
+                    onChange={onChangeTypeAppointment}
+                  />
+                  <div className="radio-design"></div>
+                  <div className="radio-text">Por cotizar</div>
+                </label>
 
-              <label className="labelRadio">
-                <input 
-                  value="9" 
-                  name="tipoCita" 
-                  id="por-cotizar" 
-                  className="radio-input" 
-                  type="radio"
-                  defaultChecked
-                  onChange={onChangeTypeAppointment}
-                />
-                <div className="radio-design"></div>
-                <div className="radio-text">Por cotizar</div>
-              </label>
+                <label className="labelRadio">
+                  <input
+                    value="10"
+                    name="tipoCita"
+                    id="cotizada"
+                    className="radio-input"
+                    type="radio"
+                    onChange={onChangeTypeAppointment}
+                  />
+                  <div className="radio-design"></div>
+                  <div className="radio-text">Cotizada</div>
+                </label>
 
-              <label className="labelRadio">
-                <input 
-                  value="10" 
-                  name="tipoCita" 
-                  id="cotizada" 
-                  className="radio-input" 
-                  type="radio"
-                  onChange={onChangeTypeAppointment}
-                />
-                <div className="radio-design"></div>
-                <div className="radio-text">Cotizada</div>
-              </label>
+                <label className="labelRadio">
+                  <input
+                    value="11"
+                    name="tipoCita"
+                    id="aceptada"
+                    className="radio-input"
+                    type="radio"
+                    onChange={onChangeTypeAppointment}
+                  />
+                  <div className="radio-design"></div>
+                  <div className="radio-text">Aceptada</div>
+                </label>
 
-              <label className="labelRadio">
-                <input 
-                  value="11" 
-                  name="tipoCita" 
-                  id="aceptada" 
-                  className="radio-input" 
-                  type="radio"
-                  onChange={onChangeTypeAppointment}
-                />
-                <div className="radio-design"></div>
-                <div className="radio-text">Aceptada</div>
-              </label>
+                <label className="labelRadio">
+                  <input
+                    value="12"
+                    name="tipoCita"
+                    id="cancelada"
+                    className="radio-input"
+                    type="radio"
+                    onChange={onChangeTypeAppointment}
+                  />
+                  <div className="radio-design"></div>
+                  <div className="radio-text">Cancelada</div>
+                </label>
 
-              <label className="labelRadio">
-                <input 
-                  value="12" 
-                  name="tipoCita" 
-                  id="cancelada" 
-                  className="radio-input" 
-                  type="radio"
-                  onChange={onChangeTypeAppointment}
-                />
-                <div className="radio-design"></div>
-                <div className="radio-text">Cancelada</div>
-              </label>
-
-              <label className="labelRadio">
-                <input 
-                  value="13" 
-                  name="tipoCita" 
-                  id="terminada" 
-                  className="radio-input" 
-                  type="radio"
-                  onChange={onChangeTypeAppointment}
-                />
-                <div className="radio-design"></div>
-                <div className="radio-text">Terminada</div>
-              </label>
+                <label className="labelRadio">
+                  <input
+                    value="13"
+                    name="tipoCita"
+                    id="terminada"
+                    className="radio-input"
+                    type="radio"
+                    onChange={onChangeTypeAppointment}
+                  />
+                  <div className="radio-design"></div>
+                  <div className="radio-text">Terminada</div>
+                </label>
               </div>
             </div>
-            {lastSale && (
-              <div className="ultimaVenta">
-              </div>
-            )}
+            {lastSale && <div className="ultimaVenta"></div>}
           </div>
 
           <div className="info2">

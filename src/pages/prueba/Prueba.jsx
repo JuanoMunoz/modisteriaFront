@@ -75,10 +75,12 @@ export default function Prueba() {
   };
   const handleDialog = (action, title) => {
     setDialogProps({ action, title });
+    setNumberOfInsumos(
+      action === "add" ? [] : selectedEvent?.data?.Insumos || []
+    );
     setReferencia(
       action === "add" ? null : selectedEvent?.data?.referencia || null
     );
-    setNumberOfInsumos(action === "add" ? [] : [] || []);
     reset({
       fecha:
         action === "add"
@@ -202,74 +204,97 @@ export default function Prueba() {
     );
     setNumberOfInsumos((prev) => (!prev ? [1] : [...prev, prev.length + 1]));
   };
+  useEffect(() => {
+    if (dialogProps.action != "edit" && selectedEvent?.data?.estadoId < 10)
+      return;
+    setValue(
+      "insumo",
+      numberOfInsumos.map((insumo) => insumo.id)
+    );
+    setValue(
+      "cantidad_utilizada",
+      numberOfInsumos.map((insumo) => insumo.CitaInsumo.cantidad_utilizada)
+    );
+  }, [dialogProps]);
   const handleSave = async (data) => {
     let response;
     if (dialogProps.action === "cancel") {
       response = await deleteCita(selectedEvent.data.id);
-      if (response.status !== 201 && response.status !== 200)
+      if (response.status !== 201 && response.status !== 200) {
         return toast.error(response.data, {
           autoClose: 2000,
           toastId: "error",
         });
+      }
     } else if (dialogProps.action === "finish") {
       response = await createVenta({ citaId: selectedEvent.data.id });
-      if (response.status !== 201 && response.status !== 200)
+      if (response.status !== 201 && response.status !== 200) {
         return toast.error(response.data, {
           autoClose: 2000,
           toastId: "error",
         });
+      }
     } else {
       if (
         numberOfInsumos.length <= 0 &&
         (dialogProps.action === "add" || dialogProps.action === "estimation")
-      )
+      ) {
         return toast.error("¡Debes añadir mínimo un insumo!", {
           toastId: "errorNoInsumosAdded",
           autoClose: 2000,
         });
+      }
+
       if (
         !referencia &&
         data.imagenes.referencia &&
         dialogProps.action === "add"
-      )
+      ) {
         return toast.error("¡Debes añadir mínimo una imagen!", {
           toastId: "errorNoImageAdded",
           autoClose: 2000,
         });
+      }
       const formDataAddCita = new FormData();
       const tiempoParsed = `${
         parseInt(data.horas) < 10 ? `0${data.horas}` : data.horas
       }:${parseInt(data.minutos) < 10 ? `0${data.minutos}` : data.minutos}:00`;
-      let datosInsumos = [];
-      numberOfInsumos.forEach((_, idx) =>
-        datosInsumos.push({
-          insumo_id: parseInt(data.insumo[idx]),
-          cantidad_utilizada: parseFloat(data.cantidad_utilizada[idx]),
-        })
-      );
+      const datosInsumos = numberOfInsumos.map((_, idx) => ({
+        insumo_id: parseInt(data.insumo[idx]),
+        cantidad_utilizada: parseFloat(data.cantidad_utilizada[idx]),
+      }));
+      console.log(datosInsumos);
+
       if (dialogProps.action !== "estimation") {
         formDataAddCita.append("fecha", data.fecha);
         formDataAddCita.append("objetivo", data.objetivo);
         formDataAddCita.append("usuarioId", data.usuarioId);
-        formDataAddCita.append("estadoId", 11);
         formDataAddCita.append("file", referencia);
       }
+
       formDataAddCita.append("precio", data.precio);
       formDataAddCita.append("tiempo", tiempoParsed);
       formDataAddCita.append("datosInsumos", datosInsumos);
+
       if (dialogProps.action === "add") {
+        formDataAddCita.append("estadoId", 11);
         response = await createCita(formDataAddCita);
+        await createEstimation({
+          citaId: response.data.cita.id,
+          datosInsumos,
+        });
       }
       if (dialogProps.action === "edit") {
         response = await updateCita(selectedEvent.data.id, formDataAddCita);
       }
+
       if (dialogProps.action === "estimation") {
         response = await updateSTP(selectedEvent.data.id, {
           estadoId: 10,
           tiempo: tiempoParsed,
           precio: data.precio,
         });
-        const insumoCita = await createEstimation({
+        await createEstimation({
           citaId: selectedEvent.data.id,
           datosInsumos,
         });
@@ -279,10 +304,12 @@ export default function Prueba() {
     const events = updatedData.data.map((cita) => {
       const fechaInicial = dayjs(`${cita.fecha.slice(0, -1)}`);
       let fechaFinal = fechaInicial;
+
       if (cita.estadoId != 9 && cita.estadoId != 12) {
-        const [horas, minutos, _] = cita.tiempo.split(":").map(Number);
+        const [horas, minutos] = cita.tiempo.split(":").map(Number);
         fechaFinal = fechaInicial.add(horas, "hours").add(minutos, "minutes");
       }
+
       return {
         title: `${cita.usuario.nombre}`,
         start: fechaInicial.toDate(),
@@ -292,6 +319,7 @@ export default function Prueba() {
     });
     setEvents(events);
     toggleState(setOpenModal);
+
     toast.success(
       `¡Cita ${
         dialogProps.action === "add"
@@ -310,6 +338,7 @@ export default function Prueba() {
       }
     );
   };
+
   const components = {
     event: (props) => {
       return <CalendarEvent props={props} />;

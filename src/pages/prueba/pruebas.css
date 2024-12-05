@@ -1,8 +1,8 @@
 .parent-calendar {
   width: 90%;
-  height: 80vh;
+  height: 92vh;
   margin: 0 auto;
-  margin-bottom: 3rem;
+  margin-bottom: 8rem;
 }
 .rbc-day-bg + .rbc-day-bg {
   border-left: none;

@@ -51,7 +51,7 @@ export default function useCitasData() {
 
   const createCita = async (infoUpdate) => {
     const respuesta = await createFetch(
-      `${URL_BACK}/citas/crearCita`,
+      `${URL_BACK}/citas/crearCitaAdmin`,
       "POST",
       infoUpdate,
       { "x-token": token }
