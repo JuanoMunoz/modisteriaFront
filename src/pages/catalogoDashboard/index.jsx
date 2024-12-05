@@ -44,7 +44,7 @@ import DialogTitleCustom from "../../components/dialogTitle/DialogTitleCustom";
 import InputDash from "../../components/inputDashboard/InputDash";
 import SelectDash from "../../components/selectDash/SelectDash";
 import CustomDialogActions from "../../components/customDialogActions/CustomDialogActions";
-import { toggleState } from "../../assets/constants.d";
+import { formToCop, toggleState } from "../../assets/constants.d";
 import CheckboxCustom from "../../components/checkbox/CheckBoxCustom";
 import { TrashColor } from "../../components/svg/Svg";
 import { ViewListOutlined } from "@mui/icons-material";
@@ -139,6 +139,8 @@ const CatalogoDashboard = () => {
     }
     setImagenes((prev) => [...prev, file]);
   };
+  console.log(dialogProps.row);
+
   const handleAddInsumo = () => {
     if (numberOfInsumos.length >= insumos?.length)
       return toast.error("¡Ya has agregado todos tus insumos!", {
@@ -306,6 +308,9 @@ const CatalogoDashboard = () => {
   const handlePreview = (row) => {
     handleDialog("preview", "Vista previa", row);
   };
+  const handleMolde = (row) => {
+    handleDialog("molde", "Molde", row);
+  };
   const handleChangeState = async (e, row) => {
     const newState = e.target.checked ? 1 : 2;
     const respuesta = await updateCatalogos(row.id, { estadoId: newState });
@@ -379,55 +384,67 @@ const CatalogoDashboard = () => {
               <div className="catalagoCard">
                 <div class="catalogo-imagen">
                   <img
-                    src="https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabellaCO/132811350_01/w=800,h=800,fit=pad"
+                    src={dialogProps.row.Imagens[0].url}
                     alt="Imagen del producto"
                   />
-
                   <div className="insumosCatalogo">
-                    <div className="campoInsumo">
-                      <label>Tela Roja:</label>
-                      <span>23 Metros</span>
-                    </div>
-
-                    <div className="campoInsumo">
-                      <label>Tela Blanca:</label>
-                      <span>23 Metros</span>
-                    </div>
-
-                    <div className="campoInsumo">
-                      <label>Tela Gris:</label>
-                      <span>23 Metros</span>
-                    </div>
+                    {dialogProps.row.insumos.length >= 1 &&
+                      dialogProps.row.insumos.map((insumo) => (
+                        <div key={insumo.id} className="campoInsumo">
+                          <label>{insumo.nombre}:</label>
+                          <span>
+                            {insumo.CatalogoInsumos.cantidad_utilizada} Metros
+                          </span>
+                        </div>
+                      ))}
                   </div>
                 </div>
 
                 <div class="catalogo-info">
                   <div class="campo">
                     <label>Nombre:</label>
-                    <span>Vestido Negro</span>
+                    <span>{dialogProps.row.producto}</span>
                   </div>
 
                   <div class="campoObjetivo">
                     <label>Descripcion:</label>
                     <br />
-                    <br />
                     <span className="objetivo-text">
-                      El vestido que es mas negro que el propio deymar
+                      {dialogProps.row.descripcion}
                     </span>
                   </div>
                   <div class="campo">
                     <label>Precio:</label>
-                    <span>5.000</span>
+                    <span>{formToCop(dialogProps.row.precio)}</span>
                   </div>
                   <div class="campo">
                     <label>Categoría:</label>
-                    <span>No sé</span>
+                    <span>
+                      {getCategoriaNombre(dialogProps.row.categoriaId)}
+                    </span>
+                    <span
+                      onClick={() => {
+                        toggleState(setOpenModal);
+                        handleMolde(dialogProps.row);
+                      }}
+                      className="molde"
+                    >
+                      Ver molde
+                    </span>
                   </div>
                   <div class="campo">
                     <label>Linea:</label>
-                    <span>Casual</span>
+                    <span>{dialogProps.row.linea}</span>
                   </div>
                 </div>
+              </div>
+            ) : dialogProps.action === "molde" ? (
+              <div style={{ width: "100%", height: "500px" }}>
+                <iframe
+                  src={dialogProps.row.categoria_prendas.molde}
+                  title="PDF Viewer"
+                  style={{ width: "100%", height: "100%" }}
+                />
               </div>
             ) : (
               <div>
@@ -785,7 +802,10 @@ const CatalogoDashboard = () => {
             <CustomDialogActions
               cancelButton
               customCancelColor={dialogProps.action === "delete" && "inherit"}
-              saveButton={dialogProps.action !== "delete"}
+              saveButton={
+                dialogProps.action !== "delete" &&
+                dialogProps.action !== "molde"
+              }
               deleteButton={dialogProps.action === "delete"}
               handleClose={() => toggleState(setOpenModal)}
             />

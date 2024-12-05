@@ -90,7 +90,7 @@ const Compras = () => {
     numberOfInsumos.forEach((_, idx) => {
       compras.push({
         cantidad: parseFloat(data.cantidad[idx]),
-        valorTotal: parseInt(data.valorTotal[idx]),
+        valor: parseInt(data.valorTotal[idx]),
         insumoId: parseInt(data.insumoId[idx]),
         proveedorId: data.proveedorId,
       });

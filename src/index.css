@@ -22,7 +22,7 @@ body,
 .content {
   width: 100%;
   font-family: "Comfortaa", sans-serif;
-  scrollbar-color: rgb(187, 14, 202) #222;
+  scrollbar-color: rgba(219, 216, 219, 0.438) #222;
   caret-color: rgb(187, 14, 202);
   overflow-y: scroll;
   scrollbar-width: none;

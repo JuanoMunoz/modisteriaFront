@@ -230,59 +230,75 @@ export default function Perfil() {
               </span>
             </div>
             <div className="change-tipo-cita">
-              <span>Tipo cita</span>
-              <div className="options">
-                <label for="por-cotizar" className="option">
-                  <input
-                    type="radio"
-                    defaultChecked
-                    id="por-cotizar"
-                    name="tipoCita"
-                    value="9"
-                    onChange={onChangeTypeAppointment}
-                  />
-                  <span>Por cotizar</span>
-                </label>
-                <label for="cotizada" className="option">
-                  <input
-                    type="radio"
-                    id="cotizada"
-                    name="tipoCita"
-                    value="10"
-                    onChange={onChangeTypeAppointment}
-                  />
-                  <div>Cotizada</div>
-                </label>
-                <label for="aceptada" className="option">
-                  <input
-                    type="radio"
-                    id="aceptada"
-                    name="tipoCita"
-                    value="11"
-                    onChange={onChangeTypeAppointment}
-                  />
-                  <span>Aceptada</span>
-                </label>
-                <label for="cancelada" className="option">
-                  <input
-                    type="radio"
-                    id="cancelada"
-                    name="tipoCita"
-                    value="12"
-                    onChange={onChangeTypeAppointment}
-                  />
-                  <span>Cancelada</span>
-                </label>
-                <label for="terminada" className="option">
-                  <input
-                    type="radio"
-                    id="terminada"
-                    name="tipoCita"
-                    value="13"
-                    onChange={onChangeTypeAppointment}
-                  />
-                  <span>Terminada</span>
-                </label>
+              <span>Filtrar cita</span>
+                
+              <div className="radio-input-wrapper">
+
+              <label className="labelRadio">
+                <input 
+                  value="9" 
+                  name="tipoCita" 
+                  id="por-cotizar" 
+                  className="radio-input" 
+                  type="radio"
+                  defaultChecked
+                  onChange={onChangeTypeAppointment}
+                />
+                <div className="radio-design"></div>
+                <div className="radio-text">Por cotizar</div>
+              </label>
+
+              <label className="labelRadio">
+                <input 
+                  value="10" 
+                  name="tipoCita" 
+                  id="cotizada" 
+                  className="radio-input" 
+                  type="radio"
+                  onChange={onChangeTypeAppointment}
+                />
+                <div className="radio-design"></div>
+                <div className="radio-text">Cotizada</div>
+              </label>
+
+              <label className="labelRadio">
+                <input 
+                  value="11" 
+                  name="tipoCita" 
+                  id="aceptada" 
+                  className="radio-input" 
+                  type="radio"
+                  onChange={onChangeTypeAppointment}
+                />
+                <div className="radio-design"></div>
+                <div className="radio-text">Aceptada</div>
+              </label>
+
+              <label className="labelRadio">
+                <input 
+                  value="12" 
+                  name="tipoCita" 
+                  id="cancelada" 
+                  className="radio-input" 
+                  type="radio"
+                  onChange={onChangeTypeAppointment}
+                />
+                <div className="radio-design"></div>
+                <div className="radio-text">Cancelada</div>
+              </label>
+
+              <label className="labelRadio">
+                <input 
+                  value="13" 
+                  name="tipoCita" 
+                  id="terminada" 
+                  className="radio-input" 
+                  type="radio"
+                  onChange={onChangeTypeAppointment}
+                />
+                <div className="radio-design"></div>
+                <div className="radio-text">Terminada</div>
+              </label>
               </div>
             </div>
             {lastSale && (

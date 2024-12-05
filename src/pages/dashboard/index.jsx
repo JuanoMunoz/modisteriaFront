@@ -244,7 +244,6 @@ const Dashboard = () => {
             height={"70px"}
           >
             <Typography color={colors.grey[100]} variant="h5" fontWeight="600">
-              Ventas recientes
               Productos
             </Typography>
           </Box>
