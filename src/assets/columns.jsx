@@ -339,7 +339,7 @@ export const ColumnsCategoriaInsumos = ({ onEdit, onDelete, changeState }) => [
 ];
 
 export const ColumnsVentas = ({ onConfirm, onOpenDialog }) => [
-  { field: "id", headerName: "ID", flex: 0.1 },
+  // { field: "id", headerName: "ID", flex: 0.1 },
   {
     field: "fecha",
     headerName: "Fecha",

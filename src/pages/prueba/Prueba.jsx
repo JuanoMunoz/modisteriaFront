@@ -212,7 +212,6 @@ export default function Prueba() {
           toastId: "error",
         });
     } else if (dialogProps.action === "finish") {
-      console.log(selectedEvent.data);
       response = await createVenta({ citaId: selectedEvent.data.id });
       if (response.status !== 201 && response.status !== 200)
         return toast.error(response.data, {
@@ -300,7 +299,7 @@ export default function Prueba() {
           : dialogProps.action === "edit"
           ? "editada"
           : dialogProps.action === "finish"
-          ? "terminada"
+          ? "Terminada"
           : dialogProps.action === "estimation"
           ? "cotizada"
           : "cancelada"

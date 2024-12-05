@@ -30,8 +30,6 @@ export default function CitaComponente({ value, typeAppointment, token }) {
   const [nombreComprobante, setNombreComprobante] = useState(payload?.id);
   const [imagen, setImagen] = useState(null);
 
-
-
   const isAnImage = (extension) => {
     return imageExtensions.includes(extension);
   };
@@ -41,7 +39,7 @@ export default function CitaComponente({ value, typeAppointment, token }) {
     watch: watchComprobante,
     formState: { errors: errorsForm2 },
   } = useForm();
-  
+
   const isCheckedChangeName = watchComprobante("incluirNombreComprobante");
 
 
@@ -52,13 +50,15 @@ export default function CitaComponente({ value, typeAppointment, token }) {
     setShowFullQr(!showFullQr);
   };
 
-  const handleCancelarCita = async () => {
+  const handleCancelarCitaCliente = async () => {
     const response = await cancelarCita(
-      `${URL_BACK}/citas/cancelCita/${value.id}`,
+      `${URL_BACK}/citas/cancelarCita/${value.id}`,
       "PUT",
       null,
       { "x-token": token }
     );
+    console.log(response.data)
+    console.log(response.data.message)
     if (response.status === 400) {
       toast.error(`${response.data.message}!`, {
         toastId: "errorDeleteCita",
@@ -68,39 +68,37 @@ export default function CitaComponente({ value, typeAppointment, token }) {
       toast.success(`${response.data.msg} con éxito!`, {
         toastId: "DeleteCita",
         autoClose: 1500,
-        onClose: () => {
-          return navigate("/perfil");
-        },
+        // onClose: ()=>{ return navigate("/perfil")},
       });
     }
   };
 
   const handleTransferencia = async (data) => {
     try {
-      // Actualiza el estado con el comprobante y la imagen
       setNombreComprobante(data.nombreComprobante);
-  
+
       if (!data.file || data.file.length === 0) {
         toast.error("Por favor, adjunta una imagen válida.");
         return;
       }
-  
+
       const file = data.file[0];
       setImagen(file);
-  
-      toast.success("Comprobante añadido con éxito!", { autoClose: 1500 });
-  
-      // Llama a la función de aceptar cita después de completar la transferencia
+
+      toast.success("Comprobante añadido con éxito!", {
+        autoClose: 1500,
+      });
+
       await handleConfirmarCita({ ...data, file: file });
     } catch (error) {
       console.error("Error en handleTransferencia:", error);
       toast.error("Ocurrió un error durante la transferencia.");
     }
   };
-  
+
   const handleConfirmarCita = async (data) => {
     const formData = new FormData();
-  
+
     // Agregar archivo e información adicional al FormData
     if (data.file) {
       formData.append("file", data.file);
@@ -108,14 +106,14 @@ export default function CitaComponente({ value, typeAppointment, token }) {
       toast.error("Por favor, adjunta una imagen válida.");
       return;
     }
-  
+
     if (data.nombreComprobante) {
       formData.append("nombrePersona", data.nombreComprobante);
     } else {
       toast.error("El nombre de la persona es necesario.");
       return;
     }
-  
+
     try {
       const response = await aceptarCita(
         `${URL_BACK}/citas/aceptarCita/${value.id}`,
@@ -125,7 +123,7 @@ export default function CitaComponente({ value, typeAppointment, token }) {
           "x-token": token,
         }
       );
-  
+
       if (response.status === 400) {
         toast.error(`${response.data.message}!`, {
           toastId: "errorConfirmarCita",
@@ -135,7 +133,7 @@ export default function CitaComponente({ value, typeAppointment, token }) {
         toast.success(`${response.data.msg} con éxito!`, {
           toastId: "confirmarCita",
           autoClose: 1500,
-          onClose: () => navigate("/perfil"),
+          // onClose: () => {return navigate("/perfil")},
         });
       }
     } catch (error) {
@@ -146,7 +144,7 @@ export default function CitaComponente({ value, typeAppointment, token }) {
       });
     }
   };
-  
+
 
   return (
     <div key={value.id} className="cartasCitas">
@@ -203,7 +201,7 @@ export default function CitaComponente({ value, typeAppointment, token }) {
             <Cancel color={"rgb(187, 25, 25)"} size={"150px"}></Cancel>
             <br />
             <span>
-              Deseas cancelar la cita del {formatDateSpanish(value.fecha)}?
+              ¿Deseas cancelar la cita del {formatDateSpanish(value.fecha)}?
             </span>
             <button
               className="btnCancelarCita"
@@ -223,7 +221,7 @@ export default function CitaComponente({ value, typeAppointment, token }) {
         <Modal show={showModal3} onClose={toggleModal3}>
           <div className="modalConfirmar">
             <Alert size={"150px"} color={"rgb(187, 25, 25)"}></Alert> <br />
-            <span>Estas seguro de cancelar tu cita con la modista?</span>
+            <span>¿Estás seguro de cancelar tu cita con la modista?</span>
             <br />
             <span>Aún no se ha realizado la cotización</span>
             <div>
@@ -235,7 +233,7 @@ export default function CitaComponente({ value, typeAppointment, token }) {
               >
                 <span>Cancelar</span>
               </button>
-              <button onClick={handleCancelarCita} className="btnCancelarCita">
+              <button onClick={handleCancelarCitaCliente} className="btnCancelarCita">
                 <span>Confirmar</span>
               </button>
             </div>
@@ -246,22 +244,22 @@ export default function CitaComponente({ value, typeAppointment, token }) {
         <Modal show={showModal2} onClose={toggleModal2}>
           <div className="modalConfirmar">
             <Alert size={"150px"} color={"rgb(187, 25, 25)"}></Alert> <br />
-            <span>Información sobre cita</span>
+            <span>Información sobre la cita</span>
             <br />
             <span>Tiempo estimado: {value.tiempo}</span>
             <br />
-            <span>Precio cita: ${value.precio}</span>
+            <span>Precio del producto: ${value.precio}</span>
             <br />
             <button
               className="btnCancelarCita"
               onClick={() => {
                 toggleModal2();
-                qrToggle(); 
+                qrToggle();
               }}
             >
               <span>Confirmar</span>
             </button>
-            <button className="btnCancelarCita" onClick={handleCancelarCita}>
+            <button className="btnCancelarCita" onClick={handleCancelarCitaCliente}>
               <span>Cancelar</span>
             </button>
           </div>
@@ -270,7 +268,7 @@ export default function CitaComponente({ value, typeAppointment, token }) {
 
       {/* Nueva modal para adjuntar la imagen */}
       <Modal customWidth={"400px"} onClose={qrToggle} show={showFullQr}>
-      <form
+        <form
           onSubmit={handleSubmitForm2(handleTransferencia)}
           className="modal-qr"
         >
@@ -286,9 +284,9 @@ export default function CitaComponente({ value, typeAppointment, token }) {
               <span>¿Cambiar quien lo envía?</span>
 
               <div className="checkbox-wrapper-10">
-                <input 
-                  type="checkbox" 
-                  id="cb5" 
+                <input
+                  type="checkbox"
+                  id="cb5"
                   className="tgl tgl-flip"
                   {...registerForm2("incluirNombreComprobante")}
                 />
