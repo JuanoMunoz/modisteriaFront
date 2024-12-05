@@ -46,14 +46,19 @@ export default function CardCompras({ compra }) {
         open={openModal}
         onClose={() => toggleState(setOpenModal)}
       >
-        <DialogTitleCustom>Insumos asociados a la compra</DialogTitleCustom>
+        <DialogTitleCustom>Insumos comprados</DialogTitleCustom>
         <DialogContent>
           {compra.insumos.length > 0 &&
             compra.insumos.map((insumo) => (
-              <div className="cristian">
-                <span>{`${insumo.nombre} ${insumo.CompraInsumos.cantidad} ${
-                  insumo.unidades_de_medida.nombre
-                } por ${formToCop(insumo.CompraInsumos.precio)}`}</span>
+              <div className="compra-card">
+                <div class="campo">
+                  <label>Insumo:</label>
+                  <span>
+                    {`${insumo.nombre} ${insumo.CompraInsumos.cantidad} ${
+                      insumo.unidades_de_medida.nombre
+                    } por ${formToCop(insumo.CompraInsumos.precio)}`}
+                  </span>
+                </div>
               </div>
             ))}
         </DialogContent>
