@@ -238,14 +238,14 @@ export default function Perfil() {
                 <input 
                   value="9" 
                   name="tipoCita" 
-                  id="por-aprobar" 
+                  id="por-cotizar" 
                   className="radio-input" 
                   type="radio"
                   defaultChecked
                   onChange={onChangeTypeAppointment}
                 />
                 <div className="radio-design"></div>
-                <div className="radio-text">Por aprobar</div>
+                <div className="radio-text">Por cotizar</div>
               </label>
 
               <label className="labelRadio">

@@ -348,6 +348,12 @@ export const ColumnsVentas = ({ onConfirm, onOpenDialog }) => [
       format(new Date(params.value), "dd/MM/yyyy HH:mm", { locale: es }),
   },
   {
+    field: "origen",
+    headerName: "Origen",
+    flex: 1,
+    valueGetter: (params) => (params.row.citaId ? "Cita" : "Catálogo"),
+  },
+  {
     field: "estadoId",
     headerName: "Estado",
     flex: 1,

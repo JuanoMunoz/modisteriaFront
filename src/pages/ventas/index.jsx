@@ -3,8 +3,8 @@ import { useForm } from "react-hook-form";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
 import { Dialog, DialogContent, DialogContentText } from "@mui/material";
 import { toast, ToastContainer } from "react-toastify";
-import { format } from "date-fns"; 
-import { es } from "date-fns/locale"; 
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import Header from "../../components/Header/Header";
 import { ColumnsVentas } from "../../assets/columns";
 import ContainerDataGrid from "../../components/containerDatagrid/ContainerDataGrid";
@@ -95,6 +95,8 @@ export default function Ventas() {
     try {
       // Solo enviamos el id de la venta al backend
       const response = await updateVentas(dialogProps.row.id);
+      console.log(dialogProps.row);
+      console.log(response);
       if (response.status !== 200 && response.status !== 201) {
         toast.error("Error al confirmar la venta.");
         return;
@@ -125,7 +127,7 @@ export default function Ventas() {
 
   return (
     <>
-      <Header title="Ventas" icon={ShoppingCartOutlined}/>
+      <Header title="Ventas" icon={ShoppingCartOutlined} />
       <br />
       <ContainerDataGrid>
         {loading ? (
@@ -162,47 +164,47 @@ export default function Ventas() {
               {dialogProps.row?.imagen ? (
                 <img
                   src={dialogProps.row?.imagen}
-                  alt="Imagen de la cita"
+                  alt="Imagen"
                 />
-              ):(
+              ) : (
                 <img
                   alt="Imagen no disponible"
                 />
               )}
             </div>
             <div className="venta-info">
-                <div class="campo">
-                  <label>Fecha:</label>
-                  <span>
-                    {dialogProps.row?.fecha ? format(new Date(dialogProps.row?.fecha), "dd/MM/yyyy HH:mm", { locale: es }) : "Sin fecha"}
-                  </span>
-                </div>
-                <div class="campo">
-                  <label>Estado:</label>
-                  <span>{dialogProps.row?.estadoId === 14 ? "Pagado" : "Pendiente"}</span>
-                </div>
-                <div class="campo">
-                  <label>Valor domicilio:</label>
-                  <span>{dialogProps.row?.valorDomicilio ? new Intl.NumberFormat('es-ES').format(dialogProps.row.valorDomicilio) : "No aplica"}</span>
-                </div>
-                <div class="campo">
-                  <label>Valor Prendas:</label>
-                  <span> {dialogProps.row?.valorPrendas ? new Intl.NumberFormat('es-ES').format(dialogProps.row.valorPrendas) : "No aplica"}</span>
-                </div>
-                <div class="campo">
-                  <label>Valor Final:</label>
-                  <span> {dialogProps.row?.valorFinal ? new Intl.NumberFormat('es-ES').format(dialogProps.row.valorFinal) : "No aplica"}</span>
-                </div>
-                <div class="campo">
-                  <label>Metodo de Pago:</label>
-                  <span> {dialogProps.row?.metodoPago === "transferencia" ? "Transferencia" : dialogProps.row?.metodoPago}</span>
-                </div>
+              <div class="campo">
+                <label>Fecha:</label>
+                <span>
+                  {dialogProps.row?.fecha ? format(new Date(dialogProps.row?.fecha), "dd/MM/yyyy HH:mm", { locale: es }) : "Sin fecha"}
+                </span>
               </div>
+              <div class="campo">
+                <label>Estado:</label>
+                <span>{dialogProps.row?.estadoId === 14 ? "Pagado" : "Pendiente"}</span>
+              </div>
+              <div class="campo">
+                <label>Valor domicilio:</label>
+                <span>{dialogProps.row?.valorDomicilio ? new Intl.NumberFormat('es-ES').format(dialogProps.row.valorDomicilio) : "No aplica"}</span>
+              </div>
+              <div class="campo">
+                <label>Valor Prendas:</label>
+                <span> {dialogProps.row?.valorPrendas ? new Intl.NumberFormat('es-ES').format(dialogProps.row.valorPrendas) : "No aplica"}</span>
+              </div>
+              <div class="campo">
+                <label>Valor Final:</label>
+                <span> {dialogProps.row?.valorFinal ? new Intl.NumberFormat('es-ES').format(dialogProps.row.valorFinal) : "No aplica"}</span>
+              </div>
+              <div class="campo">
+                <label>Metodo de Pago:</label>
+                <span> {dialogProps.row?.metodoPago === "transferencia" ? "Transferencia" : dialogProps.row?.metodoPago}</span>
+              </div>
+            </div>
           </div>
         </DialogContent>
 
         <DialogActions>
-          {dialogProps.row?.estadoId !== 14 && (
+          {dialogProps.row?.estadoId !== 14 && !dialogProps.row?.citaId && (
             <button
               onClick={() => handleSave(dialogProps.row)}  // Confirmar la venta
               style={{
@@ -229,6 +231,7 @@ export default function Ventas() {
             Cerrar
           </button>
         </DialogActions>
+
       </Dialog>
 
 
