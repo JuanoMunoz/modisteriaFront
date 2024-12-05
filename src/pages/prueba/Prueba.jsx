@@ -327,7 +327,7 @@ export default function Prueba() {
           : dialogProps.action === "edit"
           ? "editada"
           : dialogProps.action === "finish"
-          ? "terminada"
+          ? "Terminada"
           : dialogProps.action === "estimation"
           ? "cotizada"
           : "cancelada"

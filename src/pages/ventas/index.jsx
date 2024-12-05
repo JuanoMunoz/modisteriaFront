@@ -15,22 +15,6 @@ import DialogActions from '@mui/material/DialogActions';
 import "./ventasDash.css";
 import {
   ShoppingCartOutlined,
-  ViewListOutlined,
-  AdminPanelSettingsOutlined,
-  LockOutlined,
-  Inventory2Outlined,
-  StyleOutlined,
-  CalendarTodayOutlined,
-  InventoryOutlined,
-  HelpOutlineOutlined,
-  StraightenOutlined,
-  HistoryOutlined,
-  Settings,
-  TableChart,
-  BarChart,
-  PointOfSale,
-  Business,
-  Paid,
 } from "@mui/icons-material";
 export default function Ventas() {
   // Estado para los datos, modal y control de apertura
@@ -69,7 +53,7 @@ export default function Ventas() {
 
     setDialogProps({ action, row, title });
     reset({
-      id: row?.id || "",
+      // id: row?.id || "",
       fecha: row?.fecha
         ? format(new Date(row.fecha), "dd/MM/yyyy HH:mm", { locale: es })
         : "Sin fecha",
@@ -93,7 +77,6 @@ export default function Ventas() {
   // Guardar cambios
   const handleSave = async (formData) => {
     try {
-      // Solo enviamos el id de la venta al backend
       const response = await updateVentas(dialogProps.row.id);
       console.log(dialogProps.row);
       console.log(response);
@@ -102,16 +85,14 @@ export default function Ventas() {
         return;
       }
 
-      // Actualizar los datos localmente
       setData((prevData) =>
         prevData.map((venta) =>
           venta.id === dialogProps.row.id
-            ? { ...venta, estadoId: 14 } // Actualizamos el estado solo localmente
+            ? { ...venta, estadoId: 14 } 
             : venta
         )
       );
 
-      // Cerrar el modal y mostrar mensaje de éxito
       toggleState(setOpenAddModal);
       toast.success(`¡Venta confirmada con éxito!`, {
         autoClose: 1800,
