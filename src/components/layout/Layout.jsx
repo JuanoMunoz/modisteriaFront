@@ -191,7 +191,7 @@ export default function Layout() {
               propietaria es Luz Esther Vidales Hernández,
             </p>
             <p>
-              ¿Estas interesado? <a href="">Ver más...</a>
+              ¿Deseas una prenda? <a href="/cita">Agendar cita</a>
             </p>
           </div>
 
