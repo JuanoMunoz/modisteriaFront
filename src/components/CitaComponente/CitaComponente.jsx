@@ -246,11 +246,11 @@ export default function CitaComponente({ value, typeAppointment, token }) {
         <Modal show={showModal2} onClose={toggleModal2}>
           <div className="modalConfirmar">
             <Alert size={"150px"} color={"rgb(187, 25, 25)"}></Alert> <br />
-            <span>Información sobre cita</span>
+            <span className="infoConfirmar">Información sobre cita</span>
             <br />
-            <span>Tiempo estimado: {value.tiempo}</span>
+            <span className="contenidoConfirmar">Tiempo estimado: {value.tiempo}</span>
             <br />
-            <span>Precio cita: ${value.precio}</span>
+            <span className="contenidoConfirmar">Precio cita: ${value.precio}</span>
             <br />
             <button
               className="btnCancelarCita"
