@@ -613,3 +613,11 @@
 .radio-input:checked~.label-text {
   color: hsl(0, 0%, 40%);
 }
+
+.infoConfirmar{
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+.contenidoConfirmar{
+  font-size: 1.2rem;
+}
