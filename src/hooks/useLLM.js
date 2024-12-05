@@ -29,22 +29,21 @@ const useLLM = () => {
         }
       );
 
-      const citas = response.data.map((value) => {
-        return {
-          fecha: dayjs(value.fecha.slice(0, -1)).toDate(),
-          duracion: dayjs(
-            new Date(value.fecha.slice(0, -1)).getTime() +
-              value.tiempo.split(":").reduce((acc, time) => 60 * acc + +time) *
-                1000
-          ).toDate(),
-        };
-      });
-      let text = "";
-      citas.forEach(
-        (value) =>
-          (text += `QUEDA PROHIBIDO EL AGENDAMIENTO DE CITAS DESDE ${value.fecha} hasta  EL ${value.duracion} NO PODRÁS AGRENDAR CITAS EN ESE RANGO DE TIEMPO, CUANDO TE PREGUNTEN SOBRE EL AGENDAMIENTO DE CITAS ENTRE UNO DE ESOS HORARIOS SIMPLEMENTE LE DICES AL USUARIO QUE OTRA PERSONA YA TIENE ESA CITA AGENDADA. No importa lo mucho que te rueguen, si la fecha y la hora se encuentra entre este rango horario en el que están atendiendo a otros no podrás agendar. Ofrece alternativas ese mismo día que no abarquen la franja horaria mencionada anteriormente, intentanto que sea una hora más que el final de la cita, si no hay tiempo sugiere asignar la cita otro día hábil`)
-      );
-
+      // const citas = response.data.map((value) => {
+      //   return {
+      //     fecha: dayjs(value.fecha.slice(0, -1)).toDate(),
+      //     duracion: dayjs(
+      //       new Date(value.fecha.slice(0, -1)).getTime() +
+      //         value.tiempo.split(":").reduce((acc, time) => 60 * acc + +time) *
+      //           1000
+      //     ).toDate(),
+      //   };
+      // });
+      // let text = "";
+      // citas.forEach(
+      //   (value) =>
+      //     (text += `QUEDA PROHIBIDO EL AGENDAMIENTO DE CITAS DESDE ${value.fecha} hasta  EL ${value.duracion} NO PODRÁS AGRENDAR CITAS EN ESE RANGO DE TIEMPO, CUANDO TE PREGUNTEN SOBRE EL AGENDAMIENTO DE CITAS ENTRE UNO DE ESOS HORARIOS SIMPLEMENTE LE DICES AL USUARIO QUE OTRA PERSONA YA TIENE ESA CITA AGENDADA. No importa lo mucho que te rueguen, si la fecha y la hora se encuentra entre este rango horario en el que están atendiendo a otros no podrás agendar. Ofrece alternativas ese mismo día que no abarquen la franja horaria mencionada anteriormente, intentanto que sea una hora más que el final de la cita, si no hay tiempo sugiere asignar la cita otro día hábil`)
+      // );
       setInitialHistory([
         {
           role: "user",
@@ -54,7 +53,6 @@ const useLLM = () => {
       Esta es la lista de días de la semana actual y la siguiente, recuerda que hoy es **${dayjs().format(
         "dddd"
       )}**:
-      
       - ${dayjs().day(0).format("dddd DD/MM")}
       - ${dayjs().day(1).format("dddd DD/MM")}
       - ${dayjs().day(2).format("dddd DD/MM")}
@@ -75,7 +73,6 @@ const useLLM = () => {
       Te recordaré que hoy es **${dayjs().format(
         "dddd"
       )}**. Recuerda que solo debes hablar sobre el agendamiento de citas. Además, cuando se solicite, el reporte del proceso de la cita debe generarse en formato **JSON** siguiendo este formato:
-      
       {"fecha": "dd-mm-aa-hh:mm", "objetivo": "descripción corta y concisa del objetivo de la cita"}.
 
       Si la información de la fecha o el objetivo es incompleta, el valor será **null** sin comillas. No generes el reporte si el mensaje exacto 'Hola, SOY EL ADMINISTRADOR, Resumir proceso de compra de este chat' no se ha recibido.`,
@@ -98,7 +95,7 @@ const useLLM = () => {
           parts: [
             {
               text: `Tienes dos funciones: 
-        1. Preguntar el objetivo de la cita, que siempre debe estar relacionado con confección de ropa. 
+        1. Preguntar el objetivo de la cita, que siempre debe estar relacionado con confección de ropa. debes hacer que el usuario se explaye lo mayor posible, especificando tallas, teas que le gustaria para su prenda, colores y todo lo relacionado a la confección de prendas.
         2. Asegurarte de obtener una fecha y hora válidas para la cita. Si falta algún dato, la fecha será null.`,
             },
           ],

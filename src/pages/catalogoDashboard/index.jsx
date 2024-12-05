@@ -191,6 +191,7 @@ const CatalogoDashboard = () => {
         producto,
         precio,
         linea,
+        peso,
         descripcion,
         categoriaId,
       } = data;
@@ -208,6 +209,7 @@ const CatalogoDashboard = () => {
       formDataAddCatalog.append("producto", producto);
       formDataAddCatalog.append("precio", precio);
       formDataAddCatalog.append("descripcion", descripcion);
+      formDataAddCatalog.append("peso", parseFloat(peso));
       formDataAddCatalog.append("estadoId", 1);
       formDataAddCatalog.append("categoriaId", categoriaId);
       formDataAddCatalog.append("tallas", tallasParsed);
@@ -266,6 +268,7 @@ const CatalogoDashboard = () => {
       precio: row?.precio || "",
       categoriaId: row?.categoriaId || categorias[0]?.id,
       linea: row?.linea || "básica",
+      peso: row?.peso || "",
       tallas: row?.tallas || [],
     });
     toggleState(setOpenModal);
@@ -517,7 +520,29 @@ const CatalogoDashboard = () => {
                         errorsAddCatalogo.precio.message
                       }
                     />
-
+                    <InputDash
+                      {...registerCatalogo("peso", {
+                        required:
+                          "El producto del catálogo necesita un peso en Kg.",
+                        pattern: {
+                          value: /^\d+(.\d+)?$/,
+                          message: "Solo se permiten números",
+                        },
+                        min: {
+                          value: 0,
+                          message: "¡La cantidad mínima es de 0!",
+                        },
+                        maxLength: {
+                          message: "¡Máximo permitido 100 kg!",
+                          value: 100,
+                        },
+                      })}
+                      description={
+                        errorsAddCatalogo.peso && errorsAddCatalogo.peso.message
+                      }
+                      type="text"
+                      label="Peso (Kg)"
+                    />
                     <SelectDash
                       {...registerCatalogo("categoriaId", {
                         required: "Debes escoger una categoría!",

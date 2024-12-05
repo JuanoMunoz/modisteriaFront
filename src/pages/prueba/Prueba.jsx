@@ -259,11 +259,11 @@ export default function Prueba() {
       const tiempoParsed = `${
         parseInt(data.horas) < 10 ? `0${data.horas}` : data.horas
       }:${parseInt(data.minutos) < 10 ? `0${data.minutos}` : data.minutos}:00`;
-
       const datosInsumos = numberOfInsumos.map((_, idx) => ({
         insumo_id: parseInt(data.insumo[idx]),
         cantidad_utilizada: parseFloat(data.cantidad_utilizada[idx]),
       }));
+      console.log(datosInsumos);
 
       if (dialogProps.action !== "estimation") {
         formDataAddCita.append("fecha", data.fecha);
@@ -279,6 +279,10 @@ export default function Prueba() {
       if (dialogProps.action === "add") {
         formDataAddCita.append("estadoId", 11);
         response = await createCita(formDataAddCita);
+        await createEstimation({
+          citaId: response.data.cita.id,
+          datosInsumos,
+        });
       }
       if (dialogProps.action === "edit") {
         response = await updateCita(selectedEvent.data.id, formDataAddCita);

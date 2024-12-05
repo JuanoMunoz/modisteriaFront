@@ -11,7 +11,6 @@ import accesorios from "/lineaAccesorios.png";
 import infantil from "/lineaInfantil.png";
 import temporada from "/lineaTemporada.png";
 
-
 export default function Home() {
   const [postIndex, setPostIndex] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -141,26 +140,30 @@ export default function Home() {
       <div className="seccion1">
         <div className="div1">
           <div className="contenido1">
-            <h2 data-aos="fade-left">Redescubre tu estilo con prendas a medida</h2>
-            <hr className="separacion1"/>
-              <p
-                data-aos="fade-right"
-                data-aos-offset="300"
-                data-aos-easing="ease-in-sine"
-              >
-              ¡Renueva tu estilo y destaca con prendas hechas a tu medida! Agenda una cita con nuestra modista experta y transforma tus ideas en realidad.
-              </p>
+            <h2 data-aos="fade-left">
+              Redescubre tu estilo con prendas a medida
+            </h2>
+            <hr className="separacion1" />
+            <p
+              data-aos="fade-right"
+              data-aos-offset="300"
+              data-aos-easing="ease-in-sine"
+            >
+              ¡Renueva tu estilo y destaca con prendas hechas a tu medida!
+              Agenda una cita con nuestra modista experta y transforma tus ideas
+              en realidad.
+            </p>
 
-              <a href="cita">
-                <button 
-                  className="btn-registro"
-                  data-aos="fade-up"
-                  data-aos-anchor-placement="top-bottom"
-                  data-aos-delay="500"
-                >
-                  <span>Agendar</span>
-                </button>
-              </a>
+            <a href="cita">
+              <button
+                className="btn-registro"
+                data-aos="fade-up"
+                data-aos-anchor-placement="top-bottom"
+                data-aos-delay="500"
+              >
+                <span>Agendar</span>
+              </button>
+            </a>
           </div>
         </div>
       </div>
@@ -175,35 +178,41 @@ export default function Home() {
             >
               Nuestro catálogo de ropa
             </h2>
-            <hr className="separacion2"/>
-              <p
-                data-aos="fade-up"
-              >
-                ¡Descubre el estilo perfecto para cada momento! Explora nuestro catálogo de ropa y encuentra desde básicos versátiles hasta piezas únicas que reflejan tu personalidad.
-              </p>
-              <a href="cita">
-                <button 
-                  className="btn-registro"
-                  data-aos="fade-left"
-                >
-                  <span>Catálgo</span>
-                </button>
-              </a>
+            <hr className="separacion2" />
+            <p data-aos="fade-up">
+              ¡Descubre el estilo perfecto para cada momento! Explora nuestro
+              catálogo de ropa y encuentra desde básicos versátiles hasta piezas
+              únicas que reflejan tu personalidad.
+            </p>
+            <a href="cita">
+              <button className="btn-registro" data-aos="fade-left">
+                <span>Catálogo</span>
+              </button>
+            </a>
           </div>
         </div>
       </div>
 
       <section className="lineas">
-        <span className="headerLinea" data-aos="fade-down" data-aos-duration="1000">Nuestras Lineas</span>
+        <span
+          className="headerLinea"
+          data-aos="fade-down"
+          data-aos-duration="1000"
+        >
+          Nuestras Lineas
+        </span>
 
         <div className="lineasContainer">
-
-          <div className="linea deportiva" data-aos="fade-up" data-aos-duration="1000">
+          <div
+            className="linea deportiva"
+            data-aos="fade-up"
+            data-aos-duration="1000"
+          >
             <div className="lineaOverlay">
               <div className="lineaContenido">
                 <div className="iconoLinea">
                   <div className="iconoL">
-                    <img src={deportiva}/>
+                    <img src={deportiva} />
                   </div>
                 </div>
                 <span className="nombreLinea">Deportiva</span>
@@ -211,12 +220,16 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="linea casual" data-aos="fade-down" data-aos-duration="1000">
+          <div
+            className="linea casual"
+            data-aos="fade-down"
+            data-aos-duration="1000"
+          >
             <div className="lineaOverlay">
               <div className="lineaContenido">
                 <div className="iconoLinea">
                   <div className="iconoL">
-                    <img src={casual}/>
+                    <img src={casual} />
                   </div>
                 </div>
                 <span className="nombreLinea">Casual</span>
@@ -224,12 +237,16 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="linea formal" data-aos="fade-up" data-aos-duration="1000">
+          <div
+            className="linea formal"
+            data-aos="fade-up"
+            data-aos-duration="1000"
+          >
             <div className="lineaOverlay">
               <div className="lineaContenido">
                 <div className="iconoLinea">
                   <div className="iconoL">
-                    <img src={formal}/>
+                    <img src={formal} />
                   </div>
                 </div>
                 <span className="nombreLinea">Formal</span>
@@ -237,12 +254,16 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="linea infantil" data-aos="fade-down" data-aos-duration="1000">
+          <div
+            className="linea infantil"
+            data-aos="fade-down"
+            data-aos-duration="1000"
+          >
             <div className="lineaOverlay">
               <div className="lineaContenido">
                 <div className="iconoLinea">
                   <div className="iconoL">
-                    <img src={infantil}/>
+                    <img src={infantil} />
                   </div>
                 </div>
                 <span className="nombreLinea">Infantil</span>
@@ -250,12 +271,16 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="linea temporada" data-aos="fade-up" data-aos-duration="1000">
+          <div
+            className="linea temporada"
+            data-aos="fade-up"
+            data-aos-duration="1000"
+          >
             <div className="lineaOverlay">
               <div className="lineaContenido">
                 <div className="iconoLinea">
                   <div className="iconoL">
-                    <img src={temporada}/>
+                    <img src={temporada} />
                   </div>
                 </div>
                 <span className="nombreLinea">Temporada</span>
@@ -263,19 +288,22 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="linea accesorios" data-aos="fade-down" data-aos-duration="1000">
+          <div
+            className="linea accesorios"
+            data-aos="fade-down"
+            data-aos-duration="1000"
+          >
             <div className="lineaOverlay">
               <div className="lineaContenido">
                 <div className="iconoLinea">
                   <div className="iconoL">
-                    <img src={accesorios}/>
+                    <img src={accesorios} />
                   </div>
                 </div>
                 <span className="nombreLinea">Accesorios</span>
               </div>
             </div>
           </div>
-
         </div>
       </section>
       <ToastContainer></ToastContainer>
