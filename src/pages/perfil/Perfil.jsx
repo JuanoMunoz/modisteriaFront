@@ -232,16 +232,16 @@ export default function Perfil() {
             <div className="change-tipo-cita">
               <span>Tipo cita</span>
               <div className="options">
-                <label for="por-aprobar" className="option">
+                <label for="por-cotizar" className="option">
                   <input
                     type="radio"
                     defaultChecked
-                    id="por-aprobar"
+                    id="por-cotizar"
                     name="tipoCita"
                     value="9"
                     onChange={onChangeTypeAppointment}
                   />
-                  <span>Por aprobar</span>
+                  <span>Por cotizar</span>
                 </label>
                 <label for="cotizada" className="option">
                   <input

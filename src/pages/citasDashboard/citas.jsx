@@ -286,7 +286,7 @@ const CitasDashboard = () => {
       renderCell: ({ row }) => {
         const estadoText =
           {
-            9: "Por aprobar",
+            9: "Por cotizar",
             10: "Cotizada",
             11: "Aceptada",
             12: "Cancelada",
@@ -441,7 +441,7 @@ const CitasDashboard = () => {
                     native: true,
                   }}
                 >
-                  <option value="9">Por aprobar</option>
+                  <option value="9">Por cotizar</option>
                   <option value="10">Cotizada</option>
                   <option value="11">Aceptada</option>
                   <option value="12">Cancelada</option>
@@ -508,7 +508,7 @@ const CitasDashboard = () => {
                     native: true,
                   }}
                 >
-                  <option value="9">Por aprobar</option>
+                  <option value="9">Por cotizar</option>
                 </TextField>
               </>
             )}

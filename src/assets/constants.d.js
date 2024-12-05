@@ -23,7 +23,7 @@ export const messagesCalendar = {
 };
 export const estadoCitasColores = [
   {
-    nombre: "Por aprobar",
+    nombre: "Por cotizar",
     color: "#F4D03F",
   },
   {
