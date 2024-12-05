@@ -110,6 +110,17 @@
 .proveedor span {
   margin-left: 0.5rem;
 }
+.insumos span {
+  color: #e35ad7;
+  text-decoration: underline;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.insumos span:hover {
+  color: #8d3585;
+  scale: 1.09;
+}
 
 .icono-body {
   color: rgb(187, 14, 202);
