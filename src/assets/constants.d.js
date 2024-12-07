@@ -43,7 +43,29 @@ export const estadoCitasColores = [
     color: "#E74C3C",
   },
 ];
-
+export const estadosVenta = [
+  {
+    id: 14,
+    nombre: "Pagado",
+    color: "#27AE60",
+    descripcion:
+      "La venta ha finalizado con éxito, el servicio fue entregado y la modista ha generado un ingreso económico.",
+  },
+  {
+    id: 3,
+    nombre: "Pendiente",
+    color: "#E67E22",
+    descripcion:
+      "No ha sido comprabada la veracidad del pago, el actual administrador puede confirmar el ingreso o cancelar la venta siempre que se justifique.",
+  },
+  {
+    id: 18,
+    nombre: "Cancelada",
+    color: "#E74C3C",
+    descripcion:
+      "La venta ha finalizado por un motivo de peso, el servicio NO fue entregado y la modista no verá reflejado un ingreso económico.",
+  },
+];
 export const postSession = [
   {
     title: "Bienvenido a Modistería Doña Luz. ¡Agenda una cita con nosotros!",

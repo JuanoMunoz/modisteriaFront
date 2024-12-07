@@ -68,7 +68,7 @@ export default function CitaComponente({ value, typeAppointment, token }) {
       toast.success(`${response.data.msg} con éxito!`, {
         toastId: "DeleteCita",
         autoClose: 1500,
-        // onClose: ()=>{ return navigate("/perfil")},
+        onClose: () => toggleModal2(),
       });
     }
   };
@@ -134,7 +134,7 @@ export default function CitaComponente({ value, typeAppointment, token }) {
         toast.success(`${response.data.msg} con éxito!`, {
           toastId: "confirmarCita",
           autoClose: 1500,
-          // onClose: () => {return navigate("/perfil")},
+          onClose: () => qrToggle(),
         });
       }
     } catch (error) {

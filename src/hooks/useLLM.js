@@ -134,7 +134,7 @@ const useLLM = () => {
           role: "user",
           parts: [
             {
-              text: `Vas a tratar con ${payload?.nombre}. Al finalizar la cita, recuérdale que recibirá un correo en ${payload?.email} cuando la modista acepte la cita.`,
+              text: `Vas a tratar con ${payload?.nombre}. Al finalizar la cita, recuérdale que recibirá un correo en ${payload?.email} cuando la modista acepte la cita. de ahora en más solo responde con texto plano, cero negrita italica, etc. puedes usar emojis. intenta resumir un poco tus respuestas y recuerda que el ${payload?.nombre} es colombiano.`,
             },
           ],
         },
