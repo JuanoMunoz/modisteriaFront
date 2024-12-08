@@ -43,7 +43,7 @@ export default function Ventas() {
   const [openAddModal, setOpenAddModal] = useState(false);
 
   // Custom hook para manejar datos de ventas
-  const { fetchAllVentas, updateVentas, initialFetchAllVentas, loading } =
+  const { fetchAllVentas, updateVentas, cancelarVenta, initialFetchAllVentas, loading } =
     useVentasData();
 
   // Validación de formularios
@@ -81,6 +81,7 @@ export default function Ventas() {
       metodoPago: row?.metodoPago || "Transferencia",
       citaId: row?.citaId || "Sin cita",
       imagen: row?.imagen || "No hay imagen",
+      motivio: row?.motivo || "Sin motivo"
     });
     toggleState(setOpenAddModal);
   };
@@ -88,6 +89,10 @@ export default function Ventas() {
   // Confirmar edición de una venta
   const handleConfirm = (row) => {
     handleDialog("edit", "Confirmar venta", row);
+  };
+
+  const handleCancel = (row) => {
+    handleDialog("edit", "Cancelar venta", row);
   };
 
   // Guardar cambios
@@ -121,9 +126,39 @@ export default function Ventas() {
       toast.error(`Error en la operación: ${error.message}`);
     }
   };
+  const handleSaveCancel = async (formData) => {
+    try {
+      // Solo enviamos el id y el motivo de la cancelacion de venta al backend
+      const response = await cancelarVenta(dialogProps.row.id, { motivo: dialogProps.row.motivo });
+      console.log(dialogProps.row);
+      console.log(response);
+      if (response.status !== 200 && response.status !== 201) {
+        toast.error("Error al cancelar la venta.");
+        return;
+      }
+
+      // Actualizar los datos localmente
+      setData((prevData) =>
+        prevData.map((venta) =>
+          venta.id === dialogProps.row.id
+            ? { ...venta, estadoId: 12 } // Actualizamos el estado solo localmente
+            : venta
+        )
+      );
+
+      // Cerrar el modal y mostrar mensaje de éxito
+      toggleState(setOpenAddModal);
+      toast.success(`¡Venta confirmada con éxito!`, {
+        autoClose: 1800,
+        toastId: "crudAction",
+      });
+    } catch (error) {
+      toast.error(`Error en la operación: ${error.message}`);
+    }
+  };
 
   // Columnas de la tabla
-  const columns = ColumnsVentas({ onConfirm: handleConfirm, onOpenDialog: handleDialog });
+  const columns = ColumnsVentas({ onConfirm: handleConfirm, onCancel: handleCancel, onOpenDialog: handleDialog });
 
   return (
     <>
@@ -204,19 +239,33 @@ export default function Ventas() {
         </DialogContent>
 
         <DialogActions>
-          {dialogProps.row?.estadoId !== 14 && !dialogProps.row?.citaId && (
-            <button
-              onClick={() => handleSave(dialogProps.row)}  // Confirmar la venta
-              style={{
-                backgroundColor: "#7C0D84",
-                color: "white",
-                border: "none",
-                padding: "5px 10px",
-                cursor: "pointer",
-              }}
-            >
-              Confirmar Venta
-            </button>
+          {dialogProps.row?.estadoId == 3 && !dialogProps.row?.citaId && (
+            <>
+              <button
+                onClick={() => handleSave(dialogProps.row)}
+                style={{
+                  backgroundColor: "#7C0D84",
+                  color: "white",
+                  border: "none",
+                  padding: "5px 10px",
+                  cursor: "pointer",
+                }}
+              >
+                Confirmar Venta
+              </button>
+              <button
+                onClick={() => handleSaveCancel(dialogProps.row)}
+                style={{
+                  backgroundColor: "#7C0D84",
+                  color: "white",
+                  border: "none",
+                  padding: "5px 10px",
+                  cursor: "pointer",
+                }}
+              >
+                Cancelar Venta
+              </button>
+            </>
           )}
           <button
             onClick={() => toggleState(setOpenAddModal)}

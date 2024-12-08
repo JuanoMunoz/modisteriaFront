@@ -338,7 +338,7 @@ export const ColumnsCategoriaInsumos = ({ onEdit, onDelete, changeState }) => [
   },
 ];
 
-export const ColumnsVentas = ({ onConfirm, onOpenDialog }) => [
+export const ColumnsVentas = ({ onConfirm, onCancel, onOpenDialog }) => [
   { field: "id", headerName: "ID", flex: 0.1 },
   {
     field: "fecha",
@@ -361,6 +361,7 @@ export const ColumnsVentas = ({ onConfirm, onOpenDialog }) => [
       const estados = {
         14: "Pagado",
         3: "Pendiente",
+        12: "Cancelado"
       };
       return estados[params.value] || "Desconocido";
     },

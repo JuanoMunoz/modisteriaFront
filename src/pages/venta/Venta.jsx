@@ -28,7 +28,7 @@ export default function Venta() {
   const navigate = useNavigate();
   const [address, setAddress] = useState(false);
   const [lugarEntrega, setLugarEntrega] = useState("");
-  const [imagen, setImagen] = useState(null);
+  const [file, setImagen] = useState(null);
   const [nombreComprobante, setNombreComprobante] = useState(payload?.id);
   const [loading, setLoading] = useState(false);
   const { userData, setUserData } = useActiveUserInfo(payload?.id, token);
@@ -107,26 +107,26 @@ export default function Venta() {
   useEffect(() => {
     if (isFirstRender) return;
     if (!errorsForm2) return;
-    if (errorsForm2.imagen?.type === "required") {
+    if (errorsForm2.file?.type === "required") {
       toast.error("Ingresa la imagen con la transferencia!", {
         toastId: "transferenciaImagen",
         autoClose: 600,
       });
     }
-    if (errorsForm2.imagen?.type === "validate") {
+    if (errorsForm2.file?.type === "validate") {
       toast.error("Solo se permiten imágenes!", {
         toastId: "transferenciaImagenError",
         autoClose: 600,
       });
     }
-  }, [errorsForm2.imagen]);
+  }, [errorsForm2.file]);
 
   const isAnImage = (extension) => {
     return imageExtensions.includes(extension);
   };
   const handleTransferencia = async (data) => {
     setNombreComprobante(data.nombreComprobante);
-    setImagen(data.imagen[0]);
+    setImagen(data.file[0]);
     qrToggle();
     toast.success("Comprobante añadido con éxito!", { autoClose: 1500 });
   };
@@ -144,7 +144,7 @@ export default function Venta() {
     setElegirPago(true);
   };
   const handleAddCotizacion = async () => {
-    if (!imagen) {
+    if (!file) {
       qrToggle();
       return;
     }
@@ -156,7 +156,7 @@ export default function Venta() {
       : formDataAdd.append("valorDomicilio", 0);
     formDataAdd.append("valorPrendas", subtotal);
     formDataAdd.append("pedidoId", ids);
-    formDataAdd.append("file", imagen);
+    formDataAdd.append("file", file);
 
     const response = await triggerFetch(
       `${URL_BACK}/ventas/createVenta`,
@@ -164,7 +164,6 @@ export default function Venta() {
       formDataAdd,
       {
         "x-token": token,
-        "Content-Type": "multipart/form-data",
       }
     );
     if (response.status === 201)
@@ -437,14 +436,14 @@ export default function Venta() {
 
               <span>¿Cambiar quien lo envía?</span>
 
-              <div class="checkbox-wrapper-10">
+              <div className="checkbox-wrapper-10">
                 <input 
                   type="checkbox" 
                   id="cb5" 
-                  class="tgl tgl-flip"
+                  className="tgl tgl-flip"
                   {...registerForm2("incluirNombreComprobante")}
                 />
-                <label for="cb5" data-tg-on="Si" data-tg-off="No" class="tgl-btn"></label>
+                <label htmlFor="cb5" data-tg-on="Si" data-tg-off="No" className="tgl-btn"></label>
               </div>
             </div>
 
@@ -461,11 +460,11 @@ export default function Venta() {
           <div className="actions-qr">
             <label className="subir-comprobante">
               <input
-                {...registerForm2("imagen", {
+                {...registerForm2("file", {
                   required: true,
                   validate: () => {
                     return isAnImage(
-                      watchComprobante("imagen")[0].name.split(".")[1]
+                      watchComprobante("file")[0].name.split(".")[1]
                     );
                   },
                 })}
