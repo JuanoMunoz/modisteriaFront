@@ -1,13 +1,14 @@
 import { Button, Switch, alpha, Box } from "@mui/material";
-import { Edit, TrashColor, Eye  } from "../components/svg/Svg";
+import { Edit, TrashColor, Eye, Check, Cancel } from "../components/svg/Svg";
 import { useTheme } from "@mui/material";
 import { tokens } from "../theme";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { formToCop } from "./constants.d";
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import { estadosVenta, formToCop } from "./constants.d";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import dayjs from "dayjs";
 
-function Actions({ colors, row, onEdit, onDelete, eye,  onPreview }) {
+function Actions({ colors, row, onEdit, onDelete, eye, onPreview }) {
   return (
     <div>
       {eye && (
@@ -95,7 +96,12 @@ export const ColumnsUnidadesDeMedida = ({ onEdit, onDelete }) => [
   },
 ];
 
-export const ColumnsCategoriaPrendas = ({ onEdit, onDelete, onDownload, changeState }) => [
+export const ColumnsCategoriaPrendas = ({
+  onEdit,
+  onDelete,
+  onDownload,
+  changeState,
+}) => [
   { field: "nombre", headerName: "Nombre", flex: 1 },
   {
     field: "descripcion",
@@ -146,7 +152,6 @@ export const ColumnsCategoriaPrendas = ({ onEdit, onDelete, onDownload, changeSt
     },
   },
 ];
-
 
 export const ColumnsInsumos = ({
   onEdit,
@@ -338,14 +343,17 @@ export const ColumnsCategoriaInsumos = ({ onEdit, onDelete, changeState }) => [
   },
 ];
 
-export const ColumnsVentas = ({ onConfirm, onCancel, onOpenDialog }) => [
-  { field: "id", headerName: "ID", flex: 0.1 },
+export const ColumnsVentas = ({
+  handleCancel,
+  handleConfirm, onCancel,
+  handleDetails,
+}) => [
   {
     field: "fecha",
     headerName: "Fecha",
-    flex: 1,
+    flex: 2,
     renderCell: (params) =>
-      format(new Date(params.value), "dd/MM/yyyy HH:mm", { locale: es }),
+      dayjs(params.value).format("DD [de] MMMM [del] YYYY [a las] HH:mm A"),
   },
   {
     field: "origen",
@@ -354,16 +362,34 @@ export const ColumnsVentas = ({ onConfirm, onCancel, onOpenDialog }) => [
     valueGetter: (params) => (params.row.citaId ? "Cita" : "Catálogo"),
   },
   {
+    field: "id",
+    headerName: "Detalles",
+    flex: 0.5,
+    renderCell: ({ row }) => {
+      const theme = useTheme();
+      const colors = tokens(theme.palette.mode);
+      return (
+        <Button
+          onClick={() => {
+            handleDetails(row);
+          }}
+        >
+          <Eye size={20} color={colors.grey[100]}></Eye>
+        </Button>
+      );
+    },
+  },
+  {
     field: "estadoId",
     headerName: "Estado",
     flex: 1,
     renderCell: (params) => {
-      const estados = {
-        14: "Pagado",
-        3: "Pendiente",
-        12: "Cancelado"
-      };
-      return estados[params.value] || "Desconocido";
+      const estado = estadosVenta.find((estado) => estado.id === params.value);
+      return (
+        <h3 style={{ color: estado.color }}>{estado.nombre}</h3> || (
+          <h4>Desconocido</h4>
+        )
+      );
     },
   },
   {
@@ -371,24 +397,27 @@ export const ColumnsVentas = ({ onConfirm, onCancel, onOpenDialog }) => [
     headerName: "Acciones",
     flex: 1,
     renderCell: ({ row }) => {
-      return (
-        <>
-          <button
-            onClick={() =>
-              onOpenDialog("verDetalles", "Detalles de la Venta", row)
-            } // Abre el modal
-            style={{
-              backgroundColor: "#7C0D84",
-              color: "white",
-              border: "none",
-              padding: "5px 10px",
-              cursor: "pointer",
-              marginRight: "10px",
+      return row.estadoId === 3 ? (
+        <div>
+          <Button
+            title="Confirmar venta"
+            onClick={() => {
+              handleConfirm(row);
             }}
           >
-            Ver Detalles
-          </button>
-        </>
+            <Check size={20} color="#008000"></Check>
+          </Button>
+          <Button
+            title="Cancelar venta"
+            onClick={() => {
+              handleCancel(row);
+            }}
+          >
+            <Cancel size={20} color={"#E74C3C"}></Cancel>
+          </Button>
+        </div>
+      ) : (
+        <span style={{ paddingLeft: "25px" }}>Sin acciones</span>
       );
     },
   },

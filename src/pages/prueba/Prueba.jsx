@@ -285,7 +285,15 @@ export default function Prueba() {
         });
       }
       if (dialogProps.action === "edit") {
-        response = await updateCita(selectedEvent.data.id, formDataAddCita);
+        if (selectedEvent.data.estadoId === 9) {
+          response = await updateCita(selectedEvent.data.id, {
+            fecha: data.fecha,
+            objetivo: data.objetivo,
+            usuarioId: data.usuarioId,
+          });
+        } else {
+          response = await updateCita(selectedEvent.data.id, formDataAddCita);
+        }
       }
 
       if (dialogProps.action === "estimation") {
@@ -763,64 +771,71 @@ export default function Prueba() {
                       )}
                     </div>
                   )}
-                  {(dialogProps.action === "add" || dialogProps === "edit") && (
-                    <div className="select-imagenes">
-                      <h4>Imágenes</h4>
-                      <div className="inputs-container">
-                        <div class="customCheckBoxHolder">
-                          <input
-                            type="checkbox"
-                            id="referencia"
-                            className="customCheckBoxInput"
-                            {...register("imagenes.referencia")}
-                          />
+                  {(dialogProps.action === "add" ||
+                    dialogProps.action === "edit") && (
+                    <div>
+                      <div className="select-imagenes">
+                        <h4>Imágenes</h4>
+                        <div className="inputs-container">
+                          <div class="customCheckBoxHolder">
+                            <input
+                              type="checkbox"
+                              id="referencia"
+                              className="customCheckBoxInput"
+                              {...register("imagenes.referencia")}
+                            />
 
-                          <label
-                            for="referencia"
-                            className="customCheckBoxWrapper"
-                          >
-                            <div className="customCheckBox">
-                              <div className="inner">Referencia</div>
-                            </div>
-                          </label>
+                            <label
+                              for="referencia"
+                              className="customCheckBoxWrapper"
+                            >
+                              <div className="customCheckBox">
+                                <div className="inner">Referencia</div>
+                              </div>
+                            </label>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-
-                  {watch("imagenes")?.referencia && (
-                    <div>
-                      <h4>Imagen de referencia</h4>
-                      <div style={{ width: "100%" }}>
-                        <label className="subir-img">
-                          <input
-                            onChange={(e) => handleAddImage(e, "referencia")}
-                            type="file"
-                            accept="image/*"
-                          />
-                          <div style={{ width: "100%" }}>Subir imagen</div>
-                        </label>
-                        <h4 sx={{ color: "red", fontSize: ".8rem" }}>
-                          {errors?.imagen?.message}
-                        </h4>
-                      </div>
-                      {referencia && (
-                        <div
-                          className="image-container"
-                          onClick={() => setReferencia()}
-                        >
-                          <img
-                            src={
-                              typeof referencia === "string"
-                                ? referencia
-                                : URL.createObjectURL(referencia)
-                            }
-                            alt={`Imagen`}
-                            className="image"
-                          />
-                          <div className="overlay">
-                            <TrashColor size={38} color={"#fff"}></TrashColor>
+                      {watch("imagenes")?.referencia && (
+                        <div>
+                          <h4>Imagen de referencia</h4>
+                          <div style={{ width: "100%" }}>
+                            <label className="subir-img">
+                              <input
+                                onChange={(e) =>
+                                  handleAddImage(e, "referencia")
+                                }
+                                type="file"
+                                accept="image/*"
+                              />
+                              <div style={{ width: "100%" }}>Subir imagen</div>
+                            </label>
+                            <h4 sx={{ color: "red", fontSize: ".8rem" }}>
+                              {errors?.imagen?.message}
+                            </h4>
                           </div>
+                          {referencia && (
+                            <div
+                              className="image-container"
+                              onClick={() => setReferencia()}
+                            >
+                              <img
+                                src={
+                                  typeof referencia === "string"
+                                    ? referencia
+                                    : URL.createObjectURL(referencia)
+                                }
+                                alt={`Imagen`}
+                                className="image"
+                              />
+                              <div className="overlay">
+                                <TrashColor
+                                  size={38}
+                                  color={"#fff"}
+                                ></TrashColor>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>

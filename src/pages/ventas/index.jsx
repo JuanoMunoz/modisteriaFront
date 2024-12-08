@@ -6,32 +6,16 @@ import { toast, ToastContainer } from "react-toastify";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import Header from "../../components/Header/Header";
+import DialogTitleCustom from "../../components/dialogTitle/DialogTitleCustom";
+import CustomDialogActions from "../../components/customDialogActions/CustomDialogActions";
 import { ColumnsVentas } from "../../assets/columns";
 import ContainerDataGrid from "../../components/containerDatagrid/ContainerDataGrid";
 import useVentasData from "../../hooks/useVentasData";
 import LoadingTableData from "../../components/loadingTableData/LoadingTableData";
-import { toggleState } from "../../assets/constants.d";
-import DialogActions from '@mui/material/DialogActions';
+import { estadosVenta, formToCop, toggleState } from "../../assets/constants.d";
+import DialogActions from "@mui/material/DialogActions";
 import "./ventasDash.css";
-import {
-  ShoppingCartOutlined,
-  ViewListOutlined,
-  AdminPanelSettingsOutlined,
-  LockOutlined,
-  Inventory2Outlined,
-  StyleOutlined,
-  CalendarTodayOutlined,
-  InventoryOutlined,
-  HelpOutlineOutlined,
-  StraightenOutlined,
-  HistoryOutlined,
-  Settings,
-  TableChart,
-  BarChart,
-  PointOfSale,
-  Business,
-  Paid,
-} from "@mui/icons-material";
+import { ShoppingCartOutlined } from "@mui/icons-material";
 export default function Ventas() {
   // Estado para los datos, modal y control de apertura
   const [data, setData] = useState([]);
@@ -41,11 +25,9 @@ export default function Ventas() {
     row: null,
   });
   const [openAddModal, setOpenAddModal] = useState(false);
-
   // Custom hook para manejar datos de ventas
   const { fetchAllVentas, updateVentas, cancelarVenta, initialFetchAllVentas, loading } =
     useVentasData();
-
   // Validación de formularios
   const {
     handleSubmit,
@@ -53,8 +35,6 @@ export default function Ventas() {
     reset,
     formState: { errors },
   } = useForm();
-
-  // Carga inicial de datos
   useEffect(() => {
     const initialFetch = async () => {
       const response = await initialFetchAllVentas();
@@ -62,37 +42,9 @@ export default function Ventas() {
     };
     initialFetch();
   }, []);
-
-  // Función para abrir la modal
   const handleDialog = (action, title, row = null) => {
-    console.log('Abriendo modal con acción:', action, 'y fila:', row);
-
     setDialogProps({ action, row, title });
-    reset({
-      id: row?.id || "",
-      fecha: row?.fecha
-        ? format(new Date(row.fecha), "dd/MM/yyyy HH:mm", { locale: es })
-        : "Sin fecha",
-      estadoId: row?.estadoId || "Pendiente",
-      nombrePersona: row?.nombrePersona || "Anónimo",
-      valorDomicilio: row?.valorDomicilio || 0,
-      valorPrendas: row?.valorPrendas || 0,
-      valorFinal: row?.valorFinal || 0,
-      metodoPago: row?.metodoPago || "Transferencia",
-      citaId: row?.citaId || "Sin cita",
-      imagen: row?.imagen || "No hay imagen",
-      motivio: row?.motivo || "Sin motivo"
-    });
     toggleState(setOpenAddModal);
-  };
-
-  // Confirmar edición de una venta
-  const handleConfirm = (row) => {
-    handleDialog("edit", "Confirmar venta", row);
-  };
-
-  const handleCancel = (row) => {
-    handleDialog("edit", "Cancelar venta", row);
   };
 
   // Guardar cambios
@@ -106,17 +58,11 @@ export default function Ventas() {
         toast.error("Error al confirmar la venta.");
         return;
       }
-
-      // Actualizar los datos localmente
       setData((prevData) =>
         prevData.map((venta) =>
-          venta.id === dialogProps.row.id
-            ? { ...venta, estadoId: 14 } // Actualizamos el estado solo localmente
-            : venta
+          venta.id === dialogProps.row.id ? { ...venta, estadoId: 14 } : venta
         )
       );
-
-      // Cerrar el modal y mostrar mensaje de éxito
       toggleState(setOpenAddModal);
       toast.success(`¡Venta confirmada con éxito!`, {
         autoClose: 1800,
@@ -126,6 +72,19 @@ export default function Ventas() {
       toast.error(`Error en la operación: ${error.message}`);
     }
   };
+  const handleConfirm = (row) => {
+    handleDialog("confirm", "Confirmar venta", row);
+  };
+  const handleCancel = (row) => {
+    handleDialog("cancel", "Cancelar venta", row);
+  };
+  const handleDetails = (row) => {
+    handleDialog("verDetalles", "Detalles de la Venta", row);
+  };
+  const handleInfo = () => {
+    handleDialog("info", "Estados de la venta");
+  };
+
   const handleSaveCancel = async (formData) => {
     try {
       // Solo enviamos el id y el motivo de la cancelacion de venta al backend
@@ -148,7 +107,7 @@ export default function Ventas() {
 
       // Cerrar el modal y mostrar mensaje de éxito
       toggleState(setOpenAddModal);
-      toast.success(`¡Venta confirmada con éxito!`, {
+      toast.success(`¡Venta cancelada con éxito!`, {
         autoClose: 1800,
         toastId: "crudAction",
       });
@@ -156,13 +115,21 @@ export default function Ventas() {
       toast.error(`Error en la operación: ${error.message}`);
     }
   };
-
-  // Columnas de la tabla
-  const columns = ColumnsVentas({ onConfirm: handleConfirm, onCancel: handleCancel, onOpenDialog: handleDialog });
+  const columns = ColumnsVentas({
+    handleDetails,
+    handleCancel,
+    handleConfirm,
+  });
 
   return (
     <>
-      <Header title="Ventas" icon={ShoppingCartOutlined} />
+      <Header
+        title="Ventas"
+        buttonText={"Ver estados"}
+        handleAdd={handleInfo}
+        han
+        icon={ShoppingCartOutlined}
+      />
       <br />
       <ContainerDataGrid>
         {loading ? (
@@ -182,107 +149,93 @@ export default function Ventas() {
           />
         )}
       </ContainerDataGrid>
-
-      {/* Modal para detalles de venta */}
-      <Dialog open={openAddModal} onClose={() => toggleState(setOpenAddModal)}
+      <Dialog
+        open={openAddModal}
+        onClose={() => toggleState(setOpenAddModal)}
         sx={{
           "& .MuiDialog-paper": {
-            width: "80%",
+            width: "65%",
             maxWidth: "none",
           },
         }}
       >
+        <DialogTitleCustom>{dialogProps.title}</DialogTitleCustom>
         <DialogContent>
-          <div className="venta-card">
-
-            <div class="venta-imagen">
-              {dialogProps.row?.imagen ? (
-                <img
-                  src={dialogProps.row?.imagen}
-                  alt="Imagen"
-                />
-              ) : (
-                <img
-                  alt="Imagen no disponible"
-                />
-              )}
+          {dialogProps.action === "info" ? (
+            <section className="info-section">
+              {estadosVenta.map((estado, idx) => (
+                <div key={idx}>
+                  <article>
+                    <span
+                      style={{ background: estado.color }}
+                      className="color-estado"
+                    ></span>
+                    <span>{estado.nombre}</span>
+                  </article>
+                  <p>{estado.descripcion}</p>
+                </div>
+              ))}
+            </section>
+          ) : (
+            <div className="venta-card">
+              <div class="venta-imagen">
+                {dialogProps.row?.imagen ? (
+                  <img src={dialogProps.row?.imagen} alt="Imagen" />
+                ) : (
+                  <div className="no-image">
+                    <h3>¡Sin transferencia!</h3>
+                    <span>El comprador pagó en la modistería</span>
+                  </div>
+                )}
+              </div>
+              <div className="venta-info">
+                <div class="campo">
+                  <label>Nombre comprador:</label>
+                  <span>
+                    {dialogProps.row?.nombrePersona
+                      ? dialogProps.row?.nombrePersona
+                      : "Sin nombre asociado"}
+                  </span>
+                </div>
+                {dialogProps.row?.valorDomicilio !== 0 && (
+                  <div class="campo">
+                    <label>Valor domicilio:</label>
+                    <span>{formToCop(dialogProps.row.valorDomicilio)} COP</span>
+                  </div>
+                )}
+                {dialogProps.row?.valorPrendas !== 0 && (
+                  <div class="campo">
+                    <label>Valor Prendas:</label>
+                    <span>{formToCop(dialogProps.row.valorPrendas)} COP</span>
+                  </div>
+                )}
+                <div class="campo">
+                  <label>Valor Final:</label>
+                  <span>
+                    {dialogProps.row?.valorFinal
+                      ? `${formToCop(dialogProps.row.valorFinal)} COP`
+                      : "No aplica"}
+                  </span>
+                </div>
+                <div class="campo">
+                  <label>Metodo de Pago:</label>
+                  <span>
+                    {" "}
+                    {dialogProps.row?.metodoPago === "transferencia"
+                      ? "Transferencia"
+                      : dialogProps.row?.metodoPago}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="venta-info">
-              <div class="campo">
-                <label>Fecha:</label>
-                <span>
-                  {dialogProps.row?.fecha ? format(new Date(dialogProps.row?.fecha), "dd/MM/yyyy HH:mm", { locale: es }) : "Sin fecha"}
-                </span>
-              </div>
-              <div class="campo">
-                <label>Estado:</label>
-                <span>{dialogProps.row?.estadoId === 14 ? "Pagado" : "Pendiente"}</span>
-              </div>
-              <div class="campo">
-                <label>Valor domicilio:</label>
-                <span>{dialogProps.row?.valorDomicilio ? new Intl.NumberFormat('es-ES').format(dialogProps.row.valorDomicilio) : "No aplica"}</span>
-              </div>
-              <div class="campo">
-                <label>Valor Prendas:</label>
-                <span> {dialogProps.row?.valorPrendas ? new Intl.NumberFormat('es-ES').format(dialogProps.row.valorPrendas) : "No aplica"}</span>
-              </div>
-              <div class="campo">
-                <label>Valor Final:</label>
-                <span> {dialogProps.row?.valorFinal ? new Intl.NumberFormat('es-ES').format(dialogProps.row.valorFinal) : "No aplica"}</span>
-              </div>
-              <div class="campo">
-                <label>Metodo de Pago:</label>
-                <span> {dialogProps.row?.metodoPago === "transferencia" ? "Transferencia" : dialogProps.row?.metodoPago}</span>
-              </div>
-            </div>
-          </div>
+          )}
         </DialogContent>
 
-        <DialogActions>
-          {dialogProps.row?.estadoId == 3 && !dialogProps.row?.citaId && (
-            <>
-              <button
-                onClick={() => handleSave(dialogProps.row)}
-                style={{
-                  backgroundColor: "#7C0D84",
-                  color: "white",
-                  border: "none",
-                  padding: "5px 10px",
-                  cursor: "pointer",
-                }}
-              >
-                Confirmar Venta
-              </button>
-              <button
-                onClick={() => handleSaveCancel(dialogProps.row)}
-                style={{
-                  backgroundColor: "#7C0D84",
-                  color: "white",
-                  border: "none",
-                  padding: "5px 10px",
-                  cursor: "pointer",
-                }}
-              >
-                Cancelar Venta
-              </button>
-            </>
-          )}
-          <button
-            onClick={() => toggleState(setOpenAddModal)}
-            style={{
-              backgroundColor: "#ccc",
-              color: "black",
-              border: "none",
-              padding: "5px 10px",
-              cursor: "pointer",
-            }}
-          >
-            Cerrar
-          </button>
-        </DialogActions>
-
+        <CustomDialogActions
+          cancelButton
+          handleClose={() => toggleState(setOpenAddModal)}
+        />
       </Dialog>
-
 
       <ToastContainer />
     </>
