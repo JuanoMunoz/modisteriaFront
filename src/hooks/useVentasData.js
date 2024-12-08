@@ -37,11 +37,22 @@ export default function useVentas() {
     );
     return respuesta;
   };
+
+  const cancelarVenta = async (id, infoUpdate) => {
+    const respuesta = await updateFetch(
+      `${URL_BACK}/ventas/cancelarVenta/${id}`,
+      "POST",
+      infoUpdate,
+      { "x-token": token }
+    );
+    return respuesta;
+  };
   
 
   return {
     fetchAllVentas,
     updateVentas,
+    cancelarVenta,
     initialFetchAllVentas,
     loading,
   };
