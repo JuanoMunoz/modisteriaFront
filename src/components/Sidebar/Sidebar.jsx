@@ -34,6 +34,7 @@ import {
   PointOfSale,
   Business,
   Paid,
+  LocalShippingOutlined,
 } from "@mui/icons-material";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
@@ -264,7 +265,7 @@ const Sidebar = ({ nombre, permisos }) => {
               </Accordion>
             )}
 
-            {[3, 2, 5, 6].some((element) => permisos.includes(element)) && (
+            {[3, 2, 5, 6, 7].some((element) => permisos.includes(element)) && (
               <Accordion
                 sx={{ background: `${colors.primary[400]}`, border: "none" }}
               >
@@ -316,6 +317,15 @@ const Sidebar = ({ nombre, permisos }) => {
                       setSelected={setSelected}
                     />
                   )}
+                  {permisos.includes(7) && (
+                    <Item
+                      title="Domicilios"
+                      to="/dashboard/domicilios"
+                      icon={<LocalShippingOutlined />}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  )}
                 </AccordionDetails>
               </Accordion>
             )}
@@ -342,15 +352,6 @@ const Sidebar = ({ nombre, permisos }) => {
                     <Item
                       title="Tallas"
                       to="/dashboard/tallas"
-                      icon={<StraightenOutlined />}
-                      selected={selected}
-                      setSelected={setSelected}
-                    />
-                  )}
-                  {permisos.includes(2) && (
-                    <Item
-                      title="prueba"
-                      to="/dashboard/prueba"
                       icon={<StraightenOutlined />}
                       selected={selected}
                       setSelected={setSelected}

@@ -114,7 +114,11 @@ const CatalogoDashboard = () => {
         setKindOfTallas(
           tallas.data.filter((talla) => talla.tipo === "Alfanumérica")
         );
-        setInsumos(insumos.data);
+        setInsumos(
+          insumos.data.filter(
+            (insumo) => insumo.categoria_insumos.tipo === "Controlado"
+          )
+        );
       }
     };
     initialFetchCatalogo();

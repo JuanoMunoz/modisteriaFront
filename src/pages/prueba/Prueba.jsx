@@ -158,7 +158,13 @@ export default function Prueba() {
       ) {
         setData(respuesta.data);
         setUsers(usuarios.data);
-        setInsumos(insumos.data);
+        console.log(insumos);
+
+        setInsumos(
+          insumos.data.filter(
+            (insumo) => insumo.categoria_insumos.tipo === "Controlado"
+          )
+        );
 
         const events = respuesta.data.map((cita) => {
           const fechaInicial = dayjs(`${cita.fecha.slice(0, -1)}`);

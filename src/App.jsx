@@ -72,7 +72,7 @@ function App() {
             />
           )}
           {payload?.permisos.includes(2) && (
-            <Route path="/dashboard/cita" element={<CitasDashboard />} />
+            <Route path="/dashboard/cita" element={<Prueba />} />
           )}
           {payload?.permisos.includes(9) && (
             <Route path="/dashboard/insumo" element={<Insumo />} />
@@ -98,9 +98,6 @@ function App() {
               element={<UnidadesInsumo />}
             />
           )}
-          {payload?.permisos.includes(2) && (
-            <Route path="/dashboard/prueba" element={<Prueba />} />
-          )}
           {payload?.permisos.includes(14) && (
             <Route path="/dashboard/tallas" element={<Tallas />} />
           )}
@@ -109,6 +106,9 @@ function App() {
           )}
           {payload?.permisos.includes(19) && (
             <Route path="/dashboard/line" element={<Line />} />
+          )}
+          {payload?.permisos.includes(7) && (
+            <Route path="/dashboard/domicilios" element={<Line />} />
           )}
         </Route>
         <Route path="*" element={<Error404 />}></Route>

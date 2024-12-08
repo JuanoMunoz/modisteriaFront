@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
-import { Dialog, DialogContent, Button, TextField } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  Button,
+  TextField,
+  DialogContentText,
+} from "@mui/material";
 import { toast, ToastContainer } from "react-toastify";
 
 // Componentes personalizados
@@ -18,16 +24,33 @@ import { estadosVenta, formToCop, toggleState } from "../../assets/constants.d";
 // Estilos
 import "./ventasDash.css";
 import { ShoppingCartOutlined } from "@mui/icons-material";
+import CustomDialogActions from "../../components/customDialogActions/CustomDialogActions";
+import InputDash from "../../components/inputDashboard/InputDash";
 
 export default function Ventas() {
   // Estados
   const [data, setData] = useState([]);
-  const [dialogProps, setDialogProps] = useState({ action: "", title: "", row: null });
+  const [dialogProps, setDialogProps] = useState({
+    action: "",
+    title: "",
+    row: null,
+  });
   const [openAddModal, setOpenAddModal] = useState(false);
 
   // Hooks personalizados
-  const { fetchAllVentas, updateVentas, cancelarVenta, initialFetchAllVentas, loading } = useVentasData();
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const {
+    fetchAllVentas,
+    updateVentas,
+    cancelarVenta,
+    initialFetchAllVentas,
+    loading,
+  } = useVentasData();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
   // Efecto inicial
   useEffect(() => {
@@ -41,7 +64,7 @@ export default function Ventas() {
   // Funciones auxiliares
   const handleDialog = (action, title, row = null) => {
     setDialogProps({ action, title, row });
-    reset({ motivo: "" }); // Reinicia el motivo en el formulario
+    reset({ motivo: "" });
     toggleState(setOpenAddModal);
   };
 
@@ -66,7 +89,9 @@ export default function Ventas() {
 
   const handleCancelVenta = async (formData) => {
     try {
-      const response = await cancelarVenta(dialogProps.row.id, { motivo: formData.motivo });
+      const response = await cancelarVenta(dialogProps.row.id, {
+        motivo: formData.motivo,
+      });
       if (response.status !== 200 && response.status !== 201) {
         toast.error("Error al cancelar la venta.");
         return;
@@ -84,7 +109,8 @@ export default function Ventas() {
   };
 
   const columns = ColumnsVentas({
-    handleDetails: (row) => handleDialog("verDetalles", "Detalles de la Venta", row),
+    handleDetails: (row) =>
+      handleDialog("verDetalles", "Detalles de la Venta", row),
     handleConfirm: (row) => handleDialog("confirm", "Confirmar Venta", row),
     handleCancel: (row) => handleDialog("cancel", "Cancelar Venta", row),
   });
@@ -123,73 +149,111 @@ export default function Ventas() {
         }}
       >
         <DialogTitleCustom>{dialogProps.title}</DialogTitleCustom>
-        <DialogContent>
-          {dialogProps.action === "info" && (
-            <section className="info-section">
-              {estadosVenta.map((estado, idx) => (
-                <div key={idx}>
-                  <article>
-                    <span style={{ background: estado.color }} className="color-estado"></span>
-                    <span>{estado.nombre}</span>
-                  </article>
-                  <p>{estado.descripcion}</p>
-                </div>
-              ))}
-            </section>
-          )}
-          {dialogProps.action === "verDetalles" && (
-            <div className="venta-card">
-              <div className="venta-imagen">
-                {dialogProps.row?.imagen ? (
-                  <img src={dialogProps.row.imagen} alt="Imagen" />
-                ) : (
-                  <div className="no-image">
-                    <h3>¡Sin transferencia!</h3>
-                    <span>El comprador pagó en la modistería</span>
+        <form
+          onSubmit={
+            dialogProps.action === "cancel"
+              ? handleSubmit(handleCancelVenta)
+              : handleSubmit(handleConfirmVenta)
+          }
+        >
+          <DialogContent>
+            {dialogProps.action === "info" && (
+              <section className="info-section">
+                {estadosVenta.map((estado, idx) => (
+                  <div key={idx}>
+                    <article>
+                      <span
+                        style={{ background: estado.color }}
+                        className="color-estado"
+                      ></span>
+                      <span>{estado.nombre}</span>
+                    </article>
+                    <p>{estado.descripcion}</p>
                   </div>
-                )}
+                ))}
+              </section>
+            )}
+            {dialogProps.action === "verDetalles" && (
+              <div className="venta-card">
+                <div className="venta-imagen">
+                  {dialogProps.row?.imagen ? (
+                    <img src={dialogProps.row.imagen} alt="Imagen" />
+                  ) : (
+                    <div className="no-image">
+                      <h3>¡Sin transferencia!</h3>
+                      <span>El comprador pagó en la modistería</span>
+                    </div>
+                  )}
+                </div>
+                <div className="venta-info">
+                  <div className="campo">
+                    <label>Nombre comprador:</label>
+                    <span>
+                      {dialogProps.row?.nombrePersona || "Sin nombre asociado"}
+                    </span>
+                  </div>
+                  <div className="campo">
+                    <label>Valor Final:</label>
+                    <span>
+                      {dialogProps.row?.valorFinal
+                        ? `${formToCop(dialogProps.row.valorFinal)} COP`
+                        : "No aplica"}
+                    </span>
+                  </div>
+                  <div className="campo">
+                    <label>Método de Pago:</label>
+                    <span>
+                      {dialogProps.row?.metodoPago || "No especificado"}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="venta-info">
-                <div className="campo">
-                  <label>Nombre comprador:</label>
-                  <span>{dialogProps.row?.nombrePersona || "Sin nombre asociado"}</span>
-                </div>
-                <div className="campo">
-                  <label>Valor Final:</label>
-                  <span>
-                    {dialogProps.row?.valorFinal
-                      ? `${formToCop(dialogProps.row.valorFinal)} COP`
-                      : "No aplica"}
-                  </span>
-                </div>
-                <div className="campo">
-                  <label>Método de Pago:</label>
-                  <span>{dialogProps.row?.metodoPago || "No especificado"}</span>
-                </div>
+            )}
+            {dialogProps.action === "confirm" && (
+              <DialogContentText textAlign={"center"}>
+                Esta acción conifrmará la venta. ¡Asegurese del correcto pago
+                antes de confirmarla!{" "}
+              </DialogContentText>
+            )}
+            {dialogProps.action === "cancel" && (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <InputDash
+                  label="Motivo de Cancelación"
+                  {...register("motivo", {
+                    required:
+                      "¡Debes especificar el motivo por el que la venta se cancela!",
+                    minLength: {
+                      message:
+                        "¡La justificación debe ser de mínimo 4 caracteres!",
+                      value: 4,
+                    },
+                    maxLength: {
+                      message:
+                        "¡La justificación debe ser de máximo 255 caracteres!",
+                      value: 255,
+                    },
+                  })}
+                  type="text"
+                  description={errors.motivo && errors.motivo.message}
+                />
               </div>
-            </div>
-          )}
-          {dialogProps.action === "confirm" && (
-            <form onSubmit={handleSubmit(handleConfirmVenta)}>
-              <p>¿Está seguro de confirmar la venta?</p>
-              <Button type="submit">Confirmar Venta</Button>
-            </form>
-          )}
-          {dialogProps.action === "cancel" && (
-            <form onSubmit={handleSubmit(handleCancelVenta)}>
-              <p>¿Está seguro de cancelar la venta? Escriba el motivo:</p>
-              <TextField
-                label="Motivo de Cancelación"
-                {...register("motivo", { required: "Este campo es obligatorio" })}
-                fullWidth
-                margin="normal"
-                error={!!errors.motivo}
-                helperText={errors.motivo ? errors.motivo.message : ""}
-              />
-              <Button type="submit">Cancelar Venta</Button>
-            </form>
-          )}
-        </DialogContent>
+            )}
+          </DialogContent>
+          <CustomDialogActions
+            cancelButton
+            handleClose={() => toggleState(setOpenAddModal)}
+            saveButton={
+              dialogProps.action === "cancel" ||
+              dialogProps.action === "confirm"
+            }
+          />
+        </form>
       </Dialog>
       <ToastContainer />
     </>
