@@ -59,7 +59,7 @@ export const estadosVenta = [
       "No ha sido comprabada la veracidad del pago, el actual administrador puede confirmar el ingreso o cancelar la venta siempre que se justifique.",
   },
   {
-    id: 18,
+    id: 12,
     nombre: "Cancelada",
     color: "#E74C3C",
     descripcion:

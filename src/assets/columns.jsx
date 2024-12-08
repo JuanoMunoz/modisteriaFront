@@ -385,10 +385,10 @@ export const ColumnsVentas = ({
     flex: 1,
     renderCell: (params) => {
       const estado = estadosVenta.find((estado) => estado.id === params.value);
-      return (
-        <h3 style={{ color: estado.color }}>{estado.nombre}</h3> || (
-          <h4>Desconocido</h4>
-        )
+      return estado ? (
+        <h3 style={{ color: estado.color }}>{estado.nombre}</h3>
+      ) : (
+        <h4>Desconocido</h4>
       );
     },
   },

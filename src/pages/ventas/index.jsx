@@ -1,40 +1,35 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { DataGrid, GridToolbar, esES } from "@mui/x-data-grid";
-import { Dialog, DialogContent, DialogContentText } from "@mui/material";
+import { Dialog, DialogContent, Button, TextField } from "@mui/material";
 import { toast, ToastContainer } from "react-toastify";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+
+// Componentes personalizados
 import Header from "../../components/Header/Header";
 import DialogTitleCustom from "../../components/dialogTitle/DialogTitleCustom";
-import CustomDialogActions from "../../components/customDialogActions/CustomDialogActions";
-import { ColumnsVentas } from "../../assets/columns";
 import ContainerDataGrid from "../../components/containerDatagrid/ContainerDataGrid";
-import useVentasData from "../../hooks/useVentasData";
 import LoadingTableData from "../../components/loadingTableData/LoadingTableData";
+
+// Hooks y constantes
+import useVentasData from "../../hooks/useVentasData";
+import { ColumnsVentas } from "../../assets/columns";
 import { estadosVenta, formToCop, toggleState } from "../../assets/constants.d";
-import DialogActions from "@mui/material/DialogActions";
+
+// Estilos
 import "./ventasDash.css";
 import { ShoppingCartOutlined } from "@mui/icons-material";
+
 export default function Ventas() {
-  // Estado para los datos, modal y control de apertura
+  // Estados
   const [data, setData] = useState([]);
-  const [dialogProps, setDialogProps] = useState({
-    action: "",
-    title: "",
-    row: null,
-  });
+  const [dialogProps, setDialogProps] = useState({ action: "", title: "", row: null });
   const [openAddModal, setOpenAddModal] = useState(false);
-  // Custom hook para manejar datos de ventas
-  const { fetchAllVentas, updateVentas, cancelarVenta, initialFetchAllVentas, loading } =
-    useVentasData();
-  // Validación de formularios
-  const {
-    handleSubmit,
-    register,
-    reset,
-    formState: { errors },
-  } = useForm();
+
+  // Hooks personalizados
+  const { fetchAllVentas, updateVentas, cancelarVenta, initialFetchAllVentas, loading } = useVentasData();
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+
+  // Efecto inicial
   useEffect(() => {
     const initialFetch = async () => {
       const response = await initialFetchAllVentas();
@@ -42,18 +37,17 @@ export default function Ventas() {
     };
     initialFetch();
   }, []);
+
+  // Funciones auxiliares
   const handleDialog = (action, title, row = null) => {
-    setDialogProps({ action, row, title });
+    setDialogProps({ action, title, row });
+    reset({ motivo: "" }); // Reinicia el motivo en el formulario
     toggleState(setOpenAddModal);
   };
 
-  // Guardar cambios
-  const handleSave = async (formData) => {
+  const handleConfirmVenta = async () => {
     try {
-      // Solo enviamos el id de la venta al backend
       const response = await updateVentas(dialogProps.row.id);
-      console.log(dialogProps.row);
-      console.log(response);
       if (response.status !== 200 && response.status !== 201) {
         toast.error("Error al confirmar la venta.");
         return;
@@ -63,71 +57,45 @@ export default function Ventas() {
           venta.id === dialogProps.row.id ? { ...venta, estadoId: 14 } : venta
         )
       );
+      toast.success("¡Venta confirmada con éxito!");
       toggleState(setOpenAddModal);
-      toast.success(`¡Venta confirmada con éxito!`, {
-        autoClose: 1800,
-        toastId: "crudAction",
-      });
     } catch (error) {
       toast.error(`Error en la operación: ${error.message}`);
     }
   };
-  const handleConfirm = (row) => {
-    handleDialog("confirm", "Confirmar venta", row);
-  };
-  const handleCancel = (row) => {
-    handleDialog("cancel", "Cancelar venta", row);
-  };
-  const handleDetails = (row) => {
-    handleDialog("verDetalles", "Detalles de la Venta", row);
-  };
-  const handleInfo = () => {
-    handleDialog("info", "Estados de la venta");
-  };
 
-  const handleSaveCancel = async (formData) => {
+  const handleCancelVenta = async (formData) => {
     try {
-      // Solo enviamos el id y el motivo de la cancelacion de venta al backend
-      const response = await cancelarVenta(dialogProps.row.id, { motivo: dialogProps.row.motivo });
-      console.log(dialogProps.row);
-      console.log(response);
+      const response = await cancelarVenta(dialogProps.row.id, { motivo: formData.motivo });
       if (response.status !== 200 && response.status !== 201) {
         toast.error("Error al cancelar la venta.");
         return;
       }
-
-      // Actualizar los datos localmente
       setData((prevData) =>
         prevData.map((venta) =>
-          venta.id === dialogProps.row.id
-            ? { ...venta, estadoId: 12 } // Actualizamos el estado solo localmente
-            : venta
+          venta.id === dialogProps.row.id ? { ...venta, estadoId: 12 } : venta
         )
       );
-
-      // Cerrar el modal y mostrar mensaje de éxito
+      toast.success("¡Venta cancelada con éxito!");
       toggleState(setOpenAddModal);
-      toast.success(`¡Venta cancelada con éxito!`, {
-        autoClose: 1800,
-        toastId: "crudAction",
-      });
     } catch (error) {
       toast.error(`Error en la operación: ${error.message}`);
     }
   };
+
   const columns = ColumnsVentas({
-    handleDetails,
-    handleCancel,
-    handleConfirm,
+    handleDetails: (row) => handleDialog("verDetalles", "Detalles de la Venta", row),
+    handleConfirm: (row) => handleDialog("confirm", "Confirmar Venta", row),
+    handleCancel: (row) => handleDialog("cancel", "Cancelar Venta", row),
   });
 
+  // Renderizado
   return (
     <>
       <Header
         title="Ventas"
-        buttonText={"Ver estados"}
-        handleAdd={handleInfo}
-        han
+        buttonText="Ver estados"
+        handleAdd={() => handleDialog("info", "Estados de la venta")}
         icon={ShoppingCartOutlined}
       />
       <br />
@@ -141,9 +109,7 @@ export default function Ventas() {
             components={{ Toolbar: GridToolbar }}
             getRowId={(row) => row.id}
             initialState={{
-              sorting: {
-                sortModel: [{ field: "fecha", sort: "asc" }],
-              },
+              sorting: { sortModel: [{ field: "fecha", sort: "asc" }] },
             }}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
           />
@@ -153,34 +119,29 @@ export default function Ventas() {
         open={openAddModal}
         onClose={() => toggleState(setOpenAddModal)}
         sx={{
-          "& .MuiDialog-paper": {
-            width: "65%",
-            maxWidth: "none",
-          },
+          "& .MuiDialog-paper": { width: "65%", maxWidth: "none" },
         }}
       >
         <DialogTitleCustom>{dialogProps.title}</DialogTitleCustom>
         <DialogContent>
-          {dialogProps.action === "info" ? (
+          {dialogProps.action === "info" && (
             <section className="info-section">
               {estadosVenta.map((estado, idx) => (
                 <div key={idx}>
                   <article>
-                    <span
-                      style={{ background: estado.color }}
-                      className="color-estado"
-                    ></span>
+                    <span style={{ background: estado.color }} className="color-estado"></span>
                     <span>{estado.nombre}</span>
                   </article>
                   <p>{estado.descripcion}</p>
                 </div>
               ))}
             </section>
-          ) : (
+          )}
+          {dialogProps.action === "verDetalles" && (
             <div className="venta-card">
-              <div class="venta-imagen">
+              <div className="venta-imagen">
                 {dialogProps.row?.imagen ? (
-                  <img src={dialogProps.row?.imagen} alt="Imagen" />
+                  <img src={dialogProps.row.imagen} alt="Imagen" />
                 ) : (
                   <div className="no-image">
                     <h3>¡Sin transferencia!</h3>
@@ -189,27 +150,11 @@ export default function Ventas() {
                 )}
               </div>
               <div className="venta-info">
-                <div class="campo">
+                <div className="campo">
                   <label>Nombre comprador:</label>
-                  <span>
-                    {dialogProps.row?.nombrePersona
-                      ? dialogProps.row?.nombrePersona
-                      : "Sin nombre asociado"}
-                  </span>
+                  <span>{dialogProps.row?.nombrePersona || "Sin nombre asociado"}</span>
                 </div>
-                {dialogProps.row?.valorDomicilio !== 0 && (
-                  <div class="campo">
-                    <label>Valor domicilio:</label>
-                    <span>{formToCop(dialogProps.row.valorDomicilio)} COP</span>
-                  </div>
-                )}
-                {dialogProps.row?.valorPrendas !== 0 && (
-                  <div class="campo">
-                    <label>Valor Prendas:</label>
-                    <span>{formToCop(dialogProps.row.valorPrendas)} COP</span>
-                  </div>
-                )}
-                <div class="campo">
+                <div className="campo">
                   <label>Valor Final:</label>
                   <span>
                     {dialogProps.row?.valorFinal
@@ -217,26 +162,35 @@ export default function Ventas() {
                       : "No aplica"}
                   </span>
                 </div>
-                <div class="campo">
-                  <label>Metodo de Pago:</label>
-                  <span>
-                    {" "}
-                    {dialogProps.row?.metodoPago === "transferencia"
-                      ? "Transferencia"
-                      : dialogProps.row?.metodoPago}
-                  </span>
+                <div className="campo">
+                  <label>Método de Pago:</label>
+                  <span>{dialogProps.row?.metodoPago || "No especificado"}</span>
                 </div>
               </div>
             </div>
           )}
+          {dialogProps.action === "confirm" && (
+            <form onSubmit={handleSubmit(handleConfirmVenta)}>
+              <p>¿Está seguro de confirmar la venta?</p>
+              <Button type="submit">Confirmar Venta</Button>
+            </form>
+          )}
+          {dialogProps.action === "cancel" && (
+            <form onSubmit={handleSubmit(handleCancelVenta)}>
+              <p>¿Está seguro de cancelar la venta? Escriba el motivo:</p>
+              <TextField
+                label="Motivo de Cancelación"
+                {...register("motivo", { required: "Este campo es obligatorio" })}
+                fullWidth
+                margin="normal"
+                error={!!errors.motivo}
+                helperText={errors.motivo ? errors.motivo.message : ""}
+              />
+              <Button type="submit">Cancelar Venta</Button>
+            </form>
+          )}
         </DialogContent>
-
-        <CustomDialogActions
-          cancelButton
-          handleClose={() => toggleState(setOpenAddModal)}
-        />
       </Dialog>
-
       <ToastContainer />
     </>
   );
