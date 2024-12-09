@@ -40,13 +40,8 @@ export default function Ventas() {
   const [openAddModal, setOpenAddModal] = useState(false);
 
   // Hooks personalizados
-  const {
-    fetchAllVentas,
-    updateVentas,
-    cancelarVenta,
-    initialFetchAllVentas,
-    loading,
-  } = useVentasData();
+  const { fetchAllVentas, cancelarVenta, initialFetchAllVentas, loading } =
+    useVentasData();
   const { createVenta } = useCitasData(); // Asegúrate de tener esta función para terminar la cita.
   const {
     register,
@@ -73,7 +68,7 @@ export default function Ventas() {
   };
 
   const confirmarVenta = async () => {
-    const response = await updateVentas(dialogProps.row.id);
+    const response = await confirmarVenta(dialogProps.row.id);
     if (response.status !== 200 && response.status !== 201) {
       throw new Error("Error al confirmar la venta.");
     }
@@ -107,7 +102,7 @@ export default function Ventas() {
     const actionMap = {
       confirm: {
         Cita: terminarCitaHandler, // Acción para Cita
-        Catálogo: confirmarVenta,  // Acción para Catálogo
+        Catálogo: confirmarVenta, // Acción para Catálogo
       },
       cancel: {
         Catálogo: cancelVenta, // Acción para cancelar venta en Catálogo
@@ -131,7 +126,6 @@ export default function Ventas() {
     }
   };
 
-
   // Función para configurar el diálogo
   const handleDialog = (action, title, origen, row = null) => {
     setDialogProps({ action, title, origen, row });
@@ -144,9 +138,9 @@ export default function Ventas() {
       handleDialog("verDetalles", "Detalles de la Venta", "Catálogo", row),
     handleConfirm: (row) =>
       handleDialog(
-        "confirm", 
+        "confirm",
         row?.citaId !== null ? "Terminar Cita" : "Confirmar Venta", // Cambiar el título según citaId
-        "Catálogo", 
+        "Catálogo",
         row
       ),
     handleCancel: (row) =>
@@ -159,7 +153,9 @@ export default function Ventas() {
       <Header
         title="Ventas"
         buttonText="Ver estados"
-        handleAdd={() => handleDialog("info", "Estados de la venta", "Catálogo")}
+        handleAdd={() =>
+          handleDialog("info", "Estados de la venta", "Catálogo")
+        }
         icon={ShoppingCartOutlined}
       />
       <br />
@@ -278,7 +274,7 @@ export default function Ventas() {
             handleClose={() => toggleState(setOpenAddModal)}
             handleSubmit={handleSubmit(handleAction)}
             cancelButton={true} // Botón Cancelar visible
-            saveButton={true}   // Botón Guardar visible
+            saveButton={true} // Botón Guardar visible
           />
         </form>
       </Dialog>

@@ -28,15 +28,6 @@ export default function useVentas() {
     return respuesta;
   };
 
-  const updateVentas = async (id, infoUpdate) => {
-    const respuesta = await updateFetch(
-      `${URL_BACK}/ventas/confirmarVenta/${id}`,
-      "POST",
-      infoUpdate,
-      { "x-token": token }
-    );
-    return respuesta;
-  };
   const calcularDomicilio = async (id, infoUpdate) => {
     const respuesta = await updateFetch(
       `${URL_BACK}/ventas/calcularDomicilio/${id}`,
@@ -59,7 +50,6 @@ export default function useVentas() {
 
   return {
     fetchAllVentas,
-    updateVentas,
     cancelarVenta,
     initialFetchAllVentas,
     calcularDomicilio,

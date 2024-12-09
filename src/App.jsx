@@ -30,6 +30,7 @@ import Proveedores from "./pages/proveedores/Proveedores";
 import Prueba from "./pages/prueba/Prueba";
 import { useJwt } from "./context/JWTContext";
 import useDecodedJwt from "./hooks/useJwt";
+import Domicilio from "./pages/domicilio/Domicilio";
 function App() {
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
@@ -108,7 +109,7 @@ function App() {
             <Route path="/dashboard/line" element={<Line />} />
           )}
           {payload?.permisos.includes(7) && (
-            <Route path="/dashboard/domicilios" element={<Line />} />
+            <Route path="/dashboard/domicilios" element={<Domicilio />} />
           )}
         </Route>
         <Route path="*" element={<Error404 />}></Route>

@@ -48,6 +48,7 @@ export default function Prueba() {
     createVenta,
     deleteCita,
     updateSTP,
+    updateVenta,
     createEstimation,
   } = useCitasData();
   const { initialFetchAllUsuarios, loading: loadingUsuarios } =
@@ -67,6 +68,7 @@ export default function Prueba() {
     title: "",
   });
   const [openModal, setOpenModal] = useState(false);
+  const [comprobante, setComprobante] = useState(false);
   const findMaxQuantityInsumo = (id) => {
     const insumo = insumos.find((insumo) => insumo.id === id);
     return `${parseFloat(
@@ -187,7 +189,7 @@ export default function Prueba() {
     };
     initialFetchInsumos();
   }, []);
-  const handleAddImage = (e) => {
+  const handleAddImage = (e, type) => {
     const file = e.target.files[0];
     if (!file.type.includes("image")) {
       toast.error("¡Solo se permiten imágenes!", {
@@ -196,7 +198,7 @@ export default function Prueba() {
       });
       return;
     }
-    setReferencia(file);
+    type === "referencia" ? setReferencia(file) : setComprobante(file);
   };
   const handleAddInsumo = () => {
     if (numberOfInsumos.length >= insumos?.length)
@@ -233,13 +235,10 @@ export default function Prueba() {
         });
       }
     } else if (dialogProps.action === "finish") {
-      response = await createVenta({ citaId: selectedEvent.data.id });
-      if (response.status !== 201 && response.status !== 200) {
-        return toast.error(response.data, {
-          autoClose: 2000,
-          toastId: "error",
-        });
-      }
+      if (!comprobante) return toast.error("¡El comprobante es requerido!");
+      const imageFormData = new FormData();
+      imageFormData.append("file", comprobante);
+      response = await updateVenta(selectedEvent.data.venta.id, imageFormData);
     } else {
       if (
         numberOfInsumos.length <= 0 &&
@@ -333,7 +332,7 @@ export default function Prueba() {
     });
     setEvents(events);
     toggleState(setOpenModal);
-
+    setComprobante(null);
     toast.success(
       `¡Cita ${
         dialogProps.action === "add"
@@ -341,7 +340,7 @@ export default function Prueba() {
           : dialogProps.action === "edit"
           ? "editada"
           : dialogProps.action === "finish"
-          ? "terminada"
+          ? "con nuevo comprobante. Operación terminada"
           : dialogProps.action === "estimation"
           ? "cotizada"
           : "cancelada"
@@ -410,14 +409,15 @@ export default function Prueba() {
               </span>{" "}
               <span>Info</span>
             </div>
-            {selectedEvent.data.estadoId === 11 && (
-              <div onClick={handleTerminarCita}>
-                <span className="info">
-                  <CheckBoxOutlined />
-                </span>{" "}
-                <span>Terminar Cita</span>
-              </div>
-            )}
+            {selectedEvent.data.estadoId === 11 &&
+              !selectedEvent.data.venta.imagen && (
+                <div onClick={handleTerminarCita}>
+                  <span className="info">
+                    <CheckBoxOutlined />
+                  </span>{" "}
+                  <span>Comprobante</span>
+                </div>
+              )}
             {selectedEvent.data.estadoId !== 13 &&
               selectedEvent.data.estadoId !== 12 && (
                 <div onClick={handleEdit}>
@@ -450,7 +450,7 @@ export default function Prueba() {
           keepMounted
           TransitionComponent={Transition}
           open={openModal}
-          onClose={() => toggleState(!openModal)}
+          onClose={() => toggleState(setOpenModal)}
         >
           <form onSubmit={handleSubmit(handleSave)}>
             <DialogTitleCustom>{dialogProps.title}</DialogTitleCustom>
@@ -526,7 +526,37 @@ export default function Prueba() {
                   "dddd, D [de] MMMM [de] YYYY"
                 )}`}</DialogContentText>
               ) : dialogProps.action === "finish" ? (
-                <DialogContentText>{`¿Cita con ${selectedEvent.data.usuario.nombre} terminada? ¡Esto creará una venta!`}</DialogContentText>
+                <div>
+                  <h4>Subir Comprobante de pago</h4>
+                  <div style={{ width: "100%" }}>
+                    <label className="subir-img">
+                      <input
+                        onChange={(e) => handleAddImage(e, "comprobante")}
+                        type="file"
+                        accept="image/*"
+                      />
+                      <div style={{ width: "100%" }}>Subir imagen</div>
+                    </label>
+                    <h4 sx={{ color: "red", fontSize: ".8rem" }}>
+                      {errors?.imagen?.message}
+                    </h4>
+                  </div>
+                  {comprobante && (
+                    <div
+                      className="image-container"
+                      onClick={() => setComprobante()}
+                    >
+                      <img
+                        src={URL.createObjectURL(comprobante)}
+                        alt={`Imagen`}
+                        className="image"
+                      />
+                      <div className="overlay">
+                        <TrashColor size={38} color={"#fff"}></TrashColor>
+                      </div>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <div>
                   {dialogProps.action !== "estimation" && (
@@ -896,7 +926,7 @@ const CalendarEvent = ({ props }) => {
         setBgColor(null);
     }
   }, [props.event.data.estadoId]);
-  const toggleState = () => {
+  const toggleStateOption = () => {
     setIsOpenOptions(!isOpenOptions);
   };
 
@@ -905,7 +935,7 @@ const CalendarEvent = ({ props }) => {
       <div
         className="cita-calendar"
         style={{ background: bgColor.bg, color: bgColor.color }}
-        onClick={toggleState}
+        onClick={toggleStateOption}
       >
         {props.title}
         <Dots size={12} color={"#fff"} />

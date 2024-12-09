@@ -67,6 +67,15 @@ export default function useCitasData() {
     );
     return respuesta;
   };
+  const getCitaVenta = async (citaId) => {
+    const respuesta = await getFetch(
+      `${URL_BACK}/ventas/getCitaVenta/${citaId}`,
+      "GET",
+      null,
+      { "x-token": token }
+    );
+    return respuesta;
+  };
   const updateSTP = async (citaId, infoUpdate) => {
     const respuesta = await updateFetch(
       `${URL_BACK}/citas/updateSPT/${citaId}`,
@@ -85,7 +94,15 @@ export default function useCitasData() {
     );
     return respuesta;
   };
-
+  const updateVenta = async (id, infoUpdate) => {
+    const respuesta = await updateFetch(
+      `${URL_BACK}/ventas/updateVenta/${id}`,
+      "PUT",
+      infoUpdate,
+      { "x-token": token }
+    );
+    return respuesta;
+  };
   const fetchAllUsuarios = async () => {
     const respuesta = await getFetch(
       `${URL_BACK}/usuarios/getAllUsers`,
@@ -117,5 +134,6 @@ export default function useCitasData() {
     loading,
     createEstimation,
     updateSTP,
+    updateVenta,
   };
 }
