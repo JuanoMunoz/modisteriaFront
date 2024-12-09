@@ -102,56 +102,56 @@ export const ColumnsCategoriaPrendas = ({
   onDownload,
   changeState,
 }) => [
-  { field: "nombre", headerName: "Nombre", flex: 1 },
-  {
-    field: "descripcion",
-    headerName: "Descripción",
-    flex: 2,
-    valueGetter: (params) =>
-      params.row.descripcion ? params.row.descripcion : "Sin descripción",
-  },
-  {
-    field: "molde",
-    headerName: "Molde",
-    flex: 1,
-    renderCell: ({ row }) => {
-      const theme = useTheme();
-      const colors = tokens(theme.palette.mode);
-      return (
-        row.molde && (
-          <Button onClick={() => onDownload(row)}>
-            <PictureAsPdfIcon size={20} sx={{ color: "#fff" }} />
-          </Button>
-        )
-      );
+    { field: "nombre", headerName: "Nombre", flex: 1 },
+    {
+      field: "descripcion",
+      headerName: "Descripción",
+      flex: 2,
+      valueGetter: (params) =>
+        params.row.descripcion ? params.row.descripcion : "Sin descripción",
     },
-  },
-  {
-    field: "estadoId",
-    headerName: "Estado",
-    flex: 1,
-    renderCell: ({ row }) => (
-      <SwitchCustom row={row} changeState={changeState} />
-    ),
-  },
-  {
-    field: "acciones",
-    headerName: "Acciones",
-    flex: 1,
-    renderCell: ({ row }) => {
-      const theme = useTheme();
-      const colors = tokens(theme.palette.mode);
-      return (
-        <Actions
-          colors={colors}
-          row={row}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
-      );
+    {
+      field: "molde",
+      headerName: "Molde",
+      flex: 1,
+      renderCell: ({ row }) => {
+        const theme = useTheme();
+        const colors = tokens(theme.palette.mode);
+        return (
+          row.molde && (
+            <Button onClick={() => onDownload(row)}>
+              <PictureAsPdfIcon size={20} sx={{ color: "#fff" }} />
+            </Button>
+          )
+        );
+      },
     },
-  },
-];
+    {
+      field: "estadoId",
+      headerName: "Estado",
+      flex: 1,
+      renderCell: ({ row }) => (
+        <SwitchCustom row={row} changeState={changeState} />
+      ),
+    },
+    {
+      field: "acciones",
+      headerName: "Acciones",
+      flex: 1,
+      renderCell: ({ row }) => {
+        const theme = useTheme();
+        const colors = tokens(theme.palette.mode);
+        return (
+          <Actions
+            colors={colors}
+            row={row}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
+        );
+      },
+    },
+  ];
 
 export const ColumnsInsumos = ({
   onEdit,
@@ -160,51 +160,51 @@ export const ColumnsInsumos = ({
   getCategoriaNombre,
   getUnidadMedida,
 }) => [
-  {
-    field: "nombre",
-    headerName: "Nombre",
-    flex: 1,
-  },
-  {
-    field: "cantidad",
-    headerName: "Cantidad",
-    flex: 1,
-    valueGetter: (params) =>
-      `${params.row.cantidad}  ${getUnidadMedida(params.row.unidadMedidaId)}`,
-  },
-  {
-    field: "categoriaInsumoId",
-    headerName: "Categoría",
-    flex: 1,
-    valueGetter: (params) => getCategoriaNombre(params.row.categoriaInsumoId),
-  },
-  {
-    field: "estadoId",
-    headerName: "Estado",
-    flex: 1,
-    renderCell: ({ row }) => (
-      <SwitchCustom row={row} changeState={changeState} />
-    ),
-  },
-  {
-    field: "acciones",
-    headerName: "Acciones",
-    flex: 1,
-    renderCell: ({ row }) => {
-      const theme = useTheme();
-      const colors = tokens(theme.palette.mode);
-
-      return (
-        <Actions
-          colors={colors}
-          row={row}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
-      );
+    {
+      field: "nombre",
+      headerName: "Nombre",
+      flex: 1,
     },
-  },
-];
+    {
+      field: "cantidad",
+      headerName: "Cantidad",
+      flex: 1,
+      valueGetter: (params) =>
+        `${params.row.cantidad}  ${getUnidadMedida(params.row.unidadMedidaId)}`,
+    },
+    {
+      field: "categoriaInsumoId",
+      headerName: "Categoría",
+      flex: 1,
+      valueGetter: (params) => getCategoriaNombre(params.row.categoriaInsumoId),
+    },
+    {
+      field: "estadoId",
+      headerName: "Estado",
+      flex: 1,
+      renderCell: ({ row }) => (
+        <SwitchCustom row={row} changeState={changeState} />
+      ),
+    },
+    {
+      field: "acciones",
+      headerName: "Acciones",
+      flex: 1,
+      renderCell: ({ row }) => {
+        const theme = useTheme();
+        const colors = tokens(theme.palette.mode);
+
+        return (
+          <Actions
+            colors={colors}
+            row={row}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
+        );
+      },
+    },
+  ];
 export const ColumnsUsuarios = ({
   onEdit,
   onDelete,
@@ -212,57 +212,57 @@ export const ColumnsUsuarios = ({
   getRoleId,
   payload,
 }) => [
-  { field: "nombre", headerName: "Nombre", flex: 1 },
-  { field: "email", headerName: "Correo", flex: 1 },
-  { field: "telefono", headerName: "Teléfono", flex: 1 },
-  {
-    field: "direccion",
-    headerName: "Dirección",
-    flex: 1,
-    valueGetter: (params) =>
-      params.row.direccion ? params.row.direccion : "Sin dirección agregada",
-  },
-  {
-    field: "roleId",
-    headerName: "Rol",
-    flex: 1,
-    valueGetter: (params) => getRoleId(params.row.roleId),
-  },
-  {
-    field: "estadoId",
-    headerName: "Estado",
-    flex: 1,
-    renderCell: ({ row }) =>
-      payload?.email !== row.email ? (
-        <SwitchCustom row={row} changeState={changeState} />
-      ) : (
-        <Box sx={{ textAlign: "center", mx: "auto" }}>
-          <h4>Usuario activo</h4>
-        </Box>
-      ),
-  },
-  {
-    field: "acciones",
-    headerName: "Acciones",
-    flex: 1,
-    renderCell: ({ row }) => {
-      const theme = useTheme();
-      const colors = tokens(theme.palette.mode);
-      return row.email === payload?.email ? (
-        <Box sx={{ textAlign: "center", mx: "auto" }}>
-          <h4>Sin acciones</h4>
-        </Box>
-      ) : (
-        <Actions
-          colors={colors}
-          row={row}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
-      );
+    { field: "nombre", headerName: "Nombre", flex: 1 },
+    { field: "email", headerName: "Correo", flex: 1 },
+    { field: "telefono", headerName: "Teléfono", flex: 1 },
+    {
+      field: "direccion",
+      headerName: "Dirección",
+      flex: 1,
+      valueGetter: (params) =>
+        params.row.direccion ? params.row.direccion : "Sin dirección agregada",
     },
-  },
-];
+    {
+      field: "roleId",
+      headerName: "Rol",
+      flex: 1,
+      valueGetter: (params) => getRoleId(params.row.roleId),
+    },
+    {
+      field: "estadoId",
+      headerName: "Estado",
+      flex: 1,
+      renderCell: ({ row }) =>
+        payload?.email !== row.email ? (
+          <SwitchCustom row={row} changeState={changeState} />
+        ) : (
+          <Box sx={{ textAlign: "center", mx: "auto" }}>
+            <h4>Usuario activo</h4>
+          </Box>
+        ),
+    },
+    {
+      field: "acciones",
+      headerName: "Acciones",
+      flex: 1,
+      renderCell: ({ row }) => {
+        const theme = useTheme();
+        const colors = tokens(theme.palette.mode);
+        return row.email === payload?.email ? (
+          <Box sx={{ textAlign: "center", mx: "auto" }}>
+            <h4>Sin acciones</h4>
+          </Box>
+        ) : (
+          <Actions
+            colors={colors}
+            row={row}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
+        );
+      },
+    },
+  ];
 export const ColumnsProveedores = ({ onEdit, onDelete, changeState }) => [
   { field: "nombre", headerName: "Nombre", flex: 1 },
   { field: "telefono", headerName: "Teléfono", flex: 1 },
@@ -343,11 +343,7 @@ export const ColumnsCategoriaInsumos = ({ onEdit, onDelete, changeState }) => [
   },
 ];
 
-export const ColumnsVentas = ({
-  handleCancel,
-  handleConfirm, onCancel,
-  handleDetails,
-}) => [
+export const ColumnsVentas = ({ handleCancel, handleConfirm, handleDetails }) => [
   {
     field: "fecha",
     headerName: "Fecha",
@@ -374,7 +370,7 @@ export const ColumnsVentas = ({
             handleDetails(row);
           }}
         >
-          <Eye size={20} color={colors.grey[100]}></Eye>
+          <Eye size={20} color={colors.grey[100]} />
         </Button>
       );
     },
@@ -397,31 +393,39 @@ export const ColumnsVentas = ({
     headerName: "Acciones",
     flex: 1,
     renderCell: ({ row }) => {
-      return row.estadoId === 3 ? (
-        <div>
-          <Button
-            title="Confirmar venta"
-            onClick={() => {
-              handleConfirm(row);
-            }}
-          >
-            <Check size={20} color="#008000"></Check>
-          </Button>
-          <Button
-            title="Cancelar venta"
-            onClick={() => {
-              handleCancel(row);
-            }}
-          >
-            <Cancel size={20} color={"#E74C3C"}></Cancel>
-          </Button>
-        </div>
-      ) : (
-        <span style={{ paddingLeft: "25px" }}>Sin acciones</span>
-      );
+      if (row.estadoId === 3) {
+        return (
+          <div>
+            {/* Mostrar solo el botón de Confirmar venta */}
+            <Button
+              title="Confirmar venta"
+              onClick={() => {
+                handleConfirm(row);
+              }}
+            >
+              <Check size={20} color="#008000" />
+            </Button>
+
+            {/* Mostrar el botón de Cancelar venta solo si el origen es Cita */}
+            {row.citaId === null && (
+              <Button
+                title="Cancelar venta"
+                onClick={() => {
+                  handleCancel(row);
+                }}
+              >
+                <Cancel size={20} color="#E74C3C" />
+              </Button>
+            )}
+          </div>
+        );
+      } else {
+        return <span style={{ paddingLeft: "25px" }}>Sin acciones</span>;
+      }
     },
   },
 ];
+
 
 export const ColumnsRoles = ({
   onEdit,
@@ -429,58 +433,58 @@ export const ColumnsRoles = ({
   changeState,
   handlePermission,
 }) => [
-  { field: "nombre", headerName: "Nombre", flex: 1 },
-  {
-    field: "permisosId",
-    headerName: "Permisos",
-    flex: 1,
-    renderCell: ({ row }) => {
-      const theme = useTheme();
-      const colors = tokens(theme.palette.mode);
-      row.permisos = row.Permisos.map((permiso) => permiso.id);
-      return (
-        <Button
-          onClick={() => {
-            handlePermission(row);
-          }}
-        >
-          <Eye size={20} color={colors.grey[100]}></Eye>
-        </Button>
-      );
+    { field: "nombre", headerName: "Nombre", flex: 1 },
+    {
+      field: "permisosId",
+      headerName: "Permisos",
+      flex: 1,
+      renderCell: ({ row }) => {
+        const theme = useTheme();
+        const colors = tokens(theme.palette.mode);
+        row.permisos = row.Permisos.map((permiso) => permiso.id);
+        return (
+          <Button
+            onClick={() => {
+              handlePermission(row);
+            }}
+          >
+            <Eye size={20} color={colors.grey[100]}></Eye>
+          </Button>
+        );
+      },
     },
-  },
-  {
-    field: "estadoId",
-    headerName: "Estado",
-    flex: 1,
-    renderCell: ({ row }) =>
-      row.id >= 5 ? (
-        <SwitchCustom row={row} changeState={changeState} />
-      ) : (
-        "Activo"
-      ),
-  },
-  {
-    field: "acciones",
-    headerName: "Acciones",
-    flex: 1,
-    renderCell: ({ row }) => {
-      const theme = useTheme();
-      const colors = tokens(theme.palette.mode);
+    {
+      field: "estadoId",
+      headerName: "Estado",
+      flex: 1,
+      renderCell: ({ row }) =>
+        row.id >= 5 ? (
+          <SwitchCustom row={row} changeState={changeState} />
+        ) : (
+          "Activo"
+        ),
+    },
+    {
+      field: "acciones",
+      headerName: "Acciones",
+      flex: 1,
+      renderCell: ({ row }) => {
+        const theme = useTheme();
+        const colors = tokens(theme.palette.mode);
 
-      return row.id >= 5 ? (
-        <Actions
-          colors={colors}
-          row={row}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
-      ) : (
-        <span style={{ paddingLeft: "25px" }}>Sin acciones</span>
-      );
+        return row.id >= 5 ? (
+          <Actions
+            colors={colors}
+            row={row}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
+        ) : (
+          <span style={{ paddingLeft: "25px" }}>Sin acciones</span>
+        );
+      },
     },
-  },
-];
+  ];
 
 export const ColumnsCatalogo = ({
   onEdit,
@@ -489,45 +493,45 @@ export const ColumnsCatalogo = ({
   getCategoriaNombre,
   OnPreview,
 }) => [
-  { field: "producto", headerName: "Nombre", flex: 1 },
-  {
-    field: "precio",
-    headerName: "Precio",
-    flex: 1,
-    valueGetter: (params) => formToCop(params.row.precio),
-  },
-  {
-    field: "categoriaId",
-    headerName: "Categoría",
-    flex: 1,
-    valueGetter: (params) => getCategoriaNombre(params.row.categoriaId),
-  },
-  {
-    field: "estadoId",
-    headerName: "Estado",
-    flex: 1,
-    renderCell: ({ row }) => (
-      <SwitchCustom row={row} changeState={changeState} />
-    ),
-  },
-  {
-    field: "acciones",
-    headerName: "Acciones",
-    flex: 1.5,
-    renderCell: ({ row }) => {
-      const theme = useTheme();
-      const colors = tokens(theme.palette.mode);
-      row.tallas = row.Tallas.map((talla) => talla.id);
-      return (
-        <Actions
-          colors={colors}
-          row={row}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          eye
-          onPreview={OnPreview}
-        />
-      );
+    { field: "producto", headerName: "Nombre", flex: 1 },
+    {
+      field: "precio",
+      headerName: "Precio",
+      flex: 1,
+      valueGetter: (params) => formToCop(params.row.precio),
     },
-  },
-];
+    {
+      field: "categoriaId",
+      headerName: "Categoría",
+      flex: 1,
+      valueGetter: (params) => getCategoriaNombre(params.row.categoriaId),
+    },
+    {
+      field: "estadoId",
+      headerName: "Estado",
+      flex: 1,
+      renderCell: ({ row }) => (
+        <SwitchCustom row={row} changeState={changeState} />
+      ),
+    },
+    {
+      field: "acciones",
+      headerName: "Acciones",
+      flex: 1.5,
+      renderCell: ({ row }) => {
+        const theme = useTheme();
+        const colors = tokens(theme.palette.mode);
+        row.tallas = row.Tallas.map((talla) => talla.id);
+        return (
+          <Actions
+            colors={colors}
+            row={row}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            eye
+            onPreview={OnPreview}
+          />
+        );
+      },
+    },
+  ];

@@ -26,6 +26,7 @@ import "./ventasDash.css";
 import { ShoppingCartOutlined } from "@mui/icons-material";
 import CustomDialogActions from "../../components/customDialogActions/CustomDialogActions";
 import InputDash from "../../components/inputDashboard/InputDash";
+import useCitasData from "../../hooks/useCitasData";
 
 export default function Ventas() {
   // Estados
@@ -33,6 +34,7 @@ export default function Ventas() {
   const [dialogProps, setDialogProps] = useState({
     action: "",
     title: "",
+    origen: "",
     row: null,
   });
   const [openAddModal, setOpenAddModal] = useState(false);
@@ -45,6 +47,7 @@ export default function Ventas() {
     initialFetchAllVentas,
     loading,
   } = useVentasData();
+  const { createVenta } = useCitasData(); // Asegúrate de tener esta función para terminar la cita.
   const {
     register,
     handleSubmit,
@@ -61,58 +64,93 @@ export default function Ventas() {
     initialFetch();
   }, []);
 
-  // Funciones auxiliares
-  const handleDialog = (action, title, row = null) => {
-    setDialogProps({ action, title, row });
+  // Funciones específicas
+  const terminarCitaHandler = async () => {
+    const response = await createVenta({ citaId: dialogProps.row.citaId });
+    if (response.status !== 200 && response.status !== 201) {
+      throw new Error("Error al terminar la cita.");
+    }
+  };
+
+  const confirmarVenta = async () => {
+    const response = await updateVentas(dialogProps.row.id);
+    if (response.status !== 200 && response.status !== 201) {
+      throw new Error("Error al confirmar la venta.");
+    }
+    setData((prevData) =>
+      prevData.map((venta) =>
+        venta.id === dialogProps.row.id ? { ...venta, estadoId: 14 } : venta
+      )
+    );
+  };
+
+  const cancelVenta = async (formData) => {
+    const response = await cancelarVenta(dialogProps.row.id, {
+      motivo: formData.motivo,
+    });
+    if (response.status !== 200 && response.status !== 201) {
+      throw new Error("Error al cancelar la venta.");
+    }
+    setData((prevData) =>
+      prevData.map((venta) =>
+        venta.id === dialogProps.row.id ? { ...venta, estadoId: 12 } : venta
+      )
+    );
+  };
+
+  // Lógica central para manejar acciones
+  const handleAction = async (formData) => {
+    // Determina el origen según el valor de citaId
+    const origen = dialogProps.row?.citaId === null ? "Catálogo" : "Cita";
+
+    // Mapeo de las acciones posibles
+    const actionMap = {
+      confirm: {
+        Cita: terminarCitaHandler, // Acción para Cita
+        Catálogo: confirmarVenta,  // Acción para Catálogo
+      },
+      cancel: {
+        Catálogo: cancelVenta, // Acción para cancelar venta en Catálogo
+      },
+    };
+
+    // Buscar la función correspondiente según la acción y el origen
+    const actionFn = actionMap[dialogProps.action]?.[origen];
+
+    // Ejecutar la acción si existe
+    if (actionFn) {
+      try {
+        await actionFn(formData);
+        toast.success("¡Operación realizada con éxito!");
+        toggleState(setOpenAddModal); // Cerrar el modal
+      } catch (error) {
+        toast.error(`Error en la operación: ${error.message}`);
+      }
+    } else {
+      toast.error("Acción no válida.");
+    }
+  };
+
+
+  // Función para configurar el diálogo
+  const handleDialog = (action, title, origen, row = null) => {
+    setDialogProps({ action, title, origen, row });
     reset({ motivo: "" });
     toggleState(setOpenAddModal);
   };
 
-  const handleConfirmVenta = async () => {
-    try {
-      const response = await updateVentas(dialogProps.row.id);
-      if (response.status !== 200 && response.status !== 201) {
-        toast.error("Error al confirmar la venta.");
-        return;
-      }
-      setData((prevData) =>
-        prevData.map((venta) =>
-          venta.id === dialogProps.row.id ? { ...venta, estadoId: 14 } : venta
-        )
-      );
-      toast.success("¡Venta confirmada con éxito!");
-      toggleState(setOpenAddModal);
-    } catch (error) {
-      toast.error(`Error en la operación: ${error.message}`);
-    }
-  };
-
-  const handleCancelVenta = async (formData) => {
-    try {
-      const response = await cancelarVenta(dialogProps.row.id, {
-        motivo: formData.motivo,
-      });
-      if (response.status !== 200 && response.status !== 201) {
-        toast.error("Error al cancelar la venta.");
-        return;
-      }
-      setData((prevData) =>
-        prevData.map((venta) =>
-          venta.id === dialogProps.row.id ? { ...venta, estadoId: 12 } : venta
-        )
-      );
-      toast.success("¡Venta cancelada con éxito!");
-      toggleState(setOpenAddModal);
-    } catch (error) {
-      toast.error(`Error en la operación: ${error.message}`);
-    }
-  };
-
   const columns = ColumnsVentas({
     handleDetails: (row) =>
-      handleDialog("verDetalles", "Detalles de la Venta", row),
-    handleConfirm: (row) => handleDialog("confirm", "Confirmar Venta", row),
-    handleCancel: (row) => handleDialog("cancel", "Cancelar Venta", row),
+      handleDialog("verDetalles", "Detalles de la Venta", "Catálogo", row),
+    handleConfirm: (row) =>
+      handleDialog(
+        "confirm", 
+        row?.citaId !== null ? "Terminar Cita" : "Confirmar Venta", // Cambiar el título según citaId
+        "Catálogo", 
+        row
+      ),
+    handleCancel: (row) =>
+      handleDialog("cancel", "Cancelar Venta", "Catálogo", row),
   });
 
   // Renderizado
@@ -121,7 +159,7 @@ export default function Ventas() {
       <Header
         title="Ventas"
         buttonText="Ver estados"
-        handleAdd={() => handleDialog("info", "Estados de la venta")}
+        handleAdd={() => handleDialog("info", "Estados de la venta", "Catálogo")}
         icon={ShoppingCartOutlined}
       />
       <br />
@@ -149,13 +187,7 @@ export default function Ventas() {
         }}
       >
         <DialogTitleCustom>{dialogProps.title}</DialogTitleCustom>
-        <form
-          onSubmit={
-            dialogProps.action === "cancel"
-              ? handleSubmit(handleCancelVenta)
-              : handleSubmit(handleConfirmVenta)
-          }
-        >
+        <form onSubmit={handleSubmit(handleAction)}>
           <DialogContent>
             {dialogProps.action === "info" && (
               <section className="info-section">
@@ -211,8 +243,9 @@ export default function Ventas() {
             )}
             {dialogProps.action === "confirm" && (
               <DialogContentText textAlign={"center"}>
-                Esta acción conifrmará la venta. ¡Asegurese del correcto pago
-                antes de confirmarla!{" "}
+                {dialogProps.row?.citaId !== null
+                  ? "Esta acción terminará la cita. Asegúrese de que la cita esté completada antes de terminarla."
+                  : "Esta acción confirmará la venta. ¡Asegúrese del correcto pago antes de confirmarla!"}
               </DialogContentText>
             )}
             {dialogProps.action === "cancel" && (
@@ -233,25 +266,19 @@ export default function Ventas() {
                         "¡La justificación debe ser de mínimo 4 caracteres!",
                       value: 4,
                     },
-                    maxLength: {
-                      message:
-                        "¡La justificación debe ser de máximo 255 caracteres!",
-                      value: 255,
-                    },
                   })}
-                  type="text"
-                  description={errors.motivo && errors.motivo.message}
+                  error={errors.motivo?.message}
+                  multiline
+                  rows={3}
                 />
               </div>
             )}
           </DialogContent>
           <CustomDialogActions
-            cancelButton
             handleClose={() => toggleState(setOpenAddModal)}
-            saveButton={
-              dialogProps.action === "cancel" ||
-              dialogProps.action === "confirm"
-            }
+            handleSubmit={handleSubmit(handleAction)}
+            cancelButton={true} // Botón Cancelar visible
+            saveButton={true}   // Botón Guardar visible
           />
         </form>
       </Dialog>
