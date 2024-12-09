@@ -34,7 +34,7 @@ export default function Venta() {
   const navigate = useNavigate();
   const [address, setAddress] = useState(false);
   const { calcularDomicilio } = useVentas();
-  const [lugarEntrega, setLugarEntrega] = useState("");
+  const [lugarEntrega, setLugarEntrega] = useState("modisteria");
   const [file, setImagen] = useState(null);
   const [nombreComprobante, setNombreComprobante] = useState(payload?.id);
   const [loading, setLoading] = useState(false);
@@ -190,6 +190,7 @@ export default function Venta() {
     if (response.status === 201)
       toast.success(`${response.data.msg}\nEspera tu correo de confirmación`, {
         autoClose: 3000,
+        onClose: () => navigate("/"),
       });
     else if (response.status === 400) {
       toast.error(`${response.data.error}`, {

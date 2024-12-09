@@ -26,9 +26,9 @@ export default function useDomicilioData() {
     );
     return respuesta;
   };
-  const updateTalla = async (id, infoUpdate) => {
+  const updateSG = async (id, infoUpdate) => {
     const respuesta = await updateFetch(
-      `${URL_BACK}/tallas/updateTalla/${id}`,
+      `${URL_BACK}/domicilios/updateSG/${id}`,
       "PUT",
       infoUpdate,
       { "x-token": token }
@@ -58,5 +58,6 @@ export default function useDomicilioData() {
     initialFetchAllDomicilios,
     fetchAllDomicilios,
     loading,
+    updateSG,
   };
 }

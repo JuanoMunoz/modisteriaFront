@@ -53,12 +53,12 @@ export default function ControlInsumos() {
 
   const exportToExcel = () => {
     const formattedData = filteredData.map((item) => ({
-      "Nombre del Insumo": item.insumos.nombre, 
+      "Nombre del Insumo": item.insumos.nombre,
       "Cantidad Modificada": item.cantidad_modificada,
       "Unidad de Medida": item.insumos.unidades_de_medida.nombre,
-      "Autor": item.usuario.nombre, 
-      "Fecha": item.fecha,
-      "Motivo": item.motivo,
+      Autor: item.usuario.nombre,
+      Fecha: item.fecha,
+      Motivo: item.motivo,
       "Correo Autor": item.usuario.email,
     }));
 
@@ -72,53 +72,37 @@ export default function ControlInsumos() {
     const doc = new jsPDF();
 
     doc.text("Control de Insumos", 20, 20);
-    doc.text("", 20, 30); 
+    doc.text("", 20, 30);
 
     let yPosition = 40;
-    const marginBottom = 20; 
+    const marginBottom = 20;
 
     filteredData.forEach((data) => {
-
-      if (yPosition + 50 > 290) { 
+      if (yPosition + 50 > 290) {
         doc.addPage();
-        yPosition = 20; 
+        yPosition = 20;
       }
 
-      doc.text(
-        `Insumo: ${data.insumos.nombre}`,
-        20,
-        yPosition
-      ); yPosition += 10; 
-      doc.text(
-        `Fecha: ${data.fecha}`,
-        20,
-        yPosition
-      ); yPosition += 10; 
+      doc.text(`Insumo: ${data.insumos.nombre}`, 20, yPosition);
+      yPosition += 10;
+      doc.text(`Fecha: ${data.fecha}`, 20, yPosition);
+      yPosition += 10;
       doc.text(
         `Cantidad Modificada: ${data.cantidad_modificada}`,
         20,
         yPosition
-      ); yPosition += 10; 
-      doc.text(
-        `Motivo: ${data.motivo}`,
-        20,
-        yPosition
-      ); yPosition += 10; 
-      doc.text(
-        `Autor: ${data.usuario.nombre}`,
-        20,
-        yPosition
-      ); yPosition += 10; 
-      doc.text(
-        `Correo Autor: ${data.usuario.email}`,
-        20,
-        yPosition
       );
-      yPosition += 20; 
+      yPosition += 10;
+      doc.text(`Motivo: ${data.motivo}`, 20, yPosition);
+      yPosition += 10;
+      doc.text(`Autor: ${data.usuario.nombre}`, 20, yPosition);
+      yPosition += 10;
+      doc.text(`Correo Autor: ${data.usuario.email}`, 20, yPosition);
+      yPosition += 20;
 
       if (yPosition + marginBottom > 290) {
-        doc.addPage(); 
-        yPosition = 20; 
+        doc.addPage();
+        yPosition = 20;
       }
     });
 
@@ -127,30 +111,15 @@ export default function ControlInsumos() {
 
   return (
     <>
-      
-
-      <div className="export-buttons">
-        <Header title="Control de los insumos" icon={HistoryOutlined} />
-      <br />
-
-        <Button
-          variant="contained"
-          color="success"
-          onClick={exportToExcel}
-          style={{ margin: "10px" }}
-        >
-          Exportar a Excel
-        </Button>
-
-        <Button
-          variant="contained"
-          color="error"
-          onClick={exportToPDF}
-          style={{ margin: "10px" }}
-        >
-          Exportar a PDF
-        </Button>
-      </div>
+      <Header
+        title="Control de los insumos"
+        handleAdd={exportToExcel}
+        buttonText={"Exporta a excel"}
+        secondButton
+        secondButtonText={"Exportar a PDF"}
+        handleSecondButtonFunction={exportToPDF}
+        icon={HistoryOutlined}
+      />
 
       <div className="filtrosControl">
         <div className="header-actions">

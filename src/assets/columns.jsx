@@ -4,7 +4,7 @@ import { useTheme } from "@mui/material";
 import { tokens } from "../theme";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { estadosVenta, formToCop } from "./constants.d";
+import { estadosDomicilio, estadosVenta, formToCop } from "./constants.d";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import dayjs from "dayjs";
 
@@ -408,15 +408,14 @@ export const ColumnsVentas = ({
             >
               <Check size={20} color="#008000" />
             </Button>
-              <Button
-                title="Cancelar venta"
-                onClick={() => {
-                  handleCancel(row);
-                }}
-              >
-                <Cancel size={20} color="#E74C3C" />
-              </Button>
-            
+            <Button
+              title="Cancelar venta"
+              onClick={() => {
+                handleCancel(row);
+              }}
+            >
+              <Cancel size={20} color="#E74C3C" />
+            </Button>
           </div>
         );
       } else {
@@ -426,39 +425,50 @@ export const ColumnsVentas = ({
   },
 ];
 
-export const ColumnsDomicilios = ({
-  handleCancel,
-  handleConfirm,
-  handleDetails,
-}) => [
+export const ColumnsDomicilios = ({ handleConfirm, handleDetails }) => [
   {
     field: "ventas.fecha",
     headerName: "Fecha",
-    flex: 2,
+    flex: 1.2,
     renderCell: (params) =>
       dayjs(params.value).format("DD [de] MMMM [del] YYYY [a las] HH:mm A"),
   },
   {
-    field: "ventas.nombrePersona",
-    headerName: "Nombre comprador",
+    field: "estadoId",
+    headerName: "Estados",
     flex: 1,
+    renderCell: (params) => {
+      const estado = estadosDomicilio.find(
+        (estado) => estado.id === params.value
+      );
+      return estado ? (
+        <h3 style={{ color: estado.color }}>{estado.nombre}</h3>
+      ) : (
+        <h4>Desconocido</h4>
+      );
+    },
   },
   {
     field: "id",
-    headerName: "Detalles",
-    flex: 0.5,
+    headerName: "Acciones",
+    flex: 0.7,
     renderCell: ({ row }) => {
-      const theme = useTheme();
-      const colors = tokens(theme.palette.mode);
-      return (
-        <Button
-          onClick={() => {
-            handleDetails(row);
-          }}
-        >
-          <Eye size={20} color={colors.grey[100]} />
-        </Button>
-      );
+      if (row.estadoId === 3) {
+        return (
+          <div>
+            <Button
+              title="Confirmar venta"
+              onClick={() => {
+                handleConfirm(row);
+              }}
+            >
+              <Check size={20} color="#008000" />
+            </Button>
+          </div>
+        );
+      } else {
+        return <span style={{ paddingLeft: "25px" }}>Sin acciones</span>;
+      }
     },
   },
   // {

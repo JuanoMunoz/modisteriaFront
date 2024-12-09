@@ -108,6 +108,44 @@ export const estadosVenta = [
       "La venta ha finalizado por un motivo de peso, el servicio NO fue entregado y la modista no verá reflejado un ingreso económico.",
   },
 ];
+export const estadosDomicilio = [
+  {
+    id: 3,
+    nombre: "Pendiente",
+    color: "#F1C40F", // Amarillo: Aviso de que algo está pendiente
+    descripcion:
+      "El domicilio se ha creado recientemente, la modista deberá entonces acercarse al servicio de correspondencia y hacer entrega del número de guía del pedido.",
+  },
+  {
+    id: 15,
+    nombre: "En agencia",
+    color: "#3498DB", // Azul: Refleja profesionalismo y proceso en tránsito
+    descripcion:
+      "La modista ha entregado el pedido a la agencia para llevar al sitio de entrega para posteriormente enviarle al usuario su número de guía",
+  },
+  {
+    id: 16,
+    nombre: "Devuelto",
+    color: "#E67E22", // Naranja: Advertencia, algo salió fuera de lo planeado
+    descripcion:
+      "El pedido llegó al sitio de entrega sin embargo el usuario no lo recibió en el momento en el que lo llevaron, así que dicho pedido estará guardado en la sucursal de la agencia más cercana al sitio de entrega.",
+  },
+  {
+    id: 6,
+    nombre: "Entregado",
+    color: "#2ECC71", // Verde: Representa éxito y finalización
+    descripcion:
+      "La agencia ha llevado el pedido al sitio de entrega y el usuario lo ha recibido.",
+  },
+  {
+    id: 8,
+    nombre: "Cancelado",
+    color: "#E74C3C", // Rojo: Indica claramente que algo salió mal
+    descripcion:
+      "Se ha cancelado el domicilio debido a una ocurrencia con la venta. El usuario podrá revisar el motivo en su correo electrónico.",
+  },
+];
+
 export const postSession = [
   {
     title: "Bienvenido a Modistería Doña Luz. ¡Agenda una cita con nosotros!",
