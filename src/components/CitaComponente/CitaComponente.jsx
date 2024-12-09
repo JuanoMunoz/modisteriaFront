@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import Input from "../../components/input_basico/Input";
 import useDecodedJwt from "../../hooks/useJwt";
 import { QrCode } from "../../components/svg/Svg";
+import dayjs from "dayjs";
 
 export default function CitaComponente({ value, typeAppointment, token }) {
   const payload = useDecodedJwt(token);
@@ -189,7 +190,9 @@ export default function CitaComponente({ value, typeAppointment, token }) {
               </button>
             </div>
             <div className="carta-time">
-              {formaTime(value.fecha)}
+              {dayjs(value.fecha).format(
+                          "hh[:]mm A"
+                        )}
               <br />
               <p>{value.objetivo}</p>
             </div>

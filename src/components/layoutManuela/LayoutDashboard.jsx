@@ -26,6 +26,7 @@ export default function LayoutDashboard() {
             <Sidebar
               nombre={payload?.nombre}
               permisos={payload?.permisos}
+              rol={payload?.role.nombre}
               isSidebar={isSidebar}
             />
             <main
