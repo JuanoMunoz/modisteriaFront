@@ -186,7 +186,8 @@ export default function Citas() {
             Contamos con un asesor especializado que estará completamente
             dedicado a atender tus necesidades. No pierdas la oportunidad de
             recibir una atención personalizada y profesional, diseñada
-            exclusivamente para ti.
+            exclusivamente para ti. El horario de atención es de lunes a viernes, 
+            de 8am a 5pm. Recuerda que debes pedir tu cita con 3 días de anticipación.
           </p>
           <button className="btnAsesor" onClick={toggleModal}>
             <span>

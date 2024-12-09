@@ -665,10 +665,10 @@ export default function Prueba() {
                           <div>
                             <InputDash
                               {...register("horas", {
-                                required: "¡mínimo 0 horas!",
+                                required: "¡Mínimo 0 horas!",
                                 min: {
                                   value: 0,
-                                  message: "¡mínimo 0 horas!",
+                                  message: "¡Mínimo 0 horas!",
                                 },
                                 onChange: (e) => {
                                   let { value } = e.target;
@@ -693,7 +693,7 @@ export default function Prueba() {
                           <div>
                             <InputDash
                               {...register("minutos", {
-                                required: "¡mínimo 0 minutos!",
+                                required: "¡Mínimo 0 minutos!",
                                 onChange: (e) => {
                                   let { value } = e.target;
                                   value = value.replace(/\D/g, "");
@@ -701,7 +701,7 @@ export default function Prueba() {
                                 },
                                 min: {
                                   value: watch("horas") == 0 ? 10 : 0,
-                                  message: `¡mínimo ${
+                                  message: `¡Mínimo ${
                                     watch("horas") == 0 ? "10" : "0"
                                   } minutos! `,
                                 },

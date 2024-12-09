@@ -59,7 +59,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
   );
 };
 
-const Sidebar = ({ nombre, permisos }) => {
+const Sidebar = ({ nombre, permisos, rol }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   console.log(permisos.includes(17));
@@ -138,7 +138,7 @@ const Sidebar = ({ nombre, permisos }) => {
                   {nombre}
                 </Typography>
                 <Typography variant="h4" color={colors.purple[300]}>
-                  Admin
+                  {rol}
                 </Typography>
               </Box>
             </Box>
