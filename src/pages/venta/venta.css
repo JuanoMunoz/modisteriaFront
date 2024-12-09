@@ -6,6 +6,11 @@
   display: flex;
   justify-content: space-between;
 }
+.last-details-venta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .ficha-tecnica {
   border-radius: 10px;
   height: 100%;
@@ -122,7 +127,7 @@
   display: flex;
   gap: 100px;
 }
-.addressRight{
+.addressRight {
   margin-right: 170px;
 }
 .piso-depto {
@@ -309,11 +314,11 @@ input[type="radio"]:hover {
   margin-left: 20px;
 }
 
-.emisor{
+.emisor {
   display: flex;
 }
 
-.emisor span{
+.emisor span {
   font-size: 1rem;
   font-weight: bold;
 }
@@ -364,7 +369,6 @@ input[type="radio"]:hover {
   justify-content: end;
   align-items: end;
 }
-
 
 .icon-large {
   cursor: pointer;
@@ -432,19 +436,21 @@ input[type="radio"]:hover {
     color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s,
     background 0.2s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
   padding-right: 30px; /* Espacio para el ícono de ojo */
-  font-family: "Comfortaa", sans-serif
+  font-family: "Comfortaa", sans-serif;
 }
 
 .label {
   display: block;
-  margin-bottom: .3rem;
-  font-size: .9rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
   font-weight: bold;
   color: #05060f63;
-  transition: color .3s cubic-bezier(.25,.01,.25,1) 0s;
+  transition: color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
 }
 
-.select:hover, .select:focus, .select-group:hover .select {
+.select:hover,
+.select:focus,
+.select-group:hover .select {
   outline: none;
   border-color: rgb(187, 14, 202);
 }
@@ -453,7 +459,6 @@ input[type="radio"]:hover {
   color: black;
 }
 
-
 .descripcion {
   font-size: 12px;
   margin-bottom: 50px;
@@ -461,7 +466,7 @@ input[type="radio"]:hover {
   width: 100px;
 }
 
-.addressLeft{
+.addressLeft {
   margin-top: 10px;
 }
 
@@ -471,29 +476,29 @@ input[type="radio"]:hover {
 }
 
 .checkbox-wrapper-10 .tgl,
-  .checkbox-wrapper-10 .tgl:after,
-  .checkbox-wrapper-10 .tgl:before,
-  .checkbox-wrapper-10 .tgl *,
-  .checkbox-wrapper-10 .tgl *:after,
-  .checkbox-wrapper-10 .tgl *:before,
-  .checkbox-wrapper-10 .tgl + .tgl-btn {
+.checkbox-wrapper-10 .tgl:after,
+.checkbox-wrapper-10 .tgl:before,
+.checkbox-wrapper-10 .tgl *,
+.checkbox-wrapper-10 .tgl *:after,
+.checkbox-wrapper-10 .tgl *:before,
+.checkbox-wrapper-10 .tgl + .tgl-btn {
   box-sizing: border-box;
 }
 
 .checkbox-wrapper-10 .tgl::-moz-selection,
-  .checkbox-wrapper-10 .tgl:after::-moz-selection,
-  .checkbox-wrapper-10 .tgl:before::-moz-selection,
-  .checkbox-wrapper-10 .tgl *::-moz-selection,
-  .checkbox-wrapper-10 .tgl *:after::-moz-selection,
-  .checkbox-wrapper-10 .tgl *:before::-moz-selection,
-  .checkbox-wrapper-10 .tgl + .tgl-btn::-moz-selection,
-  .checkbox-wrapper-10 .tgl::selection,
-  .checkbox-wrapper-10 .tgl:after::selection,
-  .checkbox-wrapper-10 .tgl:before::selection,
-  .checkbox-wrapper-10 .tgl *::selection,
-  .checkbox-wrapper-10 .tgl *:after::selection,
-  .checkbox-wrapper-10 .tgl *:before::selection,
-  .checkbox-wrapper-10 .tgl + .tgl-btn::selection {
+.checkbox-wrapper-10 .tgl:after::-moz-selection,
+.checkbox-wrapper-10 .tgl:before::-moz-selection,
+.checkbox-wrapper-10 .tgl *::-moz-selection,
+.checkbox-wrapper-10 .tgl *:after::-moz-selection,
+.checkbox-wrapper-10 .tgl *:before::-moz-selection,
+.checkbox-wrapper-10 .tgl + .tgl-btn::-moz-selection,
+.checkbox-wrapper-10 .tgl::selection,
+.checkbox-wrapper-10 .tgl:after::selection,
+.checkbox-wrapper-10 .tgl:before::selection,
+.checkbox-wrapper-10 .tgl *::selection,
+.checkbox-wrapper-10 .tgl *:after::selection,
+.checkbox-wrapper-10 .tgl *:before::selection,
+.checkbox-wrapper-10 .tgl + .tgl-btn::selection {
   background: none;
 }
 
@@ -511,7 +516,7 @@ input[type="radio"]:hover {
 }
 
 .checkbox-wrapper-10 .tgl + .tgl-btn:after,
-  .checkbox-wrapper-10 .tgl + .tgl-btn:before {
+.checkbox-wrapper-10 .tgl + .tgl-btn:before {
   position: relative;
   display: block;
   content: "";
@@ -539,7 +544,7 @@ input[type="radio"]:hover {
 }
 
 .checkbox-wrapper-10 .tgl-flip + .tgl-btn:after,
-  .checkbox-wrapper-10 .tgl-flip + .tgl-btn:before {
+.checkbox-wrapper-10 .tgl-flip + .tgl-btn:before {
   display: inline-block;
   transition: all 0.4s ease;
   width: 100%;
@@ -563,7 +568,7 @@ input[type="radio"]:hover {
 }
 
 .checkbox-wrapper-10 .tgl-flip + .tgl-btn:before {
-  background: #FF3A19;
+  background: #ff3a19;
   content: attr(data-tg-off);
 }
 

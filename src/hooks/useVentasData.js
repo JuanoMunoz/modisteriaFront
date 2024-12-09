@@ -37,6 +37,15 @@ export default function useVentas() {
     );
     return respuesta;
   };
+  const calcularDomicilio = async (id, infoUpdate) => {
+    const respuesta = await updateFetch(
+      `${URL_BACK}/ventas/calcularDomicilio/${id}`,
+      "POST",
+      infoUpdate,
+      { "x-token": token }
+    );
+    return respuesta;
+  };
 
   const cancelarVenta = async (id, infoUpdate) => {
     const respuesta = await updateFetch(
@@ -47,13 +56,13 @@ export default function useVentas() {
     );
     return respuesta;
   };
-  
 
   return {
     fetchAllVentas,
     updateVentas,
     cancelarVenta,
     initialFetchAllVentas,
+    calcularDomicilio,
     loading,
   };
 }

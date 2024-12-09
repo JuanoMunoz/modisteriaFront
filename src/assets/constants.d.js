@@ -21,6 +21,48 @@ export const messagesCalendar = {
   event: "Evento",
   noEventsInRange: "Sin eventos",
 };
+export const municipios = [
+  {
+    nombre: "Itagüí",
+    precio: 18000,
+  },
+  {
+    nombre: "Sabaneta",
+    precio: 18000,
+  },
+  {
+    nombre: "Envigado",
+    precio: 18000,
+  },
+  {
+    nombre: "Caldas",
+    precio: 18000,
+  },
+  {
+    nombre: "La estrella",
+    precio: 18000,
+  },
+  {
+    nombre: "Medellín",
+    precio: 17500,
+  },
+  {
+    nombre: "Bello",
+    precio: 17500,
+  },
+  {
+    nombre: "Copacabana",
+    precio: 15500,
+  },
+  {
+    nombre: "Girardota",
+    precio: 15500,
+  },
+  {
+    nombre: "Barbosa",
+    precio: 15500,
+  },
+];
 export const estadoCitasColores = [
   {
     nombre: "Por cotizar",

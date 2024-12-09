@@ -14,10 +14,16 @@ import { QrCode } from "../../components/svg/Svg";
 import { toast, ToastContainer } from "react-toastify";
 import useActiveUserInfo from "../../hooks/useActiveUserInfo";
 import useIsFirstRender from "../../hooks/useIsMount";
-import { formToCop, imageExtensions, URL_BACK } from "../../assets/constants.d";
+import {
+  formToCop,
+  imageExtensions,
+  municipios,
+  URL_BACK,
+} from "../../assets/constants.d";
 import useFetch from "../../hooks/useFetch";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import SelectDash from "../../components/selectDash/SelectDash";
+import useVentas from "../../hooks/useVentasData";
 export default function Venta() {
   const { token } = useJwt();
   const payload = useDecodedJwt(token);
@@ -27,11 +33,13 @@ export default function Venta() {
   const { cartData, subtotal } = useCart();
   const navigate = useNavigate();
   const [address, setAddress] = useState(false);
+  const { calcularDomicilio } = useVentas();
   const [lugarEntrega, setLugarEntrega] = useState("");
   const [file, setImagen] = useState(null);
   const [nombreComprobante, setNombreComprobante] = useState(payload?.id);
   const [loading, setLoading] = useState(false);
   const { userData, setUserData } = useActiveUserInfo(payload?.id, token);
+  const [initialDomicilioValue, setInitialDomiciloValue] = useState(0);
   const [domicilio, setDomicilio] = useState(0);
   const [showFullQr, setShowFullQr] = useState(false);
   const handleChangeAddress = (e) => {
@@ -46,7 +54,7 @@ export default function Venta() {
   const handleAddressSubmit = async (data) => {
     setLoading(true);
     setAddress(false);
-    const direccionString = `${data.tipoCalle} ${data.calle} ${data.numero1}${data.numero2} ${data.infoAdicional}`;
+    const direccionString = `${data.tipoCalle} ${data.calle} ${data.numero1}${data.numero2} ${data.infoAdicional},${data.ciudad}`;
     axios
       .put(
         `${URL_BACK}/usuarios/updateUser/${payload?.id}`,
@@ -59,10 +67,9 @@ export default function Venta() {
           toastId: "direccion-ok",
         });
         axios
-          .get(
-            `${URL_BACK}/usuarios/getUserById/${payload?.id}`,
-            { headers: { "x-token": token } }
-          )
+          .get(`${URL_BACK}/usuarios/getUserById/${payload?.id}`, {
+            headers: { "x-token": token },
+          })
           .then((res) => {
             setUserData(res.data);
             setDomicilio(15000);
@@ -79,16 +86,30 @@ export default function Venta() {
       });
   };
   useEffect(() => {
+    const calcularDomicilioTodosPedidos = async () => {
+      const getMunicipioFromDireccion = userData.direccion.split(",");
+      const findMunicipio = municipios.find(
+        (domicilio) =>
+          domicilio.nombre ==
+          getMunicipioFromDireccion[getMunicipioFromDireccion.length - 1]
+      );
+      const response = await calcularDomicilio(userData?.id, {
+        valorDomicilio: findMunicipio.precio,
+      });
+      if (response.status === 201)
+        setInitialDomiciloValue(response.data.valorFinal);
+    };
     if (userData?.direccion) {
-      setDomicilio(15000);
+      calcularDomicilioTodosPedidos();
     } else {
       setDomicilio(0);
     }
   }, [userData]);
 
   useEffect(() => {
-    if (lugarEntrega === "domicilio") return setTotal(subtotal + domicilio);
-    setTotal(subtotal);
+    if (lugarEntrega === "domicilio")
+      return setDomicilio(initialDomicilioValue);
+    setDomicilio(0);
   }, [lugarEntrega, subtotal, domicilio]);
   const [total, setTotal] = useState(null);
 
@@ -151,10 +172,9 @@ export default function Venta() {
     const formDataAdd = new FormData();
     const ids = cartData.map((value) => value.id);
     formDataAdd.append("nombrePersona", nombreComprobante);
-    lugarEntrega === "domicilio"
-      ? formDataAdd.append("valorDomicilio", domicilio)
-      : formDataAdd.append("valorDomicilio", 0);
+    formDataAdd.append("valorDomicilio", domicilio);
     formDataAdd.append("valorPrendas", subtotal);
+    formDataAdd.append("lugarEntrega", lugarEntrega);
     formDataAdd.append("pedidoId", ids);
     formDataAdd.append("file", file);
 
@@ -202,7 +222,7 @@ export default function Venta() {
                 <span className="input-text">Enviar a domicilio</span>
               </div>
               {userData?.direccion ? (
-                <h4 className="info-adicional">Carrera 67 a #109</h4>
+                <h4 className="info-adicional">{userData.direccion}</h4>
               ) : (
                 <h4 onClick={addressToggle} className="info-agregar-direccion">
                   Agregar dirección
@@ -302,8 +322,7 @@ export default function Venta() {
             {cartData.map((value) => (
               <div key={value.idPedido} className="ficha-producto">
                 <div>
-                  <span>⦿&nbsp;&nbsp;</span>
-                  "{value?.catalogo.producto}"{" "}
+                  <span>⦿&nbsp;&nbsp;</span>"{value?.catalogo.producto}"{" "}
                   <span style={{ marginLeft: "5px" }}>Talla</span>
                   <span className="talla-producto">{value.Talla.nombre}</span>
                 </div>
@@ -333,9 +352,8 @@ export default function Venta() {
         <form onSubmit={handleSubmit(handleAddressSubmit)}>
           <h2 className="add-address-title">Agregar dirección 📍</h2>
           <div className="address-modal">
-
             <div className="addressLeft">
-            <label className="label-number-address">
+              <label className="label-number-address">
                 <h3 className="text-label">Tipo de Calle</h3>
                 <br />
                 <div className="select-container">
@@ -371,7 +389,7 @@ export default function Venta() {
             </div>
 
             <div className="addressRight">
-            <label className="label-number-address">
+              <label className="label-number-address">
                 <h3 className="text-label">Número</h3>
                 <div className="number-address">
                   {" "}
@@ -399,9 +417,31 @@ export default function Venta() {
                 </div>
               </label>
             </div>
-
           </div>
-          <div className="">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "85px",
+            }}
+          >
+            <div>
+              <h3 className="text-label">Municipio</h3>
+              <div className="select-container">
+                <select
+                  {...register("ciudad", { required: true })}
+                  defaultValue={"Copacabana"}
+                  className="select"
+                >
+                  {municipios.map((municipio, idx) => (
+                    <option key={idx} value={municipio.nombre}>
+                      {municipio.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
             <label className="piso-depto">
               <h3 className="text-label">Piso/Departamento (Opcional)</h3>
               <Input
@@ -433,17 +473,21 @@ export default function Venta() {
           <br />
           <div className="qrcode-data">
             <div className="emisor">
-
               <span>¿Cambiar quien lo envía?</span>
 
               <div className="checkbox-wrapper-10">
-                <input 
-                  type="checkbox" 
-                  id="cb5" 
+                <input
+                  type="checkbox"
+                  id="cb5"
                   className="tgl tgl-flip"
                   {...registerForm2("incluirNombreComprobante")}
                 />
-                <label htmlFor="cb5" data-tg-on="Si" data-tg-off="No" className="tgl-btn"></label>
+                <label
+                  htmlFor="cb5"
+                  data-tg-on="Si"
+                  data-tg-off="No"
+                  className="tgl-btn"
+                ></label>
               </div>
             </div>
 
