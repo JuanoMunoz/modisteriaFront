@@ -107,7 +107,7 @@ export default function Venta() {
   }, [userData]);
 
   useEffect(() => {
-    if (lugarEntrega === "domicilio")
+    if (lugarEntrega === userData?.direccion)
       return setDomicilio(initialDomicilioValue);
     setDomicilio(0);
   }, [lugarEntrega, subtotal, domicilio]);
@@ -157,11 +157,12 @@ export default function Venta() {
   }, [token, cartData, navigate]);
 
   const handlePassPayMethod = () => {
-    if (lugarEntrega === "domicilio" && !userData?.direccion) {
+    if (lugarEntrega === userData?.direccion && !userData?.direccion) {
       setAddress(true);
       return;
     }
-    if (lugarEntrega !== "domicilio" && lugarEntrega !== "modisteria") return;
+    if (lugarEntrega !== userData?.direccion && lugarEntrega !== "modisteria")
+      return;
     setElegirPago(true);
   };
   const handleAddCotizacion = async () => {
@@ -215,14 +216,14 @@ export default function Venta() {
                   type="radio"
                   className="radio-styles"
                   name="entrega"
-                  value="domicilio"
+                  value={userData?.direccion}
                   onChange={handleChangeAddress}
-                  checked={lugarEntrega === "domicilio"}
+                  checked={lugarEntrega === userData?.direccion}
                 />
                 <span className="input-text">Enviar a domicilio</span>
               </div>
               {userData?.direccion ? (
-                <h4 className="info-adicional">{userData.direccion}</h4>
+                <h4 className="info-adicional">{userData?.direccion}</h4>
               ) : (
                 <h4 onClick={addressToggle} className="info-agregar-direccion">
                   Agregar dirección
