@@ -39,6 +39,15 @@ export default function useCitasData() {
     );
     return respuesta;
   };
+  const cancelCita = async (id) => {
+    const respuesta = await updateFetch(
+      `${URL_BACK}/citas/cancelCita/${id}`,
+      "PUT",
+      null,
+      { "x-token": token }
+    );
+    return respuesta;
+  };
   const createVenta = async (citaId) => {
     const respuesta = await updateFetch(
       `${URL_BACK}/citainsumos/endCitaCreateVenta`,
@@ -135,5 +144,6 @@ export default function useCitasData() {
     createEstimation,
     updateSTP,
     updateVenta,
+    cancelCita,
   };
 }

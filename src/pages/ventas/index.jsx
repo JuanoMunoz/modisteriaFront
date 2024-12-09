@@ -93,26 +93,22 @@ export default function Ventas() {
     );
   };
 
-  // Lógica central para manejar acciones
   const handleAction = async (formData) => {
-    // Determina el origen según el valor de citaId
     const origen = dialogProps.row?.citaId === null ? "Catálogo" : "Cita";
 
-    // Mapeo de las acciones posibles
     const actionMap = {
       confirm: {
         Cita: terminarCitaHandler, // Acción para Cita
         Catálogo: confirmarVenta, // Acción para Catálogo
       },
       cancel: {
-        Catálogo: cancelVenta, // Acción para cancelar venta en Catálogo
+        Cita: cancelVenta,
+        Catálogo: cancelVenta,
       },
     };
 
-    // Buscar la función correspondiente según la acción y el origen
     const actionFn = actionMap[dialogProps.action]?.[origen];
 
-    // Ejecutar la acción si existe
     if (actionFn) {
       try {
         await actionFn(formData);

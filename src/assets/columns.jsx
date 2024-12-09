@@ -400,7 +400,6 @@ export const ColumnsVentas = ({
       if (row.estadoId === 3) {
         return (
           <div>
-            {/* Mostrar solo el botón de Confirmar venta */}
             <Button
               title="Confirmar venta"
               onClick={() => {
@@ -409,9 +408,6 @@ export const ColumnsVentas = ({
             >
               <Check size={20} color="#008000" />
             </Button>
-
-            {/* Mostrar el botón de Cancelar venta solo si el origen es Cita */}
-            {row.citaId === null && (
               <Button
                 title="Cancelar venta"
                 onClick={() => {
@@ -420,7 +416,7 @@ export const ColumnsVentas = ({
               >
                 <Cancel size={20} color="#E74C3C" />
               </Button>
-            )}
+            
           </div>
         );
       } else {
